@@ -1,0 +1,165 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#bb000000"
+    android:padding="5dp"
+    android:onClick="onHoverBackgroundClick"
+    >
+
+<!--
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="190dp"
+        android:background="@drawable/rounded_brown"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/editTextTip"
+            android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/btnSound"
+            android:layout_alignRight="@id/btnSound"
+            android:text="bla"
+            android:background="@drawable/list_of_template_tips"
+
+            />
+
+        <EditText
+            android:id="@id/editTextTip"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_above="@id/btnSound"
+            android:layout_alignLeft="@id/btnSound"
+            android:layout_alignRight="@id/btnSound"
+            android:layout_marginBottom="10dp"
+            android:gravity="top"
+            android:background="@drawable/input_text_large_below_list"
+            android:hint=" or just go freestyle..."
+            android:textColorHint="#555555"
+            android:textStyle="italic"
+            android:padding="5dp" />
+
+        <ImageButton
+            android:id="@+id/microphoneBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/btnSound"
+            android:layout_alignLeft="@+id/doneBtn"
+            android:background="@drawable/oval_icon"
+            android:src="@drawable/mic_icon_imageset_1x"
+            />
+
+        <ImageButton
+            android:id="@id/btnSound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/sound_bar"
+            />
+
+
+        <Button
+            android:id="@id/doneBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_alignTop="@id/editTextTip"
+            android:layout_alignParentRight="true"
+            android:text="@string/done"
+            android:textSize="14sp"
+            android:textColor="#ffffff"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="0dp"
+            android:background="@drawable/rounded_corners_img"
+            />
+
+    </RelativeLayout>
+-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="190dp"
+        android:background="@drawable/rounded_brown"
+        android:padding="16dp"
+        android:onClick="OnNonClickableClick"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="3dp"
+                android:text="bla"
+                android:background="@drawable/list_of_template_tips"
+                />
+
+            <EditText
+                android:id="@+id/editTextTip"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="top"
+                android:background="@drawable/input_text_large_below_list"
+                android:hint=" or just go freestyle..."
+                android:textColorHint="@color/editTextColorHint"
+                android:textColor="@color/editTextColor"
+                android:padding="5dp" />
+
+
+            <ImageButton
+                android:id="@+id/btnSound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/sound_bar"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <Button
+                android:id="@+id/doneBtn"
+                android:layout_width="70dp"
+                android:layout_height="34dp"
+                android:text="@string/done"
+                android:textSize="14sp"
+                android:textColor="#ffffff"
+                android:layout_marginTop="110dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/rounded_corners_img"
+                />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="56dp" />
+
+            <ImageButton
+                android:id="@+id/microphoneBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/oval_icon"
+                android:src="@drawable/mic_icon_imageset_1x"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="5dp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

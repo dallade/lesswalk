@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LessWalk</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title">Title:</string>
+    <string name="done">Done</string>
+    <string name="response_text"><font style='text-weight:bold;color:green;'>yesss</font> sir!</string>
+
+</resources>

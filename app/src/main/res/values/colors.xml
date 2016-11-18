@@ -1,0 +1,7 @@
+<resources>
+    <color name="player_title">#FFB010</color>
+    <color name="brown_bg">#632000</color>
+    <color name="browner_bg">#481700</color>
+    <color name="editTextColor">#222222</color>
+    <color name="editTextColorHint">#888888</color>
+</resources>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp"
+    android:background="#bb000000"
+    android:onClick="onHoverBackgroundClick"
+    >
+
+    <LinearLayout
+        android:id="@+id/request_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/rounded_brown"
+        android:onClick="OnNonClickableClick"
+        >
+
+        <TextView
+            android:id="@+id/httpRequestTextTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:text="URL:"
+            android:fontFamily="Arial"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:layout_margin="5dp"
+            />
+
+        <EditText
+            android:id="@+id/http_request_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:background="#ffffff"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:inputType="text"
+            android:labelFor="@id/familyTextTitle"
+            android:hint="Type your request here"
+            android:textColorHint="@color/editTextColorHint"
+            android:textColor="@color/editTextColor"
+            />
+
+        <Button
+            android:id="@+id/http_request_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Go"
+            android:textSize="14sp"
+            android:textColor="#ffffff"
+            android:background="@drawable/rounded_corners_img"
+            android:layout_margin="5dp"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/response_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_below="@id/request_container"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/rounded_brown"
+        android:onClick="OnNonClickableClick"
+        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            >
+            <TextView
+                android:id="@+id/response_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/response_text"
+                />
+        </ScrollView>
+    </LinearLayout>
+
+</RelativeLayout>

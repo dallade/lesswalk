@@ -1,0 +1,32 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 24        //should have a corresponding android platform version
+    buildToolsVersion "25.0"    //should be set according to the revision of the latest -
+                                //      build tools: "<build_tools_ver>.<revision>" (i.e. "25.0")
+    defaultConfig {
+        applicationId "com.lesswalk"
+        minSdkVersion 19
+        targetSdkVersion 24//shouldn't be higher than compileSdkVersion
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    dependencies {
+        compile 'com.google.code.gson:gson:2.4'
+        //
+        // AWS (Amazon):
+        compile 'com.amazonaws:aws-android-sdk-core:2.2.22'
+        compile 'com.amazonaws:aws-android-sdk-s3:2.2.22'
+        compile 'com.amazonaws:aws-android-sdk-ddb:2.2.22'
+        compile 'com.amazonaws:aws-android-sdk-cognito:2.2.22'
+        compile 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.2.22'
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+}

@@ -1,0 +1,75 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/background_1_1x"
+    android:weightSum="13"
+    tools:context="com.lesswalk.EditorActivity" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:background="@color/player_title"
+        android:weightSum="3"
+        >
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Back"
+            android:textColor="@android:color/white"
+            android:background="@color/player_title"
+            android:id="@+id/editor_back_button"/>
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="My Home"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:background="@color/player_title"
+            android:id="@+id/editor_my_home_btn"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Call"
+            android:textColor="@android:color/white"
+            android:background="@color/player_title"
+            android:id="@+id/editor_call_button"/>
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/editor_main_screen"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="12"
+        >
+
+        <Button
+            android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginLeft="80dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentLeft="true"
+            android:textColor="#eeeeee"
+            android:background="@drawable/rounded_corners_img"
+            android:text="Done"
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>
