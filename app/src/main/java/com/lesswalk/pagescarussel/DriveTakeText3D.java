@@ -48,7 +48,7 @@ public class DriveTakeText3D extends RectObject3D
 		}
 		else walkTime = "unknow";
 		
-		Log.d("elazarkin", "driveTime=" + driveTime + " walkTime=" + walkTime);
+		//Log.d("elazarkin", "driveTime=" + driveTime + " walkTime=" + walkTime);
 		//
 		init();
 	}
