@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,10 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.lesswalk.database.AWS;
 import com.lesswalk.database.DBController;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,7 +32,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.UUID;
 
 public class MoreViewsActivity extends Activity {
 
@@ -228,7 +236,50 @@ public class MoreViewsActivity extends Activity {
             //
             //TransferUtility awsFtp = AWS.getTransferUtility(getApplicationContext());
             //awsFtp.upload()
-            AWS.upload(appContext, "path_to_file");
+            String uuid = AWS.DATE_FORMAT_yyyyMMdd_HHmmss.format(new Date());
+            String ext = "zip";
+            String fileName = String.format("%s.%s", uuid, ext);
+            File file = new File(getFilesDir() + "/" + fileName);
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(file);
+                String contents = "Hello World";
+                fos.write(contents.getBytes());
+                fos.flush();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                if (fos != null) try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            String path_to_file = file.getPath();
+            AWS.upload(appContext, path_to_file, new AWS.OnUploadListener() {
+                @Override
+                public void onUploadStarted(String path) {
+                    Toast.makeText(context, "onUploadStarted for "+path, Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "onUploadStarted for "+path);
+                }
+
+                @Override
+                public void onUploadProgress(String path, float percentage) {
+                    Toast.makeText(context, String.format("path='%s',\n%.1f%%", path, percentage), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onUploadFinished(String path) {
+                    Toast.makeText(context, "onUploadFinished for "+path, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onUploadError(String path, int errorId, Exception ex) {
+                    Toast.makeText(context, "onUploadError for "+path +" , errorId="+errorId+", exception message="+ex.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
         }
 
