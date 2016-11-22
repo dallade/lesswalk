@@ -194,7 +194,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 
         Collections.sort(container, angleManager);
         
-        for (int i = 0; i < container.size(); i++)
+        for (int i = 0; container!=null && i < container.size(); i++)
         {
             float MIN_COLOR_SCALE = 0.4f;
             float color_scale = 0.0f;
