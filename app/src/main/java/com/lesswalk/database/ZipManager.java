@@ -4,9 +4,17 @@ import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -42,34 +50,111 @@ public class ZipManager {
         }
     }
 
-    public static void unzip(String zipFileName, String unzippedDir) {
-        mkdirIfNeeded(unzippedDir);
+    private static boolean unzip(String zipFileName, String unzippedDir) {
+        boolean ret = false;
         try {
-            FileInputStream fin = new FileInputStream(zipFileName);
-            ZipInputStream zipis = new ZipInputStream(fin);
-            ZipEntry ze = null;
-            while ((ze = zipis.getNextEntry()) != null) {
-                //create dir if required while unzipping
-                if (ze.isDirectory()) {
-                    mkdirIfNeeded(ze.getName());
-                } else {
-                    FileOutputStream fos = new FileOutputStream(unzippedDir + ze.getName());
-                    for (int c = zipis.read(); c != -1; c = zipis.read()) {
-                        fos.write(c);
+            int BUFFER = 2048;
+            List<String> zipFiles = new ArrayList<>();
+            File sourceZipFile = new File(zipFileName);
+            File unzippedDestinationDirectory = new File(unzippedDir);
+            if (!unzippedDestinationDirectory.mkdir()){
+                throw new Exception("UnzippedDestinationDirectory_mkdir");
+            }
+            ZipFile zipFile;
+            zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
+            Enumeration zipFileEntries = zipFile.entries();
+            while (zipFileEntries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+                String currentEntry = entry.getName();
+                File destFile = new File(unzippedDestinationDirectory, currentEntry);
+                if (currentEntry.endsWith(".zip")) {
+                    zipFiles.add(destFile.getAbsolutePath());
+                }
+
+                File destinationParent = destFile.getParentFile();
+
+                if (!destinationParent.mkdirs()){
+                    throw new Exception("DestinationParent_mkdirs");
+                }
+
+                try {
+                    if (!entry.isDirectory()) {
+                        BufferedInputStream is =
+                                new BufferedInputStream(zipFile.getInputStream(entry));
+                        int currentByte;
+                        byte data[] = new byte[BUFFER];
+
+                        FileOutputStream fos = new FileOutputStream(destFile);
+                        BufferedOutputStream dest =
+                                new BufferedOutputStream(fos, BUFFER);
+                        while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+                            dest.write(data, 0, currentByte);
+                        }
+                        dest.flush();
+                        dest.close();
+                        is.close();
                     }
-                    zipis.closeEntry();
-                    fos.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
                 }
             }
-            zipis.close();
-        } catch (Exception e) {
-            Log.e(TAG, "unzip: e.message="+e.getMessage());
+            zipFile.close();
+
+            for (String zipName : zipFiles) {
+                unzip(
+                        zipName,
+                        unzippedDir + File.separatorChar +
+                        zipName.substring(0, zipName.lastIndexOf(".zip")
+                      )
+                );
+            }
+            ret = true;
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            if (e.getMessage().equals("UnzippedDestinationDirectory_mkdir")){
+                Log.e(TAG, e.getMessage());
+            }else if (e.getMessage().equals("DestinationParent_mkdirs")) {
+                Log.e(TAG, e.getMessage());
+            }else{
+                e.printStackTrace();
+            }
         }
+        return ret;
     }
 
-    private static void mkdirIfNeeded(String dirName) {
-        //
+    private static boolean mkdirIfNeeded(String dirName) {
+        File dir = new File(dirName);
+        return dir.mkdir();
     }
+
+//    public static void unzip(String zipFileName, String unzippedDir) {
+//        mkdirIfNeeded(unzippedDir);
+//        try {
+//            FileInputStream fin = new FileInputStream(zipFileName);
+//            ZipInputStream zipis = new ZipInputStream(fin);
+//            ZipEntry ze = null;
+//            while ((ze = zipis.getNextEntry()) != null) {
+//                //create dir if required while unzipping
+//                if (ze.isDirectory()) {
+//                    mkdirIfNeeded(ze.getName());
+//                } else {
+//                    FileOutputStream fos = new FileOutputStream(unzippedDir + ze.getName());
+//                    for (int c = zipis.read(); c != -1; c = zipis.read()) {
+//                        fos.write(c);
+//                    }
+//                    zipis.closeEntry();
+//                    fos.close();
+//                }
+//            }
+//            zipis.close();
+//        } catch (Exception e) {
+//            Log.e(TAG, "unzip: e.message="+e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
+
 
 }
