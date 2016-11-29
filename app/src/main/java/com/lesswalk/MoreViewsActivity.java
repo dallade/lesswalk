@@ -3,6 +3,7 @@ package com.lesswalk;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -44,6 +45,7 @@ public class MoreViewsActivity extends Activity {
     private Button btnFirst;
     private Button btnSecond;
     private Button btnThird;
+    private Button btnLogin;
     protected Context context;
     protected Context appContext;
     private View hover_add_family;
@@ -121,6 +123,15 @@ public class MoreViewsActivity extends Activity {
         //
         btnThird = (Button) findViewById(R.id.btnHoverHttpClient);
         btnThird.setOnClickListener(onClickListener);
+        //
+        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
         //
         //
         response_text_view = (TextView) findViewById(R.id.response_text_view);

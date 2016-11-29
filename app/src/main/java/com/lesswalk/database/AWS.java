@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
+import com.amazonaws.mobileconnectors.cognito.Dataset;
+import com.amazonaws.mobileconnectors.cognito.DefaultSyncCallback;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
@@ -18,6 +20,7 @@ import com.amazonaws.util.Md5Utils;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -157,16 +160,16 @@ public class AWS {
         void onUploadError(String path, int errorId, Exception ex);
     }
 
-//    void other(){
-//        Dataset dataset = syncClient.openOrCreateDataset("myDataset");
-//        dataset.put("myKey", "myValue");
-//        dataset.synchronize(new DefaultSyncCallback() {
-//            @Override
-//            public void onSuccess(Dataset dataset, List newRecords) {
-//                //Your handler code here
-//            }
-//        });
-//    }
+    void other(){
+        Dataset dataset = syncClient.openOrCreateDataset("android_users");
+        dataset.put("myKey", "myValue");
+        dataset.synchronize(new DefaultSyncCallback() {
+            @Override
+            public void onSuccess(Dataset dataset, List newRecords) {
+                //Your handler code here
+            }
+        });
+    }
     
     
     
