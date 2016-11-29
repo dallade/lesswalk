@@ -46,7 +46,7 @@ public class DBController extends SQLiteOpenHelper {
 
     public ArrayList<HashMap<String, String>> getAllUsers() {
         ArrayList<HashMap<String, String>> wordList;
-        wordList = new ArrayList<HashMap<String, String>>();
+        wordList = new ArrayList<>();
         String selectQuery = "SELECT  * FROM users";
         SQLiteDatabase database = this.getWritableDatabase();
         try (Cursor cursor = database.rawQuery(selectQuery, null)) {

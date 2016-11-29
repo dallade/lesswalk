@@ -160,16 +160,16 @@ public class AWS {
         void onUploadError(String path, int errorId, Exception ex);
     }
 
-    void other(){
-        Dataset dataset = syncClient.openOrCreateDataset("android_users");
-        dataset.put("myKey", "myValue");
-        dataset.synchronize(new DefaultSyncCallback() {
-            @Override
-            public void onSuccess(Dataset dataset, List newRecords) {
-                //Your handler code here
-            }
-        });
-    }
+//    void other(){
+//        Dataset dataset = syncClient.openOrCreateDataset("android_users");
+//        dataset.put("myKey", "myValue");
+//        dataset.synchronize(new DefaultSyncCallback() {
+//            @Override
+//            public void onSuccess(Dataset dataset, List newRecords) {
+//                //Your handler code here
+//            }
+//        });
+//    }
     
     
     

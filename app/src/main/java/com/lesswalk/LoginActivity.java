@@ -1,29 +1,37 @@
 package com.lesswalk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.lesswalk.database.AWS;
+import com.lesswalk.database.AmazonCloud;
+import com.lesswalk.database.Cloud;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.UUID;
 
 public class LoginActivity extends Activity {
 
+    private static final String TAG = "LoginActivity";
     private EditText et_country_code;
     private EditText et_phone;
     private Button btn_signup;
+    private Cloud cloud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initViews();
+        cloud = new AmazonCloud(this);
     }
 
     public EditText getEditText() {
@@ -87,18 +95,33 @@ public class LoginActivity extends Activity {
         if (!isValid) return;
         hideKeyboard();
         //
-        AWS.getSyncClient(this).
-        //
-        Toast.makeText(this, String.format(Locale.getDefault()
-                , "Login success!\n+%d\n%d"
-                , Integer.parseInt(
-                        et_country_code.getText().toString()
-                )
-                , Long.parseLong(
-                        et_phone.getText().toString()
-                )
-            ), Toast.LENGTH_SHORT
-        ).show();
+        String uuid = UUID.randomUUID().toString();
+        int countryCodeInt = Integer.parseInt(et_country_code.getText().toString());
+        long phoneLong = Long.parseLong(et_phone.getText().toString());
+        @SuppressLint("DefaultLocale") String phone = String.format("+%d %d", countryCodeInt, phoneLong);
+        cloud.createUser(phone, uuid, new Cloud.I_ProcessListener() {
+            @Override
+            public void onSuccess(HashMap<String, String> result) {
+                String output = String.format(Locale.getDefault()
+                        , "Login success!\n%s\n%s"
+                        , result.get("dataset")
+                        , result.get("updatedRecords")
+                );
+
+                Toast.makeText(LoginActivity.this, output, Toast.LENGTH_SHORT).show();
+                Log.v(TAG, output);
+            }
+
+            @Override
+            public void onFailure(HashMap<String, String> result) {
+                String output = String.format(Locale.getDefault()
+                        , "Login failed!\n%s"
+                        , result.get("DataStorageException")
+                );
+                Toast.makeText(LoginActivity.this, output, Toast.LENGTH_SHORT).show();
+                Log.v(TAG, output);
+            }
+        });
     }
 
 
