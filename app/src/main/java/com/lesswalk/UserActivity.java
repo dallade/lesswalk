@@ -96,14 +96,18 @@ public class UserActivity extends Activity {
             case "My Signatures":{
 //                String responseStr = httpReqUrl("http://52.70.155.39:30082/cmd/signature/findSignaturesByOwner?owner=" + userUuid);
 //                tv_user_act_result.setText(responseStr);
-                String req = "http://52.70.155.39:30082/cmd/signature/findSignaturesByOwner?owner=" + userUuid;
+                String req = "http://52.70.155.39:30082/cmd/signature/findByOwner/" + userUuid;
                 asyncHttpReqUrl(req);
             }break;
             case "Friends Signatures":{
-                Toast.makeText(curActivity, "Not implemented yet", Toast.LENGTH_SHORT).show();
+                String someonesUuid = "801BFAF1-6480-481C-92C6-619C381E0222";
+                String req = "http://52.70.155.39:30082/cmd/signature/findByOwner/" + someonesUuid;
+                asyncHttpReqUrl(req);
             }break;
             case "Another Option":{
-                Toast.makeText(curActivity, "Not implemented yet", Toast.LENGTH_SHORT).show();
+                String someonesUuid = "E68F1C41-656A-4DA8-A001-10093F93E000";
+                String req = "http://52.70.155.39:30082/cmd/signature/findByOwner/" + someonesUuid;
+                asyncHttpReqUrl(req);
             }break;
         }
     }
