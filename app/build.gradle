@@ -16,6 +16,7 @@ android {
     }
     dependencies {
         compile 'com.google.code.gson:gson:2.4'
+        compile 'com.squareup.okhttp3:okhttp:3.4.2'
         //
         // AWS (Amazon):
         compile 'com.amazonaws:aws-android-sdk-core:2.2.22'
@@ -26,7 +27,4 @@ android {
     }
     productFlavors {
     }
-}
-
-dependencies {
 }

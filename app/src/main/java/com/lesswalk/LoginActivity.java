@@ -3,6 +3,7 @@ package com.lesswalk;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,7 @@ public class LoginActivity extends Activity {
     private EditText et_phone;
     private Button btn_signup;
     private Cloud cloud;
+    private HashMap<String, String> loginResult = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,19 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         initViews();
         cloud = new AmazonCloud(this);
+        cloud.getUser("000", new Cloud.I_ProcessListener() {
+            @Override
+            public void onSuccess(HashMap<String, String> result) {
+                loginResult = result;
+                String uuid = loginResult.get("uuid");
+                showLoggedInArea(uuid);
+            }
+
+            @Override
+            public void onFailure(HashMap<String, String> result) {
+                loginResult = result;
+            }
+        });
     }
 
     public EditText getEditText() {
@@ -123,6 +138,21 @@ public class LoginActivity extends Activity {
             }
         });
     }
+
+    private void showLoggedInArea(String uuid) {
+        Intent intent = new Intent(getApplicationContext(), UserActivity.class);
+        intent.putExtra("uuid", ""+uuid);
+        startActivity(intent);
+    }
+
+
+
+
+
+
+
+
+
 
 
 }

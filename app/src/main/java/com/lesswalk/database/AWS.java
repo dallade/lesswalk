@@ -31,6 +31,8 @@ public class AWS {
     private static final String TAG = "AWS";
     //
     private static final String IDENTITY_POOL_ID = "us-east-1:528e5e4d-4722-45da-ab53-13c39938b355";
+    //private static final String IDENTITY_POOL_ID = "arn:aws:cognito-idp:us-east-1:988859694509:userpool/us-east-1_ggisCB2C9";
+    //private static final String ROLE_SMS = "arn:aws:iam::988859694509:role/service-role/eladsuserpool-SMS-Role";
     private static final Regions REGION = Regions.US_EAST_1;
     private static final String BUCKET = "com.lesswalk.one-amir";
     //
