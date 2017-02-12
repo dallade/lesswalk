@@ -63,21 +63,16 @@ public class UserActivity extends Activity {
     void asyncHttpReqUrl(final String url){
 
         new AsyncTask<String, String, String>() {
-
-
-
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
 
             }
-
             @Override
             protected String doInBackground(String... params) {
                 //String url = params[0];
                 return httpReqUrl(url);
             }
-
             @Override
             protected void onPostExecute(String s) {
                 if (curActivity == null) return;

@@ -39,6 +39,13 @@ public class LoginActivity extends Activity {
             public void onSuccess(HashMap<String, String> result) {
                 loginResult = result;
                 String uuid = loginResult.get("uuid");
+                String output = String.format(Locale.getDefault()
+                        , "Login success!\n%s"
+                        , Utils.toString(result)
+                );
+
+                Toast.makeText(LoginActivity.this, output, Toast.LENGTH_SHORT).show();
+                Log.v(TAG, output);
                 showLoggedInArea(uuid);
             }
 
