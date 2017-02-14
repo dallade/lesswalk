@@ -8,7 +8,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lesswalk.database.AmazonCloud;
+import com.lesswalk.database.Cloud;
+
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,6 +25,7 @@ public class UserActivity extends Activity {
     private TextView tv_user_act_result;
     private String userUuid = "";
     private UserActivity curActivity;
+    private Cloud cloud = new AmazonCloud(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,36 @@ public class UserActivity extends Activity {
         }.execute(url);
     }
 
+    void asyncFindSignatures(final String phone, final String countryCode){
+
+        new AsyncTask<String, String, String>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+            }
+            @Override
+            protected String doInBackground(String... params) {
+                List<String> signatures = cloud.findSignaturesUuidsByOwnerPhone(phone, countryCode);
+                String allTogether = "";
+                for (int i = 0; i < signatures.size(); i++) {
+                    allTogether += signatures.get(i) + "\n";
+                }
+                return allTogether;
+            }
+            @Override
+            protected void onPostExecute(String s) {
+                if (curActivity == null) return;
+                if (tv_user_act_result == null) return;
+                tv_user_act_result.setText(s);
+
+            }
+        }.execute();
+    }
+//    String phone = "0526807577";//sharon's
+//    String countryCode = "972";
+//    asyncFindSignatures(phone, countryCode);
+
     public void onClickUserActivityButtons(View view) {
         Button btn = (Button) view;
         String btnTxt = btn.getText().toString();
@@ -100,9 +135,10 @@ public class UserActivity extends Activity {
                 asyncHttpReqUrl(req);
             }break;
             case "Another Option":{
-                String someonesUuid = "E68F1C41-656A-4DA8-A001-10093F93E000";
-                String req = "http://52.70.155.39:30082/cmd/signature/findByOwner/" + someonesUuid;
-                asyncHttpReqUrl(req);
+                //String someonesUuid = "E68F1C41-656A-4DA8-A001-10093F93E000";
+                String phone = "0526807577";//sharon's
+                String countryCode = "972";
+                asyncFindSignatures(phone, countryCode);
             }break;
         }
     }

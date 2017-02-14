@@ -34,26 +34,13 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         initViews();
         cloud = new AmazonCloud(this);
-        cloud.getUser("000", new Cloud.I_ProcessListener() {
-            @Override
-            public void onSuccess(HashMap<String, String> result) {
-                loginResult = result;
-                String uuid = loginResult.get("uuid");
-                String output = String.format(Locale.getDefault()
-                        , "Login success!\n%s"
-                        , Utils.toString(result)
-                );
+        //cloud.getUserJson();
+    }
 
-                Toast.makeText(LoginActivity.this, output, Toast.LENGTH_SHORT).show();
-                Log.v(TAG, output);
-                showLoggedInArea(uuid);
-            }
-
-            @Override
-            public void onFailure(HashMap<String, String> result) {
-                loginResult = result;
-            }
-        });
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        showLoggedInArea("bla");
     }
 
     public EditText getEditText() {

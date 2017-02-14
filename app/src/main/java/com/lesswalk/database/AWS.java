@@ -57,7 +57,7 @@ public class AWS {
                 REGION, // Region
                 credentialsProvider
         );
-        // Create an S3 client
+        // Create an S3 httpClient
         s3 = new AmazonS3Client(credentialsProvider);
         transferUtility = new TransferUtility(s3, context);
     }

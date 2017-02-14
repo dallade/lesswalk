@@ -2,7 +2,11 @@ package com.lesswalk.database;
 
 import android.util.ArrayMap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by elad on 29/11/16.
@@ -35,5 +39,10 @@ public abstract class Cloud {
     }
 
     public abstract void createUser(String phone, String uuid, final Cloud.I_ProcessListener listener);
-    public abstract void getUser(String phone, final Cloud.I_ProcessListener listener);
+    //
+    public abstract JSONObject getUserJson(String phone, String countryCode);
+    public abstract String getUserUuid(String phone, String countryCode);
+    public abstract JSONArray findSignaturesByOwner(String uuid);
+    public abstract List<String> findSignaturesUuidsByOwnerUuid(String uuid);
+    public abstract List<String> findSignaturesUuidsByOwnerPhone(String phone, String countryCode);
 }

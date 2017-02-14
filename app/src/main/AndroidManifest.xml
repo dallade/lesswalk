@@ -45,6 +45,8 @@
         </activity>
         <activity android:name=".UserActivity" >
         </activity>
+        <!--<service android:name=".MainService">-->
+        <!--</service>-->
     </application>
 
 </manifest>
