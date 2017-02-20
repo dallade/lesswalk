@@ -45,4 +45,7 @@ public abstract class Cloud {
     public abstract JSONArray findSignaturesByOwner(String uuid);
     public abstract List<String> findSignaturesUuidsByOwnerUuid(String uuid);
     public abstract List<String> findSignaturesUuidsByOwnerPhone(String phone, String countryCode);
+    //
+    public abstract String downloadSignature(String uuid, AWS.OnDownloadListener onDownloadListener);
+    public abstract String downloadAndUnzipSignature(String uuid);
 }

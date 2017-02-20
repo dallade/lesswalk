@@ -9,11 +9,13 @@ import com.amazonaws.mobileconnectors.cognito.Dataset;
 import com.amazonaws.mobileconnectors.cognito.Record;
 import com.amazonaws.mobileconnectors.cognito.SyncConflict;
 import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
+import com.lesswalk.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,11 +44,16 @@ public class AmazonCloud extends Cloud {
     protected static final String GET_REQ_USER_BY_PHONE = "%s://%s:%d/cmd/%s/%s?phone_number=%s&country_code=%s";
     protected static final String CLOUD_JSON_key = "key";
     protected static final String CLOUD_JSON_owner = "owner";
+    private static final String SIGNATURES_EXTRACT_PATH = "sig_extracted";
+    private static final String SIGNATURES_PATH = "signatures";
+    private static final String SIGNATURE_EXTENSION = ".zip";
+    protected Context mContext;
     protected CognitoSyncManager syncClient;
 
     public AmazonCloud(Context context) {
         super();
-        syncClient = AWS.getSyncClient(context);
+        mContext = context;
+        syncClient = AWS.getSyncClient(mContext);
     }
 
     @Override
@@ -199,4 +206,59 @@ public class AmazonCloud extends Cloud {
         }
         return signaturesUuids;
     }
+
+    @Override
+    public String downloadSignature(final String uuid, final AWS.OnDownloadListener onDownloadListener) {
+        File signatureDir = Utils.createDirIfNeeded(mContext, SIGNATURES_PATH);
+        if (signatureDir == null) return null;
+        String filePath = new File(signatureDir, uuid + SIGNATURE_EXTENSION).getPath();
+        AWS.download(mContext, SIGNATURES_PATH+File.separator+uuid+SIGNATURE_EXTENSION, filePath, onDownloadListener);
+        return filePath;
+    }
+
+    @Override
+    public String downloadAndUnzipSignature(final String uuid) {
+        File signatureDir = Utils.createDirIfNeeded(mContext, SIGNATURES_PATH);
+        if (signatureDir == null) return null;
+        String filePath = new File(signatureDir, uuid + SIGNATURE_EXTENSION).getPath();
+        AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, new AWS.OnDownloadListener() {
+            @Override
+            public void onDownloadStarted(String path) {
+
+            }
+
+            @Override
+            public void onDownloadProgress(String path, float percentage) {
+
+            }
+
+            @Override
+            public void onDownloadFinished(String path) {
+                File unzippedParentDir = new File(mContext.getExternalFilesDir(null), SIGNATURES_EXTRACT_PATH);
+                File unzippedDir;
+                if (null == Utils.createDirIfNeeded(mContext, unzippedParentDir.getPath())) {
+                    Log.e(TAG, String.format("state: Unzip failed. Couldn't create dir %s - %s", unzippedParentDir.getPath(), path));
+                    return;
+                }
+                unzippedDir = new File(unzippedParentDir, uuid);
+                if (null == Utils.createDirIfNeeded(mContext, unzippedDir.getPath())) {
+                    Log.e(TAG, String.format("state: Unzip failed. Couldn't create dir %s - %s", unzippedDir.getPath(), path));
+                    return;
+                }
+                if (!ZipManager.unzip(mContext.getApplicationContext(), path, unzippedDir.getPath())){
+                    Log.e(TAG, String.format("Unzip failed for - '%s'", path));
+                }else{
+                    Log.d(TAG, String.format("Unzip succeeded into - '%s'", unzippedDir.getPath()));
+                }
+            }
+
+            @Override
+            public void onDownloadError(String path, int errorId, Exception ex) {
+                Log.e(TAG, String.format("state %s: {'%s', %d} for file '%s'", "Error", ex.getMessage(), errorId, path));
+            }
+        });
+        return filePath;
+    }
+
+
 }

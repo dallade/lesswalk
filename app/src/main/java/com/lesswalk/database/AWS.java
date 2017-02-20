@@ -149,6 +149,71 @@ public class AWS {
         });
     }
 
+
+
+    public static void download(Context context, final String uuid, final String path_to_file, final OnDownloadListener onDownloadListener) {
+        File file = new File(path_to_file);
+        TransferObserver observer = getInstance(context).transferUtility.download(BUCKET, uuid, file);
+        observer.setTransferListener(new TransferListener() {
+            boolean hasStarted = false;
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                switch (state){
+
+                    case WAITING:
+                        break;
+                    case IN_PROGRESS:
+                        if (!hasStarted){
+                            hasStarted = true;
+                            onDownloadListener.onDownloadStarted(path_to_file);
+                        }
+                        break;
+                    case PAUSED:
+                        break;
+                    case RESUMED_WAITING:
+                        break;
+                    case COMPLETED:
+                        onDownloadListener.onDownloadFinished(path_to_file);
+                        break;
+                    case CANCELED:
+                        break;
+                    case FAILED:
+                        break;
+                    case WAITING_FOR_NETWORK:
+                        break;
+                    case PART_COMPLETED:
+                        break;
+                    case PENDING_CANCEL:
+                        break;
+                    case PENDING_PAUSE:
+                        break;
+                    case PENDING_NETWORK_DISCONNECT:
+                        break;
+                    case UNKNOWN:
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                float percentage = 0;
+                try{
+                    percentage = (bytesCurrent/bytesTotal)*100;
+                }catch (ArithmeticException e){
+                    Log.d(TAG, "onProgressChanged: bytesTotal="+bytesTotal);
+                }
+                onDownloadListener.onDownloadProgress(path_to_file, percentage);
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                onDownloadListener.onDownloadError(path_to_file, id, ex);
+            }
+        });
+    }
+
     private static String generateKey() {
         String str = UUID.randomUUID().toString();
         //str += DATE_FORMAT_yyyyMMdd_HHmmss.format(new Date());
@@ -160,6 +225,13 @@ public class AWS {
         void onUploadProgress(String path, float percentage);
         void onUploadFinished(String path);
         void onUploadError(String path, int errorId, Exception ex);
+    }
+
+    public interface OnDownloadListener {
+        void onDownloadStarted(String path);
+        void onDownloadProgress(String path, float percentage);
+        void onDownloadFinished(String path);
+        void onDownloadError(String path, int errorId, Exception ex);
     }
 
 //    void other(){

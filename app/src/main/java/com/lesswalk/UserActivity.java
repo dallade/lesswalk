@@ -1,13 +1,14 @@
 package com.lesswalk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.Cloud;
 
@@ -22,6 +23,7 @@ import okhttp3.Response;
  * Created by elad on 05/12/16.
  */
 public class UserActivity extends Activity {
+
     private TextView tv_user_act_result;
     private String userUuid = "";
     private UserActivity curActivity;
@@ -91,6 +93,36 @@ public class UserActivity extends Activity {
     void asyncFindSignatures(final String phone, final String countryCode){
 
         new AsyncTask<String, String, String>() {
+
+            @SuppressLint("DefaultLocale")
+            final AWS.OnDownloadListener onDownloadListener = new AWS.OnDownloadListener() {
+                @Override
+                public void onDownloadStarted(String path) {
+                    publishProgress(String.format("state %s: '%s'", "Started", path));
+                }
+
+                @Override
+                public void onDownloadProgress(String path, float percentage) {
+                    publishProgress(String.format("state %s: (%3.1f) '%s'", "Progress", percentage, path));
+                }
+
+                @Override
+                public void onDownloadFinished(String path) {
+                    publishProgress(String.format("state %s: '%s'", "Finished", path));
+                }
+
+                @Override
+                public void onDownloadError(String path, int errorId, Exception ex) {
+                    publishProgress(String.format("state %s: {'%s', %d} for file '%s'", "Error", ex.getMessage(), errorId, path));
+                    ex.printStackTrace();
+                }
+            };
+
+            @Override
+            protected void onProgressUpdate(String... values) {
+                tv_user_act_result.setText(values[0]);
+            }
+
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -100,9 +132,15 @@ public class UserActivity extends Activity {
             protected String doInBackground(String... params) {
                 List<String> signatures = cloud.findSignaturesUuidsByOwnerPhone(phone, countryCode);
                 String allTogether = "";
+                String sigUuid = "";
                 for (int i = 0; i < signatures.size(); i++) {
-                    allTogether += signatures.get(i) + "\n";
+                    sigUuid = signatures.get(i);
+                    allTogether += sigUuid + "\n";
+                    cloud.downloadAndUnzipSignature(sigUuid);
                 }
+//                if (signatures.size() > 0) {
+//                    cloud.downloadAndUnzipSignature(sigUuid, onDownloadListener);
+//                }
                 return allTogether;
             }
             @Override

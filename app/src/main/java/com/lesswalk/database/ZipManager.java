@@ -1,6 +1,9 @@
 package com.lesswalk.database;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.lesswalk.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,7 +28,7 @@ public class ZipManager {
     private static final String TAG = "ZipManager";
     private static final int BYTE_BUFFER_SIZE = 1024;
 
-    private static void zip(String[] files, String zipFile) {
+    public static void zip(String[] files, String zipFile) {
         try {
             byte data[] = new byte[BYTE_BUFFER_SIZE];
             int numOfReadBytes;
@@ -50,16 +53,14 @@ public class ZipManager {
         }
     }
 
-    private static boolean unzip(String zipFileName, String unzippedDir) {
+    public static boolean unzip(Context c, String zipFileName, String unzippedDir) {
         boolean ret = false;
         try {
             int BUFFER = 2048;
             List<String> zipFiles = new ArrayList<>();
             File sourceZipFile = new File(zipFileName);
             File unzippedDestinationDirectory = new File(unzippedDir);
-            if (!unzippedDestinationDirectory.mkdir()){
-                throw new Exception("UnzippedDestinationDirectory_mkdir");
-            }
+            if (null == (Utils.createDirIfNeeded(c, unzippedDestinationDirectory.getPath()))) return false;
             ZipFile zipFile;
             zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
             Enumeration zipFileEntries = zipFile.entries();
@@ -73,9 +74,7 @@ public class ZipManager {
 
                 File destinationParent = destFile.getParentFile();
 
-                if (!destinationParent.mkdirs()){
-                    throw new Exception("DestinationParent_mkdirs");
-                }
+                if (null == (Utils.createDirIfNeeded(c, destinationParent.getPath()))) return false;
 
                 try {
                     if (!entry.isDirectory()) {
@@ -102,6 +101,7 @@ public class ZipManager {
 
             for (String zipName : zipFiles) {
                 unzip(
+                        c,
                         zipName,
                         unzippedDir + File.separatorChar +
                         zipName.substring(0, zipName.lastIndexOf(".zip")
