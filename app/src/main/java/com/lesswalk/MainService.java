@@ -64,8 +64,10 @@ public class MainService extends Service implements ILesswalkService
 		
 		contactManager.startLoadContacts();
 
+		new SyncThread(this).start();
+		
         cloud = new AmazonCloud(this);
-
+        
 		super.onCreate();
 	}
 	
