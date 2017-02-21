@@ -11,7 +11,6 @@ import com.lesswalk.bases.BaseRenderer;
 import com.lesswalk.bases.RectObject3D;
 
 import android.content.Context;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -31,7 +30,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 
     private Vector<CarusselPageInterface> container  = null;
 
-    CarusselMainItem carusselMainItem = null;
+    private ICarusselMainItem carusselMainItem = null;
 
     private float perspectiveMat[]    = null;
     //
@@ -72,6 +71,8 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     @Override
     public void onSurfaceChanged(GL10 gl10, int w, int h)
     {
+    	Log.d("elazarkin1", "onSurfaceChanged");
+    	
     	WIDTH  = w;
     	HEIGTH = h;
     	
@@ -99,7 +100,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
         {
             container = new Vector<CarusselPageInterface>();
             carusselMainItem.fillContainerByItems(container);
-            Log.d("elazarkin", "containerSize=" + container.size());
+            Log.d("elazarkin1", "updateContainer: containerSize=" + container.size());
         }
         else if(carusselMainItem == null) return;
 
@@ -172,77 +173,75 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 	
     private void drawCarrusselObj() 
     {
-        float carruselR   = 0.0f;
-        float viewOffset  = 0.0f;
-
-        float modelView[] = new float[16];
-        float rotationM[] = new float[16];
-        //
-        angleManager.setCurrentContainerSize(container.size());
-        angleManager.checkCurrentAngleOffset(container.size());
-        //
-        if(container.size() > 2)
-        {
-            carruselR = (float) (CarusselPageInterface.page_width()/(2.0f*Math.tan(Math.PI/container.size())));
-        }
-        else
-        {
-            carruselR = 0.0f;
-        }
-
-        viewOffset = (float) (1.0f/Math.tan(HVA*Math.PI/360.0f));
-
-        Collections.sort(container, angleManager);
-        
-        for (int i = 0; container!=null && i < container.size(); i++)
-        {
-            float MIN_COLOR_SCALE = 0.4f;
-            float color_scale = 0.0f;
-            //
-            float rotationAngle = angleManager.calculateRotationAngle(container.elementAt(i).getIndex());
-            
-            if(!container.elementAt(i).isInited())
-            {
-                container.elementAt(i).freeze();
-            }
-
-            while (rotationAngle <-180.0f) rotationAngle += 360.0f;
-            while (rotationAngle > 180.0f) rotationAngle -= 360.0f;
-
-            if(container.size() == 2)
-            {
-                if(Math.abs(rotationAngle) > 90.0f)continue;
-            }
-
-//            if(i != 3) continue;
-            //
-            color_scale = 1.0f - (Math.abs(rotationAngle)/180.0f)*(1.0f - MIN_COLOR_SCALE);
-            color_scale = (color_scale < MIN_COLOR_SCALE ? MIN_COLOR_SCALE : color_scale);
-
-            container.elementAt(i).setColorScale(color_scale);
-
-            Matrix.setIdentityM(modelView, 0);
-
-            container.elementAt(i).rotateIfNeed(modelView, rotationM);
-            modelView[14] += carruselR;
-            Matrix.setRotateM(rotationM, 0, rotationAngle, 0.0f, 1.0f, 0.0f);
-            Matrix.multiplyMM(modelView, 0, rotationM, 0, modelView, 0);
-            modelView[14] -= (viewOffset + carruselR);
-            
-            container.elementAt(i).setModelView(modelView);
-
-            container.elementAt(i).drawSelf();
-        }
+    	try 
+    	{
+	        float carruselR   = 0.0f;
+	        float viewOffset  = 0.0f;
+	
+	        float modelView[] = new float[16];
+	        float rotationM[] = new float[16];
+	        //
+	        angleManager.setCurrentContainerSize(container.size());
+	        angleManager.checkCurrentAngleOffset(container.size());
+	        //
+	        if(container.size() > 2)
+	        {
+	            carruselR = (float) (CarusselPageInterface.page_width()/(2.0f*Math.tan(Math.PI/container.size())));
+	        }
+	        else
+	        {
+	            carruselR = 0.0f;
+	        }
+	
+	        viewOffset = (float) (1.0f/Math.tan(HVA*Math.PI/360.0f));
+	
+	        Collections.sort(container, angleManager);
+	        
+	        for (int i = 0; i < container.size(); i++)
+	        {
+	            float MIN_COLOR_SCALE = 0.4f;
+	            float color_scale = 0.0f;
+	            //
+	            float rotationAngle = angleManager.calculateRotationAngle(container.elementAt(i).getIndex());
+	            
+	            if(!container.elementAt(i).isInited())
+	            {
+	                container.elementAt(i).freeze();
+	            }
+	
+	            while (rotationAngle <-180.0f) rotationAngle += 360.0f;
+	            while (rotationAngle > 180.0f) rotationAngle -= 360.0f;
+	
+	            if(container.size() == 2)
+	            {
+	                if(Math.abs(rotationAngle) > 90.0f)continue;
+	            }
+	
+	//            if(i != 3) continue;
+	            //
+	            color_scale = 1.0f - (Math.abs(rotationAngle)/180.0f)*(1.0f - MIN_COLOR_SCALE);
+	            color_scale = (color_scale < MIN_COLOR_SCALE ? MIN_COLOR_SCALE : color_scale);
+	
+	            container.elementAt(i).setColorScale(color_scale);
+	
+	            Matrix.setIdentityM(modelView, 0);
+	
+	            container.elementAt(i).rotateIfNeed(modelView, rotationM);
+	            modelView[14] += carruselR;
+	            Matrix.setRotateM(rotationM, 0, rotationAngle, 0.0f, 1.0f, 0.0f);
+	            Matrix.multiplyMM(modelView, 0, rotationM, 0, modelView, 0);
+	            modelView[14] -= (viewOffset + carruselR);
+	            
+	            container.elementAt(i).setModelView(modelView);
+	
+	            container.elementAt(i).drawSelf();
+	        }
+    	} 
+    	catch (Exception e) 
+    	{
+    		e.printStackTrace();
+		}
 	}
-
-    public void checkGLError()
-    {
-        int error;
-        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        {
-            Log.e("elazarkin", "glError " + error);
-        }
-    }
 
     public void moved(float lastTouchedX, float lastTouchedY, float x, float y)
     {
@@ -330,7 +329,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
         carusselMainItem = null;
     }
 
-    public void setCarusselMainItem(CarusselMainItem item)
+    public void setCarusselMainItem(ICarusselMainItem item)
     {
         carusselMainItem = item;
     }

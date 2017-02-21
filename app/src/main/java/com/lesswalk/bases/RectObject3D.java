@@ -12,25 +12,32 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 public class RectObject3D extends BaseObject3D
 {
-    protected static final int   HANDLER_ATTR_VER_POS_INDEX   = 0;
-    protected static final int   HANDLER_ATTR_TEX_COORD_INDEX = 1;
-    protected static final int   HANDLER_ATTR_SIZE            = 2;
+    protected static final int   HANDLER_ATTR_VER_POS_INDEX     = 0;
+    protected static final int   HANDLER_ATTR_TEX_COORD_INDEX   = 1;
+    protected static final int   HANDLER_ATTR_SIZE              = 2;
 
-    protected static final int   HANDLER_UNIF_PER_MAT_INDEX   = 0;
-    protected static final int   HANDLER_UNIF_MV_MAT_INDEX    = 1;
-    protected static final int   HANDLER_UNIF_TEXTURE_INDEX   = 2;
-    protected static final int   HANDLER_UNIF_COLOR_SCALE     = 3;
-    protected static final int   HANDLER_UNIF_ALPHA           = 4;
-    protected static final int   HANDLER_VIEW_BACKGROUND      = 5;
-    protected static final int   HANDLER_BACKGROUND_COLOR     = 6;
-    protected static final int   HANDLER_UNIF_SIZE            = 7;
+    protected static final int   HANDLER_UNIF_PER_MAT_INDEX     = 0;
+    protected static final int   HANDLER_UNIF_MV_MAT_INDEX      = 1;
+    protected static final int   HANDLER_UNIF_TEXTURE_INDEX     = 2;
+    protected static final int   HANDLER_UNIF_COLOR_SCALE       = 3;
+    protected static final int   HANDLER_UNIF_ALPHA             = 4;
+    protected static final int   HANDLER_VIEW_BACKGROUND        = 5;
+    protected static final int   HANDLER_BACKGROUND_COLOR       = 6;
+    protected static final int   HANDLER_UNIF_SIZE              = 7;
     
-    private static int         program                      = 0;
-    private static int         attrHandlers[]               = null;
-    private static int         unifHandlers[]               = null;
+    private static int         program                          =-1;
+    private static int         program_ext                      =-1;
+    private static int         attrHandlers[]                   = null;
+    private static int         unifHandlers[]                   = null;
+    
+    private static int         attrHandlers_ext[]               = null;
+    private static int         unifHandlers_ext[]               = null;
+    
+    protected static int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 	
     private static final float[] baseFrameObject =
     {
@@ -80,9 +87,8 @@ public class RectObject3D extends BaseObject3D
 		void init(Point3D p) {init(p.x, p.y, p.z);}
 	}
 	
-	private int[]   textID      = {-1};
-	//
-    private float   frame[]     = null;
+	private int[] textID      = {-1};
+    private float frame[]     = null;
     //
     private Vector<RectObject3D> childs = null;
     //
@@ -114,7 +120,7 @@ public class RectObject3D extends BaseObject3D
 			this.weight = weight;
 			this.x0     = x0;
 			this.y0     = y0;
-			this.width      = w;
+			this.width  = w;
 			this.aspect = aspect;
 		}
 		
@@ -191,7 +197,7 @@ public class RectObject3D extends BaseObject3D
     	return null;
     }
 	
-	public void addOnClickCallback(OnClickedAction callback)
+	public void setOnClickCallback(OnClickedAction callback)
 	{
 		this.clickCallback = callback;
 	}
@@ -328,7 +334,7 @@ public class RectObject3D extends BaseObject3D
 		objectAlpha = alpha;
 	};
 	
-	private void generateTextureID()
+	protected void generateTextureID()
 	{
 		GLES20.glGenTextures(1, textID, 0);
 	}
@@ -372,30 +378,37 @@ public class RectObject3D extends BaseObject3D
     @Override
     public String toString() {return objectName + "_RectObject3D";}
     
-    protected void drawCurrent(int textureID)
-    {
-		GLES20.glUniform1f(unifHandlers[HANDLER_UNIF_ALPHA], objectAlpha);
-		GLES20.glUniform1f(unifHandlers[HANDLER_VIEW_BACKGROUND], isViewBackground ? 1.0f:0.0f);
+    protected void drawCurrent(int textureID) 
+	{
+    	int _program = isExternal() ? RectObject3D.program_ext : RectObject3D.program;
+    	int attrs[]  = isExternal() ? RectObject3D.attrHandlers_ext : RectObject3D.attrHandlers;
+    	int unifs[]  = isExternal() ? RectObject3D.unifHandlers_ext : RectObject3D.unifHandlers;
+    	
+    	int target   = isExternal() ? GL_TEXTURE_EXTERNAL_OES:GLES20.GL_TEXTURE_2D;
+    	
+    	GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+    	GLES20.glUseProgram(_program);
+		GLES20.glUniform1f(unifs[HANDLER_UNIF_ALPHA], objectAlpha);
+		GLES20.glUniform1f(unifs[HANDLER_VIEW_BACKGROUND], isViewBackground ? 1.0f:0.0f);
 		
 		if(backgroundColor == null)
 		{
 			backgroundColor = new float[]{(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
 		}
 		
-		GLES20.glUniform4f(unifHandlers[HANDLER_BACKGROUND_COLOR], backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
+		GLES20.glUniform4f(unifs[HANDLER_BACKGROUND_COLOR], backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
 		
-        GLES20.glEnableVertexAttribArray(attrHandlers[HANDLER_ATTR_VER_POS_INDEX]);
-        GLES20.glVertexAttribPointer(attrHandlers[HANDLER_ATTR_VER_POS_INDEX], 3, GLES20.GL_FLOAT, false, 0, getVertexesBuffer());
-        GLES20.glEnableVertexAttribArray(attrHandlers[HANDLER_ATTR_TEX_COORD_INDEX]);
-        GLES20.glVertexAttribPointer(attrHandlers[HANDLER_ATTR_TEX_COORD_INDEX], 2, GLES20.GL_FLOAT, false, 2 * Float.SIZE / 8, getTextureMapBuffer());
-        //
-        GLES20.glEnable(GLES20.GL_TEXTURE_2D);
+        GLES20.glEnableVertexAttribArray(attrs[HANDLER_ATTR_VER_POS_INDEX]);
+        GLES20.glVertexAttribPointer(attrs[HANDLER_ATTR_VER_POS_INDEX], 3, GLES20.GL_FLOAT, false, 0, getVertexesBuffer());
+        GLES20.glEnableVertexAttribArray(attrs[HANDLER_ATTR_TEX_COORD_INDEX]);
+        GLES20.glVertexAttribPointer(attrs[HANDLER_ATTR_TEX_COORD_INDEX], 2, GLES20.GL_FLOAT, false, 2 * Float.SIZE / 8, getTextureMapBuffer());
+        GLES20.glEnable(target);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glUniform1i(unifHandlers[HANDLER_UNIF_TEXTURE_INDEX], 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureID);
+        GLES20.glUniform1i(unifs[HANDLER_UNIF_TEXTURE_INDEX], 0);
+        GLES20.glBindTexture(target, textureID);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-    }
-
+	}
+    
 	protected void drawCurrent() 
 	{
 		drawCurrent(getTextureID());
@@ -403,44 +416,66 @@ public class RectObject3D extends BaseObject3D
 
 	public static void init(Context context) 
 	{
-        program = createProgram
-        (
-            loadShaderFromGlslFile(context.getResources(), R.raw.player_carussel_vertex_shader),
-            loadShaderFromGlslFile(context.getResources(), R.raw.player_carussel_fragment_shader)
-        );
-
-        attrHandlers    = new int[HANDLER_ATTR_SIZE];
-        unifHandlers    = new int[HANDLER_UNIF_SIZE];
-        loadHandlers(attrHandlers, unifHandlers, program);
+		if(program < 0)
+		{
+	        program = createProgram
+	        (
+	            loadShaderFromGlslFile(context.getResources(), R.raw.player_carussel_vertex_shader),
+	            loadShaderFromGlslFile(context.getResources(), R.raw.player_carussel_fragment_shader)
+	        );
+	        
+	        attrHandlers     = new int[HANDLER_ATTR_SIZE];
+	        unifHandlers     = new int[HANDLER_UNIF_SIZE];
+	        checkGlError("create program check");
+	        Log.d("elazarkin", "program=" + program);
+	        loadHandlers(attrHandlers, unifHandlers, program);
+		}
+		
+		if(program_ext < 0)
+		{
+	        
+	        program_ext = createProgram
+	        (
+	            loadShaderFromGlslFile(context.getResources(), R.raw.player_carussel_vertex_shader_ext),
+	            loadShaderFromGlslFile(context.getResources(), R.raw.player_carussel_fragment_shader_ext)
+	        );
+	        checkGlError("create program check");
+	        attrHandlers_ext = new int[HANDLER_ATTR_SIZE];
+	        unifHandlers_ext = new int[HANDLER_UNIF_SIZE];
+	        Log.d("elazarkin", "program_ext=" + program_ext);
+	        loadHandlers(attrHandlers_ext, unifHandlers_ext, program_ext);
+		}
 	}
 	
-    protected static void loadHandlers(int attrHandlers[], int uniformHandler[], int program)
+    protected static void loadHandlers(int atts[], int unifs[], int _program)
     {
         String attrNames[] = new String[HANDLER_ATTR_SIZE];
         String unifNames[] = new String[HANDLER_UNIF_SIZE];
 
         // Add program to OpenGL ES environment
-        GLES20.glUseProgram(program);
+        GLES20.glUseProgram(_program);
 
         attrNames[HANDLER_ATTR_VER_POS_INDEX]   = "aPosition";
         attrNames[HANDLER_ATTR_TEX_COORD_INDEX] = "textureCoord";
 
         for (int i = 0; i < attrNames.length; i++)
         {
-            attrHandlers[i] = GLES20.glGetAttribLocation(program, attrNames[i]);
+            atts[i] = GLES20.glGetAttribLocation(_program, attrNames[i]);
+            Log.d("elazarkin", "attr: " + attrNames[i] + " = " + atts[i]);
         }
 
-        unifNames[HANDLER_UNIF_PER_MAT_INDEX]  = "u_pMatrix";
-        unifNames[HANDLER_UNIF_MV_MAT_INDEX]   = "u_mvMatrix";
-        unifNames[HANDLER_UNIF_TEXTURE_INDEX]  = "texSampler2D";
-        unifNames[HANDLER_UNIF_COLOR_SCALE]    = "color_scale";
-        unifNames[HANDLER_UNIF_ALPHA]          = "alpha";
-        unifNames[HANDLER_VIEW_BACKGROUND]     = "isViewBackground";
-        unifNames[HANDLER_BACKGROUND_COLOR]    = "backgroundColor";
+        unifNames[HANDLER_UNIF_PER_MAT_INDEX]      = "u_pMatrix";
+        unifNames[HANDLER_UNIF_MV_MAT_INDEX]       = "u_mvMatrix";
+        unifNames[HANDLER_UNIF_TEXTURE_INDEX]      = "texSampler2D";
+        unifNames[HANDLER_UNIF_COLOR_SCALE]        = "color_scale";
+        unifNames[HANDLER_UNIF_ALPHA]              = "alpha";
+        unifNames[HANDLER_VIEW_BACKGROUND]         = "isViewBackground";
+        unifNames[HANDLER_BACKGROUND_COLOR]        = "backgroundColor";
 
         for (int i = 0; i < unifNames.length; i++)
         {
-            uniformHandler[i] = GLES20.glGetUniformLocation(program, unifNames[i]);
+            unifs[i] = GLES20.glGetUniformLocation(_program, unifNames[i]);
+            Log.d("elazarkin", "unif: " + unifNames[i] + " = " + unifs[i]);
         }
     }
 
@@ -473,4 +508,18 @@ public class RectObject3D extends BaseObject3D
 
 	public void prepare() {}
 	public void release() {}
+	
+    protected static void checkGlError(String title)
+    {
+        int error;
+        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
+        {
+            Log.e("elazarkin", "glError " + title + ": " + error);
+        }
+    }
+    
+    protected boolean isExternal()
+    {
+    	return false;
+    }
 }

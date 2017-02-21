@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    android:weightSum="8">
+
+    <TextView 
+        android:layout_width="match_parent"
+    	android:layout_height="0dp"
+    	android:layout_weight="2"
+        />
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="3"
+	    android:padding="5dp"
+        >
+        <LinearLayout 
+            android:layout_width="match_parent"
+	    	android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_brown"
+            android:weightSum="20"
+            >
+            
+            <TextView 
+	            android:layout_width="0dp"
+		    	android:layout_height="match_parent"
+		    	android:layout_weight="4"
+	            />
+            
+            <LinearLayout 
+                android:layout_width="0dp"
+		    	android:layout_height="match_parent"
+		    	android:layout_weight="10"
+		    	android:orientation="vertical"
+		    	android:background="@drawable/list_of_template_tips"
+		    	android:weightSum="7"
+                >
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+		            android:orientation="horizontal"
+		            android:layout_weight="1"
+		            android:weightSum="10"
+                    >
+                   	
+                    <ImageView
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="1"
+				    	android:src="@drawable/tips_editor_icon_1_1x"
+                        />
+                    
+                    <TextView 
+                        android:id="@+id/editor_text_tip_watch_tv"
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="7"
+				    	android:gravity="center|left"
+				    	android:text="Watch out from ..."
+				    	android:textSize="12sp"
+				    	android:textColor="@android:color/white"
+                        />
+                    
+                    <TextView 
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="2"
+                        />
+                    
+                </LinearLayout>
+                
+            	<LinearLayout
+                    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+		            android:orientation="horizontal"
+		            android:layout_weight="1"
+		            android:weightSum="10"
+                    >
+                   	
+                    <ImageView
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="1"
+				    	android:src="@drawable/tips_editor_icon_2_1x"
+                        />
+                    
+                    <TextView 
+                        android:id="@+id/editor_text_tip_recog_tv"
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="7"
+				    	android:gravity="center|left"
+				    	android:text="Recognize the ..."
+				    	android:textSize="12sp"
+				    	android:textColor="@android:color/white"
+                        />
+                    
+                    <TextView 
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="2"
+                        />
+                    
+                </LinearLayout>
+                
+            	<LinearLayout
+                    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+		            android:orientation="horizontal"
+		            android:layout_weight="1"
+		            android:weightSum="10"
+                    >
+                   	
+                    <ImageView
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="1"
+				    	android:src="@drawable/tips_editor_icon_3_1x"
+                        />
+                    
+                    <TextView 
+                        android:id="@+id/editor_text_tip_shortcut_tv"
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="7"
+				    	android:gravity="center|left"
+				    	android:text="Use a shortcut ..."
+				    	android:textSize="12sp"
+				    	android:textColor="@android:color/white"
+                        />
+                    
+                    <TextView 
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="2"
+                        />
+                    
+                </LinearLayout>
+                
+            	<LinearLayout
+                    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+		            android:orientation="horizontal"
+		            android:layout_weight="1"
+		            android:weightSum="10"
+                    >
+                   	
+                    <ImageView
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="1"
+				    	android:src="@drawable/tips_editor_icon_4_1x"
+                        />
+                    
+                    <TextView 
+                        android:id="@+id/editor_text_tip_forget_tv"
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="7"
+				    	android:gravity="center|left"
+				    	android:text="Do not forget to ..."
+				    	android:textSize="12sp"
+				    	android:textColor="@android:color/white"
+                        />
+                    
+                    <TextView 
+                        android:layout_width="0dp"
+				    	android:layout_height="match_parent"
+				    	android:layout_weight="2"
+                        />
+                    
+                </LinearLayout>
+                
+            	<EditText 
+            	    android:id="@+id/editor_text_tip_editor"
+            	    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+			    	android:layout_weight="3"
+            	    android:gravity="top"
+	                android:background="@drawable/input_text_large_below_list"
+	                android:hint=" or just go freestyle..."
+	                android:textColorHint="@color/editTextColorHint"
+	                android:textColor="@color/editTextColor"
+	                android:textSize="12sp"
+            	    />
+                
+           	</LinearLayout>
+            
+            <LinearLayout 
+                android:layout_width="0dp"
+		    	android:layout_height="match_parent"
+		    	android:layout_weight="6"
+		    	android:orientation="vertical"
+		    	android:weightSum="9"
+                >
+            	
+                <TextView
+                    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+			    	android:layout_weight="4"
+                    />
+                
+                <Button 
+                    android:id="@+id/editor_text_tip_done_bt"
+                    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+			    	android:layout_weight="1"
+			    	android:text="Done"
+			    	android:background="@drawable/rounded_corners_img"
+                    />
+                
+                <TextView
+                    android:layout_width="match_parent"
+			    	android:layout_height="0dp"
+			    	android:layout_weight="4"
+                    />
+                
+            </LinearLayout>
+            
+        </LinearLayout>
+        
+    </RelativeLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+    	android:layout_height="0dp"
+    	android:layout_weight="3"
+        />
+
+</LinearLayout>

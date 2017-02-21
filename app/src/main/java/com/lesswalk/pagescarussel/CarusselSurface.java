@@ -27,7 +27,8 @@ public class CarusselSurface extends GLSurfaceView
 
     public void initiation()
     {
-        setZOrderOnTop(true);
+//    	setZOrderMediaOverlay(true);
+//        setZOrderOnTop(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         getHolder().setFormat(PixelFormat.RGBA_8888);
         setEGLContextClientVersion(2);
@@ -95,7 +96,7 @@ public class CarusselSurface extends GLSurfaceView
         renderer.removeAllItems();
     }
 
-    public void addCarusselMainItem(CarusselMainItem item)
+    public void addCarusselMainItem(ICarusselMainItem item)
     {
         renderer.setCarusselMainItem(item);
     }

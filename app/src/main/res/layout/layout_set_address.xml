@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="20"
+    android:background="#80808080"
+    >
+    
+    <TextView 
+        android:layout_width="match_parent"
+    	android:layout_height="0dp"
+    	android:layout_weight="3"
+    	android:background="@android:color/transparent"
+        />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal"
+	    android:weightSum="10"
+	    android:layout_weight="2"
+	    android:background="@android:color/transparent"
+        >
+        
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	    	android:background="@android:color/transparent"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="3"
+	    	android:gravity="center"
+	    	android:text="Country"
+	        />
+	    
+	    <EditText
+	        android:id="@+id/editor_manual_text_get_country_et" 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="5"
+	    	android:text="Israel"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	    	android:background="@android:color/transparent"
+	        />
+        
+    </LinearLayout>
+    
+	<LinearLayout
+        android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal"
+	    android:weightSum="10"
+	    android:layout_weight="2"
+        >
+        
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	        />
+	    
+	    <TextView
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="3"
+	    	android:gravity="center"
+	    	android:text="City"
+	        />
+	    
+	    <EditText
+	        android:id="@+id/editor_manual_text_get_city_et" 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="5"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	        />
+        
+    </LinearLayout>
+    
+	<LinearLayout
+        android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal"
+	    android:weightSum="10"
+	    android:layout_weight="2"
+	    android:background="@android:color/transparent"
+        >
+        
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	    	android:background="@android:color/transparent"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="3"
+	    	android:gravity="center"
+	    	android:text="Street"
+	        />
+	    
+	    <EditText
+	        android:id="@+id/editor_manual_text_get_street_et" 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="5"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	    	android:background="@android:color/transparent"
+	        />
+        
+    </LinearLayout>
+    
+	<LinearLayout
+        android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal"
+	    android:weightSum="10"
+	    android:layout_weight="2"
+	    android:background="@android:color/transparent"
+        >
+        
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	    	android:background="@android:color/transparent"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="3"
+	    	android:gravity="center"
+	    	android:text="Street Num"
+	        />
+	    
+	    <EditText
+	        android:id="@+id/editor_manual_text_get_street_num_et"
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="5"
+	    	android:inputType="numberDecimal"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="1"
+	    	android:background="@android:color/transparent"
+	        />
+        
+    </LinearLayout>
+    
+	
+	<LinearLayout
+        android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal"
+	    android:weightSum="10"
+	    android:layout_weight="2"
+	    android:background="@android:color/transparent"
+        >
+        
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="3"
+	    	android:background="@android:color/transparent"
+	        />
+	    
+	    <Button 
+	        android:id="@+id/editor_manual_text_done_bt"
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="3"
+	    	android:text="Done"
+	        />
+	    
+	    <TextView 
+	        android:layout_width="0dp"
+	    	android:layout_height="match_parent"
+	    	android:layout_weight="3"
+	    	android:background="@android:color/transparent"
+	        />
+        
+    </LinearLayout>
+    
+	<TextView 
+	    android:layout_width="match_parent"
+    	android:layout_height="0dp"
+    	android:layout_weight="7"
+    	android:background="@android:color/transparent"
+	    />
+
+</LinearLayout>

@@ -99,7 +99,8 @@ public class LoginActivity extends Activity {
         return !anyInvalid;
     }
 
-    private void signUpClicked() {
+    @SuppressLint("DefaultLocale")
+	private void signUpClicked() {
         boolean isValid = verifyFields();
         if (!isValid) return;
         hideKeyboard();
@@ -107,8 +108,9 @@ public class LoginActivity extends Activity {
         String uuid = UUID.randomUUID().toString();
         int countryCodeInt = Integer.parseInt(et_country_code.getText().toString());
         long phoneLong = Long.parseLong(et_phone.getText().toString());
-        @SuppressLint("DefaultLocale") String phone = String.format("+%d %d", countryCodeInt, phoneLong);
-        cloud.createUser(phone, uuid, new Cloud.I_ProcessListener() {
+        String phone = String.format("+%d %d", countryCodeInt, phoneLong);
+        cloud.createUser(phone, uuid, new Cloud.I_ProcessListener() 
+        {
             @Override
             public void onSuccess(HashMap<String, String> result) {
                 String output = String.format(Locale.getDefault()
@@ -133,10 +135,11 @@ public class LoginActivity extends Activity {
         });
     }
 
-    private void showLoggedInArea(String uuid) {
-        Intent intent = new Intent(getApplicationContext(), UserActivity.class);
-        intent.putExtra("uuid", ""+uuid);
-        startActivity(intent);
+    private void showLoggedInArea(String uuid) 
+    {
+//        Intent intent = new Intent(getApplicationContext(), UserActivity.class);
+//        intent.putExtra("uuid", ""+uuid);
+//        startActivity(intent);
     }
 
 

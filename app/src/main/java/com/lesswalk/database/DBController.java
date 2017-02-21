@@ -1,15 +1,13 @@
 package com.lesswalk.database;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import com.lesswalk.MoreViewsActivity;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by elad on 21/10/16.

@@ -105,13 +105,13 @@ public abstract class CarusselPageInterface extends RectObject3D
     //
 	public void setIndex(int index) {this.index = index;}
 	//
-	public int  getIndex() {return index;}
+	public int getIndex() {return index;}
 	//
 	public Context getContext() {return context;}
 	//
     protected void freeze()
     {
-    	Log.d("elazarkin", "freeze() " + getIndex());
+    	Log.d("elazarkin", String.format("freeze() getIndex()=%d getTextureID()=%d", getIndex(), getTextureID()));
     	
         if(getTextureID() < 0)
         {
@@ -171,56 +171,55 @@ public abstract class CarusselPageInterface extends RectObject3D
         page.recycle();
 	}
 	
-	protected Bitmap createBitmap(float aspect)
-	{
-		return Bitmap.createBitmap((int)(FRAME_PIXEL_W), (int) (FRAME_PIXEL_W*aspect), Config.ARGB_8888);
-	}
-	
 	protected Bitmap createTitleBitmap(String title, float aspect) 
 	{
-		Bitmap work             = createBitmap(aspect);
+		Bitmap work             = ImageObject3D.createBitmap(aspect);
 		Canvas cwork            = new Canvas(work);
 		Paint  pwork            = new Paint();
 		float  titleTextSize    = work.getHeight()*0.7f;
 		float  startOfLine      = 0.05f*work.getWidth();
 		float  lineDistFromText = 0.02f*work.getWidth();
 		Rect   titleBounds      = new Rect();
-		//
-		pwork.setStrokeWidth(work.getHeight()/20.0f);
-		pwork.setTextSize(titleTextSize);
-		pwork.setFakeBoldText(true);
-		pwork.setTextSkewX(-0.2f);
-		pwork.getTextBounds(title, 0, title.length(), titleBounds);
-		//
-		// TODO delete this line
-		if(isBackgroundOn())cwork.drawColor(Color.argb(255, 128, 64, 192));
-		//
-		cwork.drawLine
-		(
-			startOfLine, 
-			work.getHeight()/2,
-			work.getWidth()/2  - titleBounds.width() / 2 - lineDistFromText,
-			work.getHeight()/2, 
-			pwork
-		);
-
-		cwork.drawLine
-		(
-			work.getWidth() - startOfLine, 
-			work.getHeight()/2,
-			work.getWidth()/2 + titleBounds.width()/2 + lineDistFromText,
-			work.getHeight()/2, 
-			pwork
-		);
-
-		cwork.drawText(title, work.getWidth()/2 - titleBounds.width()/2, work.getHeight()/2 + titleBounds.height()/3, pwork);
+		
+		if(title != null)
+		{
+			//
+			pwork.setStrokeWidth(work.getHeight()/20.0f);
+			pwork.setTextSize(titleTextSize);
+			pwork.setFakeBoldText(true);
+			pwork.setTextSkewX(-0.2f);
+			pwork.getTextBounds(title, 0, title.length(), titleBounds);
+			//
+			// TODO delete this line
+			if(isBackgroundOn())cwork.drawColor(Color.argb(255, 128, 64, 192));
+			//
+			cwork.drawLine
+			(
+				startOfLine, 
+				work.getHeight()/2,
+				work.getWidth()/2  - titleBounds.width() / 2 - lineDistFromText,
+				work.getHeight()/2, 
+				pwork
+			);
+	
+			cwork.drawLine
+			(
+				work.getWidth() - startOfLine, 
+				work.getHeight()/2,
+				work.getWidth()/2 + titleBounds.width()/2 + lineDistFromText,
+				work.getHeight()/2, 
+				pwork
+			);
+	
+			cwork.drawText(title, work.getWidth()/2 - titleBounds.width()/2, work.getHeight()/2 + titleBounds.height()/3, pwork);
+		}
 		//
 		return work;
 	}
 	
 	protected Bitmap createMapAddresBitmap(float aspect, String additionText) 
 	{
-		Bitmap work   = createBitmap(aspect);
+		Bitmap work   = ImageObject3D.createBitmap(aspect);
 		Canvas cwork  = new Canvas(work);
 		Paint  pwork  = new Paint();
 		
@@ -236,9 +235,9 @@ public abstract class CarusselPageInterface extends RectObject3D
 			//
 			textOffset[0] += work.getHeight()*0.02f;
 			
-			if(additionText != null) drawTextToRect(additionText, addressTextSize, work, cwork, pwork, textOffset);
+			if(additionText != null) ImageObject3D.drawTextToRect(additionText, addressTextSize, work, cwork, pwork, textOffset);
 			//
-			drawTextToRect(fullText, addressTextSize, work, cwork, pwork, textOffset);
+			ImageObject3D.drawTextToRect(fullText, addressTextSize, work, cwork, pwork, textOffset);
 		}
 		else
 		{
@@ -251,46 +250,6 @@ public abstract class CarusselPageInterface extends RectObject3D
 	protected String getMapAddressString()
 	{
 		return mapAddress != null ? (mapAddress.items[mapAddress.STREET] + ", " + mapAddress.items[mapAddress.CITY]):"No know address!";
-	}
-
-	private void drawTextToRect(String fullText, float addressTextSize, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset) 
-	{
-		String currentText      = "";
-		String words[]          = fullText.split(" ");
-		Rect   bounds           = new Rect();
-		float  addressTextStart = work.getWidth()*0.1f;
-		float  textStep         = addressTextSize/4.0f;
-		//
-		pwork.setTextSize(addressTextSize);
-		pwork.setTextSkewX(0.0f);
-		//
-		for (int i = 0; i < words.length;) 
-		{
-			int start_i   = i;
-			int end_i     = start_i;
-			do
-			{
-				currentText += words[end_i] + " ";
-				pwork.getTextBounds(currentText, 0, currentText.length(), bounds);
-				if(bounds.width() < work.getWidth() - addressTextStart*2.0f) end_i++;
-				else break;
-			}
-			while(end_i < words.length);
-			
-			Log.d("elazarkin1", "currentText=" + currentText);
-			
-			currentText   = "";
-			for(int j = start_i; j < end_i; j++)
-			{
-				currentText += words[j] + " ";
-			}
-			
-			pwork.getTextBounds(currentText, 0, currentText.length(), bounds);
-			textOffset[0] += bounds.height() + textStep;
-			cwork.drawText(currentText, addressTextStart, textOffset[0], pwork);
-			
-			i = end_i;
-		}
 	}
 
 	public void initImageItem(File objectsDir, String key, String value)
@@ -368,7 +327,7 @@ public abstract class CarusselPageInterface extends RectObject3D
     	{
     		if(key.equals("name"))
     		{
-    			videoFile = new File(key, value);
+    			videoFile = new File(objectsDir, value);
     		}
     	}
 	}

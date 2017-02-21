@@ -9,7 +9,7 @@ import android.opengl.GLES20;
 
 public class BaseObject3D 
 {
-    protected static String loadShaderFromGlslFile(Resources getter, int id)
+    public static String loadShaderFromGlslFile(Resources getter, int id)
     {
         BufferedReader reader = null;
         String ans  = "";
@@ -33,7 +33,7 @@ public class BaseObject3D
         return ans;
     }
 
-    protected static int loadShader(int type, String shaderCode)
+    public static int loadShader(int type, String shaderCode)
     {
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
         // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
@@ -46,7 +46,7 @@ public class BaseObject3D
         return shader;
     }
 
-    protected static int createProgram(String vertexShaderCode, String fragmentShaderCode)
+    public static int createProgram(String vertexShaderCode, String fragmentShaderCode)
     {
         int mProgram       = 0;
         int vertexShader   = 0;

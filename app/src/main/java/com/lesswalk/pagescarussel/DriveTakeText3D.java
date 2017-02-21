@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class DriveTakeText3D extends RectObject3D 
 {
-	private static final int    WIDTH_RESOLUTION   = 1024;
+	private static final int    WIDTH_RESOLUTION   = 640;
 	private static final String DRIVE_FORMAT       = "%3.1f ~%d mins";
 	private static final String WALK_FORMAT        = "+%dmin";
 	private static final String WALK_ADDITION_TEXT = "LW Time";
@@ -47,7 +47,7 @@ public class DriveTakeText3D extends RectObject3D
 			walkTime  = String.format(WALK_FORMAT, walkTimeMINUTES);
 		}
 		else walkTime = "unknow";
-		
+		//
 		//Log.d("elazarkin", "driveTime=" + driveTime + " walkTime=" + walkTime);
 		//
 		init();

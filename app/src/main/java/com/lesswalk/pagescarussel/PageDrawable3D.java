@@ -131,7 +131,7 @@ public class PageDrawable3D extends RectObject3D
 
 	public void setBackgroundObject(RectObject3D obj) 
 	{
-		Log.d("elazarkin", "PageDrawable - setBackgroundObject");
+		Log.d("elazarkin", "PageDrawable - setBackgroundObject: " + obj);
 		back_obj = obj;
 		back_obj.prepare();
 	}

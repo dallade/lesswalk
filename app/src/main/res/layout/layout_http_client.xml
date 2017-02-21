@@ -74,8 +74,8 @@
             android:layout_height="match_parent"
             android:background="#ffffff"
             >
-            <TextView
-                android:id="@+id/response_text_view"
+            <WebView
+                android:id="@+id/response_web_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/response_text"
