@@ -31,8 +31,8 @@ import android.util.Log;
 public class MainService extends Service implements ILesswalkService
 {
 	private static final String TAG = "lesswalk_MainService";
-    private static final int PHONE_INDEX_COUNTRY = 0;
-    private static final int PHONE_INDEX_MAIN = 1;
+    protected static final int PHONE_INDEX_COUNTRY = 0;
+    protected static final int PHONE_INDEX_MAIN = 1;
 
     private static Semaphore mutex = new Semaphore(1);
 	
@@ -222,13 +222,11 @@ public class MainService extends Service implements ILesswalkService
 			mutex.release();
 		}
 
-		@Override
+        @Override
 		public void fillSignaturesByPhoneNumber(String phoneNumber, Vector<ContactSignature> signatures)
 		{
 			if(signatures == null) return;
-			
 			signatures.removeAllElements();
-			
 			// TODO Elad fill
             //String[] fullPhoneNumber = splitPhoneNumber(phoneNumber);
             String[] fullPhoneNumber = new String[]{"972", "0526807577"};
@@ -246,21 +244,6 @@ public class MainService extends Service implements ILesswalkService
             }
         }
 	}
-
-    private String[] splitPhoneNumber(String phoneNumber) {
-        String[] parts = new String[2];
-        String input = phoneNumber.replaceAll(" ", "");
-        if (input.startsWith("0")){
-            parts[PHONE_INDEX_COUNTRY] = "+972";
-            parts[PHONE_INDEX_MAIN] = input;
-        }else {
-            if (input.startsWith("+")){
-                //
-            }
-        }
-        return parts;
-    }
-
 
     // http://stackoverflow.com/questions/11218845/how-to-get-contacts-phone-number-in-android
 	private String getPhoneNumber(String id) 
