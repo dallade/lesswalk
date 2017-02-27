@@ -56,6 +56,7 @@
 
         <activity
             android:name="com.lesswalk.ContactProfile"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_contact_profile"
             android:parentActivityName="com.lesswalk.MainActivity" >
         </activity>

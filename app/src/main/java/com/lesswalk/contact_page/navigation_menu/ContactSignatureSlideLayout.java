@@ -61,11 +61,13 @@ public class ContactSignatureSlideLayout extends View
 		float x0 = 0, y0 = 0, x1 = 0, y1 = 0;
 	}
 	
-	private static  Vector<Bitmap>  ICONS_TYPES   = null;
+	private static  Vector<Bitmap>  ICONS_TYPES   	= null;
 	//
-	private Vector<ContactSignature> container     = null;
-	private Vector<ContactSignature> workContainer = null;
-	private SignatureArea           areas[]       = null;
+	private Vector<ContactSignature> container     	= null;
+	private Vector<ContactSignature> workContainer 	= null;
+	private SignatureArea           areas[]     	= null;
+
+	private HandlerThread returnAnimation = null;
 	//
 	private int      icons_in_row     = 5;
 	private boolean  editable         = false;
@@ -84,6 +86,8 @@ public class ContactSignatureSlideLayout extends View
 	private boolean  touched          = false;
 	private int      animation_target = 0;
 	private boolean  needRedraw       = false;
+	private boolean  animationAlive   = false;
+	private int      randomIndex      = 0;
 	
 	public ContactSignatureSlideLayout(Context context, AttributeSet attrs) 
 	{
@@ -102,8 +106,8 @@ public class ContactSignatureSlideLayout extends View
 		{
 			workContainer.add(faked);
 		}
-		
-		returnAnimation.start();
+
+		randomIndex = (int) (Math.random()*65536);
 	}
 	
 	public int addContactSignature(ContactSignature signature)
@@ -304,17 +308,25 @@ public class ContactSignatureSlideLayout extends View
 		signatureArea.path = path;
 	}
 	
-	private HandlerThread returnAnimation = new HandlerThread("animation_tread") 
+	class ReturnAnimationThread extends HandlerThread
 	{
+		public ReturnAnimationThread()
+		{
+			super("slider return thread");
+		}
+
 		@Override
 		public void run() 
 		{
+			long  debug_t   = System.currentTimeMillis();
 			long  last_t    = System.currentTimeMillis();
 			long  curr_t    = 0L;
 			float curr_step = 0.0f;
 			float curr_dist = 0.0f;
+
+			animationAlive = true;
 			
-			while(true)
+			while(animationAlive)
 			{
 				curr_t    = System.currentTimeMillis();
 				
@@ -337,7 +349,7 @@ public class ContactSignatureSlideLayout extends View
 				
 				if(needRedraw)
 				{
-					((Activity)getContext()).runOnUiThread(new Runnable() 
+					((Activity)getContext()).runOnUiThread(new Runnable()
 					{
 						@Override
 						public void run() 
@@ -348,6 +360,11 @@ public class ContactSignatureSlideLayout extends View
 				}
 				
 				last_t = curr_t;
+				if(curr_t - debug_t > 1000)
+				{
+					Log.d("elazarkin", "thread_" + randomIndex + ": still alive");
+					debug_t = curr_t;
+				}
 				try {Thread.sleep(30);} catch (InterruptedException e) {e.printStackTrace();}
 			}
 		}
@@ -363,6 +380,9 @@ public class ContactSignatureSlideLayout extends View
 		int     action  = event.getAction();
 		int     x       = (int)(event.getX() + 0.5f);
 		int     y       = (int)(event.getY() + 0.5f);
+
+
+		if(screen == null) return false;
 		//
 		if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight()) 
 		{
@@ -457,4 +477,25 @@ public class ContactSignatureSlideLayout extends View
 		}
 		else animation_target    = (int)(offset/screen.getWidth() + 1.0f)*screen.getWidth();
 	}
+
+	public void pause()
+	{
+		Log.d("elazarkin", "onVisibilityChanged: " + returnAnimation.getState());
+		try
+		{
+			animationAlive = false;
+			returnAnimation.join();
+			returnAnimation.quit();
+		}
+		catch (Exception e)
+		{
+			Log.e("elazarkin", "error: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+    public void resume()
+    {
+		(returnAnimation = new ReturnAnimationThread()).start();
+    }
 }

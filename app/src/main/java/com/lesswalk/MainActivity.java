@@ -113,6 +113,8 @@ public class MainActivity extends BaseActivity
     	super.onResume();
     	
     	setMode(MODE.CONTACT_CARUSSEL_MODE);
+
+		if(signatureSlider != null) signatureSlider.resume();
     }
     
 	private void setMode(final MODE mode)
@@ -175,6 +177,7 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void onPause()
 	{
+		signatureSlider.pause();
 		barcodeObject.onPause();
 		super.onPause();
 	}

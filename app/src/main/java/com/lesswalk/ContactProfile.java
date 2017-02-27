@@ -14,13 +14,15 @@ public class ContactProfile extends BaseActivity
 {
 	private TextView                    contact_profile_name_tv = null;
 	private ContactSignatureSlideLayout contactSignatureLayout  = null;
+	private ContactSignatureSlideLayout userSignatureLayout     = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_contact_profile);
 		
-		contactSignatureLayout = (ContactSignatureSlideLayout) findViewById(R.id.contact_profile_visit_slider);
+		contactSignatureLayout  = (ContactSignatureSlideLayout) findViewById(R.id.contact_profile_visit_slider);
+		userSignatureLayout     = (ContactSignatureSlideLayout) findViewById(R.id.contact_profile_invite_slider);
 		contact_profile_name_tv = (TextView) findViewById(R.id.contact_profile_name_tv);
 		
 		contact_profile_name_tv.setText(getIntent().getExtras().getString("contact_name", "No Name"));
@@ -43,5 +45,38 @@ public class ContactProfile extends BaseActivity
 			contactSignatureLayout.addContactSignature(c);
             Log.d("elazarkin", "add signature" + c.getSignutarePath());
         }
+	}
+
+	@Override
+	protected void onPause()
+	{
+		if(contactSignatureLayout != null)
+		{
+			contactSignatureLayout.pause();
+		}
+
+		if(userSignatureLayout != null)
+		{
+			userSignatureLayout.pause();
+		}
+
+        finish();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+
+		if(contactSignatureLayout != null)
+		{
+			contactSignatureLayout.resume();
+		}
+
+		if(userSignatureLayout != null)
+		{
+			userSignatureLayout.resume();
+		}
 	}
 }

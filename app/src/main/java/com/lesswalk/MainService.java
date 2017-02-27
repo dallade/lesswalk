@@ -1,19 +1,5 @@
 package com.lesswalk;
 
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Vector;
-import java.util.concurrent.Semaphore;
-
-import com.lesswalk.bases.ContactSignature;
-import com.lesswalk.bases.IContactManager;
-import com.lesswalk.bases.ILesswalkService;
-import com.lesswalk.contact_page.navigation_menu.CarusselContact;
-import com.lesswalk.database.AmazonCloud;
-import com.lesswalk.database.Cloud;
-
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -28,11 +14,24 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.util.Log;
 
+import com.lesswalk.bases.ContactSignature;
+import com.lesswalk.bases.IContactManager;
+import com.lesswalk.bases.ILesswalkService;
+import com.lesswalk.contact_page.navigation_menu.CarusselContact;
+import com.lesswalk.database.AmazonCloud;
+
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.Semaphore;
+
 public class MainService extends Service implements ILesswalkService
 {
-	private static final String TAG = "lesswalk_MainService";
-    protected static final int PHONE_INDEX_COUNTRY = 0;
-    protected static final int PHONE_INDEX_MAIN = 1;
+	private 	static final String TAG 				= "lesswalk_MainService";
+	protected 	static final int 	PHONE_INDEX_COUNTRY = 0;
+	protected 	static final int 	PHONE_INDEX_MAIN 	= 1;
 
     private static Semaphore mutex = new Semaphore(1);
 	
@@ -222,11 +221,13 @@ public class MainService extends Service implements ILesswalkService
 			mutex.release();
 		}
 
-        @Override
+		@Override
 		public void fillSignaturesByPhoneNumber(String phoneNumber, Vector<ContactSignature> signatures)
 		{
 			if(signatures == null) return;
+			
 			signatures.removeAllElements();
+			
 			// TODO Elad fill
             //String[] fullPhoneNumber = splitPhoneNumber(phoneNumber);
             String[] fullPhoneNumber = new String[]{"972", "0526807577"};
