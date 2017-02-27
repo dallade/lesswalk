@@ -39,6 +39,7 @@ public class MainService extends Service implements ILesswalkService
 	
 	private ContactManager contactManager = null;
     private AmazonCloud cloud;
+	private SyncThread syncThread = null;
 
     @Override
 	public IBinder onBind(Intent intent) 
@@ -63,7 +64,7 @@ public class MainService extends Service implements ILesswalkService
 		
 		contactManager.startLoadContacts();
 
-		new SyncThread(this).start();
+		(syncThread = new SyncThread(this)).start();
 		
         cloud = new AmazonCloud(this);
         
@@ -156,7 +157,7 @@ public class MainService extends Service implements ILesswalkService
 		            uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(ID));
 		            phone_number = getPhoneNumber(ID);
 		            
-		            if(phone_number != null && phone_number.length() > 0)
+		            if(phone_number != null && phone_number.length() > 0 && !phone_number.startsWith("*"))
 		            {
 			            try {mutex.acquire();} catch (InterruptedException e) {e.printStackTrace();}
 			            

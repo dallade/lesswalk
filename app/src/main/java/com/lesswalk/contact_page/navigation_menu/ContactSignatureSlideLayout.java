@@ -362,7 +362,7 @@ public class ContactSignatureSlideLayout extends View
 				last_t = curr_t;
 				if(curr_t - debug_t > 1000)
 				{
-					Log.d("elazarkin", "thread_" + randomIndex + ": still alive");
+//					Log.d("elazarkin", "thread_" + randomIndex + ": still alive");
 					debug_t = curr_t;
 				}
 				try {Thread.sleep(30);} catch (InterruptedException e) {e.printStackTrace();}
@@ -480,7 +480,6 @@ public class ContactSignatureSlideLayout extends View
 
 	public void pause()
 	{
-		Log.d("elazarkin", "onVisibilityChanged: " + returnAnimation.getState());
 		try
 		{
 			animationAlive = false;

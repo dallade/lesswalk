@@ -3,24 +3,24 @@ package com.lesswalk;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.util.Pair;
 
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.Cloud;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.Vector;
 
 public class SyncThread
 {
     private static final String TAG = "SyncThread";
     private static final String SHARED_PREFS_NAME = "lesswalk_shared_prefs";
-    private final MainService mParent;
-    private final Cloud mCloud;
+    private MainService mParent = null;
+    private Cloud mCloud = null;
     private Vector<CarusselContact> contacts;
+    private DataBaseUpdater dataBaseUpdater = null;
+
+    private boolean isAlive = false;
 
     public SyncThread(MainService parent)
     {
@@ -28,23 +28,92 @@ public class SyncThread
         mCloud = new AmazonCloud(mParent);
     }
 
-    // TODO update databases
-    // TODO update
-
     public void start()
     {
-        // Start threads:
-        Thread syncThread = new Thread(new Runnable()
+        if(!isAlive)
         {
+            isAlive = true;
+            (dataBaseUpdater = new DataBaseUpdater(this, mParent)).start();
+        }
+    }
 
-            @Override
-            public void run()
+    public void stop()
+    {
+        isAlive = false;
+        try
+        {
+            dataBaseUpdater.join();
+            dataBaseUpdater = null;
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This thread will update data (files and database) by user existed contacts
+     *
+     * first (by loop of exist numbers) the thread check differences about the number on Amazon cloud and local
+     * and update it if need
+     *
+     * databases:
+     *  1 - number, uuid, signatures_uuids (sign1,sign2...)
+     *  2 - signature_uuid - type
+     *
+     * files of signatures will be as zip files
+     */
+
+    private class DataBaseUpdater extends Thread
+    {
+        private MainService service = null;
+        private SyncThread parent = null;
+
+        public DataBaseUpdater(SyncThread _parent, MainService _service)
+        {
+            parent  = _parent;
+            service = _service;
+        }
+        @Override
+        public void run()
+        {
+            long MIN_LOOP_TIME = 5*1000;
+
+            Vector<CarusselContact> contacts = new Vector<CarusselContact>();
+
+            while(isAlive)
             {
-                // TODO Auto-generated method stub
-                ArrayList<String> localContactsPhones = updateLocalContactsPhones();
+                long t0 = System.currentTimeMillis();
+                long tdiff = 0L;
+                long t2sleep = 0L;
+
+                contacts.removeAllElements();
+                service.getContactManager().fillContactVector(contacts);
+
+                for(CarusselContact c:contacts)
+                {
+                    updateContactIfNeed(c);
+                }
+
+                tdiff = System.currentTimeMillis() - t0;
+                t2sleep = MIN_LOOP_TIME - tdiff;
+
+                if(t2sleep >= 100)
+                {
+                    try {sleep(t2sleep);} catch (InterruptedException e) {e.printStackTrace();}
+                }
             }
-        });
-        syncThread.start();
+        }
+
+        private void updateContactIfNeed(CarusselContact c)
+        {
+            String number[] = splitPhoneNumber(c.getNumber());
+
+            if(number != null)
+            {
+                Log.d("elazarkin", "fixed number: " + number[0] + " " + number[1]);
+            }
+        }
     }
 
     /*
@@ -82,7 +151,8 @@ public class SyncThread
                                 phoneNumber[MainService.PHONE_INDEX_COUNTRY] + "," +
                                 phoneNumber[MainService.PHONE_INDEX_MAIN];
                 editor.putString(originalPhone, localContact);
-            } else
+            }
+            else
             {
                 String[] fields = localContact.split(",");
                 String localUuid = fields[0];
@@ -99,7 +169,8 @@ public class SyncThread
                 {
                     Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has removed the profile");
                     editor.remove(originalPhone);
-                } else if (!userUuid.equals(localUuid))
+                }
+                else if (!userUuid.equals(localUuid))
                 {
                     Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has changed the profile (used to be " + localUuid + ")");
                     editor.remove(originalPhone);
@@ -124,29 +195,31 @@ public class SyncThread
 
     private String[] splitPhoneNumber(String originalNumber)
     {
-        String LOCAL_COUNTRY_CODE = "+972";
+        int COUNTRY_CODE_LENGTH = 3;
+        String LOCAL_COUNTRY_CODE = "972";
         String[] parts = new String[2];
+
         String input = originalNumber.replaceAll(" ", "");
+        input = input.replaceAll("-", "");
+
         if (input.startsWith("0"))
         {
             parts[MainService.PHONE_INDEX_COUNTRY] = LOCAL_COUNTRY_CODE;
             parts[MainService.PHONE_INDEX_MAIN] = input;
-        } else
-        {
-            if (input.startsWith(LOCAL_COUNTRY_CODE))
-            {
-                parts[MainService.PHONE_INDEX_COUNTRY] = LOCAL_COUNTRY_CODE;
-                parts[MainService.PHONE_INDEX_MAIN] = input.substring(
-                        parts[MainService.PHONE_INDEX_COUNTRY].length()
-                );
-                if (!parts[MainService.PHONE_INDEX_MAIN].startsWith("0"))
-                {
-                    parts[MainService.PHONE_INDEX_MAIN] = "0" + parts[MainService.PHONE_INDEX_MAIN];
-                }
-            } else return null;
         }
+        else if(input.length() > COUNTRY_CODE_LENGTH && input.startsWith("+"))
+        {
+            input = input.substring(1);
+            parts[MainService.PHONE_INDEX_COUNTRY] = input.substring(0, COUNTRY_CODE_LENGTH);
+            parts[MainService.PHONE_INDEX_MAIN] = input.substring(parts[MainService.PHONE_INDEX_COUNTRY].length());
+
+            if (!parts[MainService.PHONE_INDEX_MAIN].startsWith("0"))
+            {
+                parts[MainService.PHONE_INDEX_MAIN] = "0" + parts[MainService.PHONE_INDEX_MAIN];
+            }
+        }
+        else return null;
+        //
         return parts;
     }
-
-
 }
