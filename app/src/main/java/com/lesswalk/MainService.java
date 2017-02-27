@@ -19,6 +19,7 @@ import com.lesswalk.bases.IContactManager;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AmazonCloud;
+import com.lesswalk.utils.PhoneUtils;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -30,8 +31,6 @@ import java.util.concurrent.Semaphore;
 public class MainService extends Service implements ILesswalkService
 {
 	private 	static final String TAG 				= "lesswalk_MainService";
-	protected 	static final int 	PHONE_INDEX_COUNTRY = 0;
-	protected 	static final int 	PHONE_INDEX_MAIN 	= 1;
 
     private static Semaphore mutex = new Semaphore(1);
 	
@@ -61,14 +60,19 @@ public class MainService extends Service implements ILesswalkService
 		Log.d(TAG, "MainService onStartCommand!");
 		
 		contactManager = new ContactManager(this);
-		
+
 		contactManager.startLoadContacts();
 
-		(syncThread = new SyncThread(this)).start();
-		
         cloud = new AmazonCloud(this);
         
 		super.onCreate();
+	}
+
+	private void onFinishLoadContacts()
+	{
+		syncThread = new SyncThread(this);
+
+		syncThread.start();
 	}
 	
 	private class ContactManager implements IContactManager
@@ -180,9 +184,10 @@ public class MainService extends Service implements ILesswalkService
 			        	// TODO order contacts
 			        	mutex.release();
 		            }
-		        	
 	            }
 	        }
+
+			onFinishLoadContacts();
 	    }
 
 		private void addContact(List<CarusselContact> contacts, InputStream photoIs, String name, String phone_number) 
@@ -225,29 +230,32 @@ public class MainService extends Service implements ILesswalkService
 		@Override
 		public void fillSignaturesByPhoneNumber(String phoneNumber, Vector<ContactSignature> signatures)
 		{
-			if(signatures == null) return;
-			
+			if (signatures == null) return;
+
 			signatures.removeAllElements();
-			
-			// TODO Elad fill
-            //String[] fullPhoneNumber = splitPhoneNumber(phoneNumber);
-            String[] fullPhoneNumber = new String[]{"972", "0526807577"};
-            List<String> signaturesUuids = cloud.findSignaturesUuidsByOwnerPhone(
-                    fullPhoneNumber[PHONE_INDEX_MAIN]
-                    , fullPhoneNumber[PHONE_INDEX_COUNTRY]
-            );
-            for (int i = 0; i < signaturesUuids.size(); i++) {
-                ContactSignature signature = new ContactSignature(
-                        phoneNumber
-                        , ContactSignature.SignatureType.COFFE
-                        , signaturesUuids.get(i)
-                );
-                signatures.add(signature);
-            }
-        }
+
+			// TODO use local databases data
+
+//			//String[] fullPhoneNumber = splitPhoneNumber(phoneNumber);
+//			String[] fullPhoneNumber = new String[]{"972", "0526807577"};
+//			List<String> signaturesUuids = cloud.findSignaturesUuidsByOwnerPhone
+//			(
+//				fullPhoneNumber[PhoneUtils.PHONE_INDEX_COUNTRY],
+//				fullPhoneNumber[PhoneUtils.PHONE_INDEX_MAIN]
+//			);
+//			for (int i = 0; i < signaturesUuids.size(); i++)
+//			{
+//				ContactSignature signature = new ContactSignature(
+//						phoneNumber
+//						, ContactSignature.SignatureType.COFFE
+//						, signaturesUuids.get(i)
+//				);
+//				signatures.add(signature);
+//			}
+		}
 	}
 
-    // http://stackoverflow.com/questions/11218845/how-to-get-contacts-phone-number-in-android
+	// http://stackoverflow.com/questions/11218845/how-to-get-contacts-phone-number-in-android
 	private String getPhoneNumber(String id) 
 	{
 	    String number = "";

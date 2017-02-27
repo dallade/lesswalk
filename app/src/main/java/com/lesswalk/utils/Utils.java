@@ -1,4 +1,4 @@
-package com.lesswalk;
+package com.lesswalk.utils;
 
 import android.content.Context;
 import android.util.Log;

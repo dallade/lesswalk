@@ -7,8 +7,10 @@ import android.util.Log;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.Cloud;
+import com.lesswalk.utils.PhoneUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 public class SyncThread
@@ -77,7 +79,7 @@ public class SyncThread
         @Override
         public void run()
         {
-            long MIN_LOOP_TIME = 5*1000;
+            long MIN_LOOP_TIME = 3*60*1000;
 
             Vector<CarusselContact> contacts = new Vector<CarusselContact>();
 
@@ -107,12 +109,19 @@ public class SyncThread
 
         private void updateContactIfNeed(CarusselContact c)
         {
-            String number[] = splitPhoneNumber(c.getNumber());
+            String       number[]      = PhoneUtils.splitPhoneNumber(c.getNumber());
+            String       userUuid      = null;
+            List<String> sinaturesList = null;
 
-            if(number != null)
-            {
-                Log.d("elazarkin", "fixed number: " + number[0] + " " + number[1]);
-            }
+            if (number == null) return;
+
+            userUuid = mCloud.getUserUuid(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
+
+            if (userUuid == null) return;
+
+            sinaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
+
+            Log.d("elazarkin", "fixed number: " + number[PhoneUtils.PHONE_INDEX_COUNTRY] + " " + number[PhoneUtils.PHONE_INDEX_MAIN] + " uuid:" + userUuid);
         }
     }
 
@@ -125,101 +134,71 @@ public class SyncThread
      *
      * @return
      */
-    synchronized protected ArrayList<String> updateLocalContactsPhones()
-    {
-        ArrayList<String> uuidsList = new ArrayList<>();
-        contacts = new Vector<>();
-        SharedPreferences prefs = mParent.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        mParent.getContactManager().fillContactVector(contacts);
-        for (CarusselContact c : contacts)
-        {
-            String originalPhone = c.getNumber();
-            String localContact = prefs.getString(originalPhone, null);
-            String userUuid;
-            if (localContact == null)
-            {
-                String[] phoneNumber = splitPhoneNumber(originalPhone);
-                if (phoneNumber == null) continue;
-                userUuid = mCloud.getUserUuid(
-                        phoneNumber[MainService.PHONE_INDEX_COUNTRY]
-                        , phoneNumber[MainService.PHONE_INDEX_MAIN]
-                );
-                if (userUuid == null || userUuid.equals("")) continue;
-                localContact =
-                        userUuid + "," +
-                                phoneNumber[MainService.PHONE_INDEX_COUNTRY] + "," +
-                                phoneNumber[MainService.PHONE_INDEX_MAIN];
-                editor.putString(originalPhone, localContact);
-            }
-            else
-            {
-                String[] fields = localContact.split(",");
-                String localUuid = fields[0];
-                if (localUuid == null || localUuid.equals(""))
-                {
-                    Log.e(TAG, "Bad local contact fields");
-                    continue;
-                }
-                userUuid = mCloud.getUserUuid(
-                        fields[2]
-                        , fields[1]
-                );
-                if (userUuid == null || userUuid.equals(""))
-                {
-                    Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has removed the profile");
-                    editor.remove(originalPhone);
-                }
-                else if (!userUuid.equals(localUuid))
-                {
-                    Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has changed the profile (used to be " + localUuid + ")");
-                    editor.remove(originalPhone);
-                    String[] phoneNumber = splitPhoneNumber(originalPhone);
-                    if (phoneNumber == null)
-                    {
-                        Log.e(TAG, "Bad phoneNumber - the splitPhoneNumber method has probably changed since last time");
-                        continue;
-                    }
-                    localContact =
-                            userUuid + "," +
-                                    phoneNumber[MainService.PHONE_INDEX_COUNTRY] + "," +
-                                    phoneNumber[MainService.PHONE_INDEX_MAIN];
-                    editor.putString(originalPhone, localContact);
-                }
-            }
-            uuidsList.add(userUuid);
-        }
-        editor.commit();
-        return uuidsList;
-    }
-
-    private String[] splitPhoneNumber(String originalNumber)
-    {
-        int COUNTRY_CODE_LENGTH = 3;
-        String LOCAL_COUNTRY_CODE = "972";
-        String[] parts = new String[2];
-
-        String input = originalNumber.replaceAll(" ", "");
-        input = input.replaceAll("-", "");
-
-        if (input.startsWith("0"))
-        {
-            parts[MainService.PHONE_INDEX_COUNTRY] = LOCAL_COUNTRY_CODE;
-            parts[MainService.PHONE_INDEX_MAIN] = input;
-        }
-        else if(input.length() > COUNTRY_CODE_LENGTH && input.startsWith("+"))
-        {
-            input = input.substring(1);
-            parts[MainService.PHONE_INDEX_COUNTRY] = input.substring(0, COUNTRY_CODE_LENGTH);
-            parts[MainService.PHONE_INDEX_MAIN] = input.substring(parts[MainService.PHONE_INDEX_COUNTRY].length());
-
-            if (!parts[MainService.PHONE_INDEX_MAIN].startsWith("0"))
-            {
-                parts[MainService.PHONE_INDEX_MAIN] = "0" + parts[MainService.PHONE_INDEX_MAIN];
-            }
-        }
-        else return null;
-        //
-        return parts;
-    }
+//    synchronized protected ArrayList<String> updateLocalContactsPhones()
+//    {
+//        ArrayList<String> uuidsList = new ArrayList<>();
+//        contacts = new Vector<>();
+//        SharedPreferences prefs = mParent.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = prefs.edit();
+//        mParent.getContactManager().fillContactVector(contacts);
+//        for (CarusselContact c : contacts)
+//        {
+//            String originalPhone = c.getNumber();
+//            String localContact = prefs.getString(originalPhone, null);
+//            String userUuid;
+//            if (localContact == null)
+//            {
+//                String[] phoneNumber = splitPhoneNumber(originalPhone);
+//                if (phoneNumber == null) continue;
+//                userUuid = mCloud.getUserUuid(
+//                        phoneNumber[MainService.PHONE_INDEX_COUNTRY]
+//                        , phoneNumber[MainService.PHONE_INDEX_MAIN]
+//                );
+//                if (userUuid == null || userUuid.equals("")) continue;
+//                localContact =
+//                        userUuid + "," +
+//                                phoneNumber[MainService.PHONE_INDEX_COUNTRY] + "," +
+//                                phoneNumber[MainService.PHONE_INDEX_MAIN];
+//                editor.putString(originalPhone, localContact);
+//            }
+//            else
+//            {
+//                String[] fields = localContact.split(",");
+//                String localUuid = fields[0];
+//                if (localUuid == null || localUuid.equals(""))
+//                {
+//                    Log.e(TAG, "Bad local contact fields");
+//                    continue;
+//                }
+//                userUuid = mCloud.getUserUuid(
+//                        fields[2]
+//                        , fields[1]
+//                );
+//                if (userUuid == null || userUuid.equals(""))
+//                {
+//                    Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has removed the profile");
+//                    editor.remove(originalPhone);
+//                }
+//                else if (!userUuid.equals(localUuid))
+//                {
+//                    Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has changed the profile (used to be " + localUuid + ")");
+//                    editor.remove(originalPhone);
+//                    String[] phoneNumber = splitPhoneNumber(originalPhone);
+//                    if (phoneNumber == null)
+//                    {
+//                        Log.e(TAG, "Bad phoneNumber - the splitPhoneNumber method has probably changed since last time");
+//                        continue;
+//                    }
+//                    localContact =
+//                            userUuid + "," +
+//                                    phoneNumber[MainService.PHONE_INDEX_COUNTRY] + "," +
+//                                    phoneNumber[MainService.PHONE_INDEX_MAIN];
+//                    editor.putString(originalPhone, localContact);
+//                }
+//            }
+//            uuidsList.add(userUuid);
+//        }
+//        editor.commit();
+//        return uuidsList;
+//    }
 }
