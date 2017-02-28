@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -208,11 +209,17 @@ public class AmazonCloud extends Cloud
     }
 
     @Override
-    public List<String> findSignaturesUuidsByOwnerUuid(String uuid)
+    public Vector<String> findSignaturesUuidsByOwnerUuid(String uuid)
     {
+        Vector<String> list              = null;
+        JSONArray      signaturesJsonArr = null;
+
         if (null == uuid) return null;
-        List<String> list              = new ArrayList<>();
-        JSONArray    signaturesJsonArr = findSignaturesByOwner(uuid);
+
+        list = new Vector<String>();
+
+        signaturesJsonArr = findSignaturesByOwner(uuid);
+
         try
         {
             for (int i = 0; i < signaturesJsonArr.length(); i++)

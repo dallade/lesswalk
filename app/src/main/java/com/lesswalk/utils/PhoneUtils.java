@@ -1,21 +1,19 @@
 package com.lesswalk.utils;
 
-import com.lesswalk.MainService;
-
 /**
  * Created by elazarkin on 2/27/17.
  */
 
 public class PhoneUtils
 {
-    public 	static final int 	PHONE_INDEX_COUNTRY = 0;
-    public 	static final int 	PHONE_INDEX_MAIN 	= 1;
+    public static final int PHONE_INDEX_COUNTRY = 0;
+    public static final int PHONE_INDEX_MAIN    = 1;
 
     public static String[] splitPhoneNumber(String originalNumber)
     {
-        int COUNTRY_CODE_LENGTH = 3;
-        String LOCAL_COUNTRY_CODE = "972";
-        String[] parts = new String[2];
+        int      COUNTRY_CODE_LENGTH = 3;
+        String   LOCAL_COUNTRY_CODE  = "972";
+        String[] parts               = new String[2];
 
         String input = originalNumber.replaceAll(" ", "");
         input = input.replaceAll("-", "");
@@ -25,7 +23,7 @@ public class PhoneUtils
             parts[PHONE_INDEX_COUNTRY] = LOCAL_COUNTRY_CODE;
             parts[PHONE_INDEX_MAIN] = input;
         }
-        else if(input.length() > COUNTRY_CODE_LENGTH && input.startsWith("+"))
+        else if (input.length() > COUNTRY_CODE_LENGTH && input.startsWith("+"))
         {
             input = input.substring(1);
             parts[PHONE_INDEX_COUNTRY] = input.substring(0, COUNTRY_CODE_LENGTH);

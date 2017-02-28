@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by elad on 29/11/16.
@@ -59,7 +60,7 @@ public abstract class Cloud
 
     public abstract JSONArray findSignaturesByOwner(String uuid);
 
-    public abstract List<String> findSignaturesUuidsByOwnerUuid(String uuid);
+    public abstract Vector<String> findSignaturesUuidsByOwnerUuid(String uuid);
 
     //public abstract List<String> findSignaturesUuidsByOwnerPhone(String phone, String countryCode);
 
