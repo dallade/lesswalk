@@ -99,10 +99,11 @@ public class SyncThread
             Vector<String> sinaturesList    = null;
             //SQLiteDatabase signaturesReadDB = parent.signaturesDB.getReadableDatabase();
             Cursor         cursor           = null;
-            ContentValues  values           = new ContentValues();
             String         signaturesString = null;
 
             if (number == null) return;
+
+            Log.d("elazarkin", "fixed number: " + number[PhoneUtils.PHONE_INDEX_COUNTRY] + " " + number[PhoneUtils.PHONE_INDEX_MAIN] + " no lesswalk number");
 
             userUuid = mCloud.getUserUuid(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
 
@@ -116,8 +117,21 @@ public class SyncThread
 
             if(checkUserChanges(parent.usersDB, number, userUuid, signaturesString))
             {
+                updateUserDataBase(parent.usersDB, number, userUuid, signaturesString);
                 Log.d("elazarkin", "will update database");
             }
+        }
+
+        private void updateUserDataBase(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString)
+        {
+            String        fullNumber = splitedNumberToFullNumber(number);
+            ContentValues values     = new ContentValues();
+            //
+            values.put(FULL_PHONE_NUMBER_ROW, fullNumber);
+            values.put(USER_UUID_ROW, userUuid);
+            values.put(SIGNATURES_ROW, signaturesString);
+
+            db.getWritableDatabase().update(db.table_name, values, null, null);
         }
 
         private boolean checkUserChanges(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString)
@@ -127,6 +141,7 @@ public class SyncThread
             String   selection       = FULL_PHONE_NUMBER_ROW + " = ?";
             String   selectionArgs[] = {fullNumber};
             Cursor   cursor          = null;
+            boolean ret = false;
 
             Log.d("elazarkin", "check database by " + fullNumber + " number");
 
@@ -137,21 +152,33 @@ public class SyncThread
 
             cursor = db.getReadableDatabase().query(db.table_name, projection, selection, selectionArgs, null, null, null);
 
-            if(cursor == null || cursor.getCount() <= 0) return true;
+            if(cursor == null || cursor.getCount() <= 0)
+            {
+                ret = true;
+            }
             else if(cursor.getCount() != 1)
             {
                 Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
-                return false;
+                ret = false;
             }
-
-            while (cursor.moveToNext())
+            else
             {
-                
+                while (cursor.moveToNext())
+                {
+                    String signatures = cursor.getString(cursor.getColumnIndexOrThrow(SIGNATURES_ROW));;
+                    String uuid       = cursor.getString(cursor.getColumnIndexOrThrow(USER_UUID_ROW));
+
+                    if (!userUuid.equals("" + uuid) || !signaturesString.equals("" + signatures))
+                    {
+                        ret = true;
+                        break;
+                    }
+                }
             }
 
             cursor.close();
 
-            return false;
+            return ret;
         }
 
         private String splitedNumberToFullNumber(String[] number)
