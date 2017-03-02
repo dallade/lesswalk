@@ -27,26 +27,28 @@ import java.util.UUID;
  * Created by elad on 31/10/16.
  */
 
-public class AWS {
-    private static final String TAG = "AWS";
+public class AWS
+{
+    private static final String           TAG                         = "AWS";
     //
-    private static final String IDENTITY_POOL_ID = "us-east-1:528e5e4d-4722-45da-ab53-13c39938b355";
+    private static final String           IDENTITY_POOL_ID            = "us-east-1:528e5e4d-4722-45da-ab53-13c39938b355";
     //private static final String IDENTITY_POOL_ID = "arn:aws:cognito-idp:us-east-1:988859694509:userpool/us-east-1_ggisCB2C9";
     //private static final String ROLE_SMS = "arn:aws:iam::988859694509:role/service-role/eladsuserpool-SMS-Role";
-    private static final Regions REGION = Regions.US_EAST_1;
-    private static final String BUCKET = "com.lesswalk.one-amir";
+    private static final Regions          REGION                      = Regions.US_EAST_1;
+    private static final String           BUCKET                      = "com.lesswalk.one-amir";
     //
     @SuppressLint("SimpleDateFormat")
-    public static final SimpleDateFormat DATE_FORMAT_yyyyMMdd_HHmmss = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    public static final  SimpleDateFormat DATE_FORMAT_yyyyMMdd_HHmmss = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
     private static AWS instance;
 
-    private CognitoCachingCredentialsProvider credentialsProvider;
-    private CognitoSyncManager syncClient;
-    private final AmazonS3Client s3;
-    private final TransferUtility transferUtility;
+    private       CognitoCachingCredentialsProvider credentialsProvider;
+    private       CognitoSyncManager                syncClient;
+    private final AmazonS3Client                    s3;
+    private final TransferUtility                   transferUtility;
 
-    private AWS(Context context){
+    private AWS(Context context)
+    {
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 context, // Context
                 IDENTITY_POOL_ID, // Identity Pool ID
@@ -62,44 +64,55 @@ public class AWS {
         transferUtility = new TransferUtility(s3, context);
     }
 
-    private static AWS getInstance(Context c){
-        if (instance == null){
+    private static AWS getInstance(Context c)
+    {
+        if (instance == null)
+        {
             instance = new AWS(c);
         }
         return instance;
     }
 
-    public static CognitoCachingCredentialsProvider getCredentials(Context c){
+    public static CognitoCachingCredentialsProvider getCredentials(Context c)
+    {
         return getInstance(c).credentialsProvider;
     }
 
-    public static CognitoSyncManager getSyncClient(Context c){
+    public static CognitoSyncManager getSyncClient(Context c)
+    {
         return getInstance(c).syncClient;
     }
 
-    public static AmazonS3Client getS3(Context c){
+    public static AmazonS3Client getS3(Context c)
+    {
         return getInstance(c).s3;
     }
 
-    public static TransferUtility getTransferUtility(Context c){
+    public static TransferUtility getTransferUtility(Context c)
+    {
         return getInstance(c).transferUtility;
     }
 
-    public static void upload(Context context, final String path_to_file, final OnUploadListener onUploadListener) {
-        File file = new File(path_to_file);
-        String key = generateKey();
+    public static void upload(Context context, final String path_to_file, final OnUploadListener onUploadListener)
+    {
+        File             file     = new File(path_to_file);
+        String           key      = generateKey();
         TransferObserver observer = getInstance(context).transferUtility.upload(BUCKET, key, file);
-        observer.setTransferListener(new TransferListener() {
+        observer.setTransferListener(new TransferListener()
+        {
             boolean hasStarted = false;
 
             @Override
-            public void onStateChanged(int id, TransferState state) {
-                switch (state){
+            public void onStateChanged(int id, TransferState state)
+            {
+                switch (state)
+                {
 
                     case WAITING:
                         break;
                     case IN_PROGRESS:
-                        if (!hasStarted){
+                        if (!hasStarted)
+                        {
                             hasStarted = true;
                             onUploadListener.onUploadStarted(path_to_file);
                         }
@@ -132,39 +145,48 @@ public class AWS {
             }
 
             @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal)
+            {
                 float percentage = 0;
-                try{
-                    percentage = (bytesCurrent/bytesTotal)*100;
-                }catch (ArithmeticException e){
-                    Log.d(TAG, "onProgressChanged: bytesTotal="+bytesTotal);
+                try
+                {
+                    percentage = (bytesCurrent / bytesTotal) * 100;
+                }
+                catch (ArithmeticException e)
+                {
+                    Log.d(TAG, "onProgressChanged: bytesTotal=" + bytesTotal);
                 }
                 onUploadListener.onUploadProgress(path_to_file, percentage);
             }
 
             @Override
-            public void onError(int id, Exception ex) {
+            public void onError(int id, Exception ex)
+            {
                 onUploadListener.onUploadError(path_to_file, id, ex);
             }
         });
     }
 
 
-
-    public static void download(Context context, final String uuid, final String path_to_file, final OnDownloadListener onDownloadListener) {
-        File file = new File(path_to_file);
+    public static void download(Context context, final String uuid, final String path_to_file, final OnDownloadListener onDownloadListener)
+    {
+        File             file     = new File(path_to_file);
         TransferObserver observer = getInstance(context).transferUtility.download(BUCKET, uuid, file);
-        observer.setTransferListener(new TransferListener() {
+        observer.setTransferListener(new TransferListener()
+        {
             boolean hasStarted = false;
 
             @Override
-            public void onStateChanged(int id, TransferState state) {
-                switch (state){
+            public void onStateChanged(int id, TransferState state)
+            {
+                switch (state)
+                {
 
                     case WAITING:
                         break;
                     case IN_PROGRESS:
-                        if (!hasStarted){
+                        if (!hasStarted)
+                        {
                             hasStarted = true;
                             onDownloadListener.onDownloadStarted(path_to_file);
                         }
@@ -197,40 +219,54 @@ public class AWS {
             }
 
             @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal)
+            {
                 float percentage = 0;
-                try{
-                    percentage = (bytesCurrent/bytesTotal)*100;
-                }catch (ArithmeticException e){
-                    Log.d(TAG, "onProgressChanged: bytesTotal="+bytesTotal);
+                try
+                {
+                    percentage = (bytesCurrent / bytesTotal) * 100;
+                }
+                catch (ArithmeticException e)
+                {
+                    Log.d(TAG, "onProgressChanged: bytesTotal=" + bytesTotal);
                 }
                 onDownloadListener.onDownloadProgress(path_to_file, percentage);
             }
 
             @Override
-            public void onError(int id, Exception ex) {
+            public void onError(int id, Exception ex)
+            {
                 onDownloadListener.onDownloadError(path_to_file, id, ex);
             }
         });
     }
 
-    private static String generateKey() {
+    private static String generateKey()
+    {
         String str = UUID.randomUUID().toString();
         //str += DATE_FORMAT_yyyyMMdd_HHmmss.format(new Date());
         return str;
     }
 
-    public interface OnUploadListener {
+    public interface OnUploadListener
+    {
         void onUploadStarted(String path);
+
         void onUploadProgress(String path, float percentage);
+
         void onUploadFinished(String path);
+
         void onUploadError(String path, int errorId, Exception ex);
     }
 
-    public interface OnDownloadListener {
+    public interface OnDownloadListener
+    {
         void onDownloadStarted(String path);
+
         void onDownloadProgress(String path, float percentage);
+
         void onDownloadFinished(String path);
+
         void onDownloadError(String path, int errorId, Exception ex);
     }
 
@@ -244,21 +280,6 @@ public class AWS {
 //            }
 //        });
 //    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
 }

@@ -5,8 +5,8 @@ import android.util.ArrayMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Vector;
 
 /**
@@ -63,9 +63,17 @@ public abstract class Cloud
     public abstract Vector<String> findSignaturesUuidsByOwnerUuid(String uuid);
 
     //public abstract List<String> findSignaturesUuidsByOwnerPhone(String phone, String countryCode);
-
+    public abstract File getSignutareFilePathByUUID(String uuid);
     //
     public abstract String downloadSignature(String uuid, AWS.OnDownloadListener onDownloadListener);
 
-    public abstract String downloadAndUnzipSignature(String uuid);
+    /**
+     *
+     * @param uuid
+     * @param cacheDir
+     * @return unzipped dir
+     */
+    public abstract String unzipSignatureByUUID(String uuid, File cacheDir);
+
+//    public abstract String downloadAndUnzipSignature(String uuid);
 }

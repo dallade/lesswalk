@@ -2,16 +2,21 @@ package com.lesswalk;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
+import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.Cloud;
 import com.lesswalk.utils.PhoneUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -40,17 +45,39 @@ public class SyncThread
         mCloud = new AmazonCloud(mParent);
     }
 
+    private class ContactUpdateTask
+    {
+        static final int COMMAND_UPDATE_DB    = 0x1;
+        static final int COMMAND_DOWNLOAD_ZIP = 0x2;
+        static final int COMMAND_DELETE_ZIP   = 0x3;
+        static final int COMMAND_UPDATE_ZIP   = 0x4;
+        static final int UPDATE_SIGNATURE_DB  = 0x5;
+
+        int    command     = 0x0;
+        String description = null;
+
+        ContactUpdateTask(int _command, String _description)
+        {
+            command = _command;
+            description = "" + _description;
+        }
+    }
+
+    // TODO add optimization thread that will update relevants contact (cause request all contacts take too much time)
+
     /**
      * This thread will update data (files and database) by user existed contacts
-     * <p>
+     *
      * first (by loop of exist numbers) the thread check differences about the number on Amazon cloud and local
      * and update it if need
-     * <p>
+     *
      * databases:
      * 1 - number, uuid, signatures_uuids (sign1,sign2...)
      * 2 - signature_uuid, type, last_update
-     * <p>
+     *
      * files of signatures will be as zip files
+     *
+     *
      */
 
     private class DataBaseUpdater extends Thread
@@ -94,16 +121,16 @@ public class SyncThread
 
         private void updateContactIfNeed(CarusselContact c)
         {
-            String         number[]         = PhoneUtils.splitPhoneNumber(c.getNumber());
-            String         userUuid         = null;
-            Vector<String> sinaturesList    = null;
-            //SQLiteDatabase signaturesReadDB = parent.signaturesDB.getReadableDatabase();
-            Cursor         cursor           = null;
-            String         signaturesString = null;
+            String                    number[]         = PhoneUtils.splitPhoneNumber(c.getNumber());
+            String                    userUuid         = null;
+            Vector<String>            sinaturesList    = null;
+            Cursor                    cursor           = null;
+            String                    signaturesString = null;
+            Vector<ContactUpdateTask> tasks            = null;
 
             if (number == null) return;
 
-            Log.d("elazarkin", "fixed number: " + number[PhoneUtils.PHONE_INDEX_COUNTRY] + " " + number[PhoneUtils.PHONE_INDEX_MAIN] + " no lesswalk number");
+            Log.d("elazarkin", "fixed number: " + number[PhoneUtils.PHONE_INDEX_COUNTRY] + " " + number[PhoneUtils.PHONE_INDEX_MAIN] + " not lesswalk number");
 
             userUuid = mCloud.getUserUuid(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
 
@@ -115,11 +142,39 @@ public class SyncThread
 
             signaturesString = SignatureListToString(sinaturesList);
 
-            if(checkUserChanges(parent.usersDB, number, userUuid, signaturesString))
+            tasks = new Vector<ContactUpdateTask>();
+
+            checkUserChanges(parent.usersDB, number, userUuid, signaturesString, tasks);
+
+            if(tasks.size() > 0)
             {
-                updateUserDataBase(parent.usersDB, number, userUuid, signaturesString);
-                Log.d("elazarkin", "will update database");
+                for(ContactUpdateTask t:tasks)
+                {
+                    switch (t.command)
+                    {
+                        case ContactUpdateTask.COMMAND_UPDATE_DB:
+                        {
+                            Log.d("elazarkin", "will update database");
+                            updateUserDataBase(parent.usersDB, number, userUuid, signaturesString);
+                            break;
+                        }
+                        case ContactUpdateTask.COMMAND_DOWNLOAD_ZIP:
+                        {
+                            Log.d("elazarkin", "will dowload zip");
+                            downloadZipIfNeed(t.description);
+                            break;
+                        }
+                        case ContactUpdateTask.UPDATE_SIGNATURE_DB:
+                        {
+                            Log.d("elazarkin", "will update signatureDB");
+                            updateSignatureDatabase(parent.signaturesDB, t.description);
+                            break;
+                        }
+                    }
+                }
+
             }
+            else Log.d("elazarkin", "no database need update!");
         }
 
         private void updateUserDataBase(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString)
@@ -131,17 +186,87 @@ public class SyncThread
             values.put(USER_UUID_ROW, userUuid);
             values.put(SIGNATURES_ROW, signaturesString);
 
-            db.getWritableDatabase().update(db.table_name, values, null, null);
+            db.getWritableDatabase().replace(db.table_name, null, values);
         }
 
-        private boolean checkUserChanges(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString)
+        private synchronized void updateSignatureDatabase(LesswalkDbHelper db, String uuid)
+        {
+            File          zip         = mCloud.getSignutareFilePathByUUID(uuid);
+            File          outDir      = new File(parent.mParent.getCacheDir(), "updateSignaturesDB");
+            ContentValues values      = new ContentValues();
+            InputStream   fis         = null;
+            File          contentFile = null;
+            byte          buffer[]    = null;
+            String        json        = null;
+
+            //
+            mCloud.unzipSignatureByUUID(uuid, outDir);
+
+            try
+            {
+                String type      = "";
+                String searchKey = "\"type\"";
+                int    MAX = 0;
+                int readedSize = 0;
+
+                contentFile = new File(outDir, "content.json");
+                fis = new FileInputStream(contentFile);
+                buffer = new byte[(int) contentFile.length()];
+                //
+                while(readedSize < buffer.length)
+                {
+                    readedSize += fis.read(buffer, readedSize, buffer.length - readedSize);
+                }
+                fis.close();
+
+                json = new String(buffer);
+
+                Log.d("elazarkin", "" + json);
+
+                for(int i = 0; i < json.length() - searchKey.length(); i++)
+                {
+                    if(json.substring(i, i + searchKey.length()).equals(searchKey))
+                    {
+                        i += searchKey.length();
+                        while(i < json.length() && json.charAt(i) != '"')
+                        {
+//                            Log.d("elazarkin", "not take " + );
+                            i++;
+                        }
+                        i++;
+                        while(i < json.length() && json.charAt(i) != '"')
+                        {
+                            type += json.charAt(i++);
+                        }
+                        i = json.length();
+                        break;
+                    }
+                }
+
+                Log.d("elazarkin", "updateSignatureDatabase type = " + type);
+
+//            values.put(SIGNATURE_UUID_ROW, uuid);
+//            values.put(TYPE_ROW, userUuid);
+//            values.put(SIGNATURES_ROW, signaturesString);
+//
+//            db.getWritableDatabase().replace(db.table_name, null, values);
+
+            }
+            catch (Exception e)
+            {
+                Log.d("elazarkin", "updateSignatureDatabase error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        private void checkUserChanges(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString, Vector<ContactUpdateTask> tasks)
         {
             String   fullNumber      = splitedNumberToFullNumber(number);
             String[] projection      = new String[db.colums.size()];
             String   selection       = FULL_PHONE_NUMBER_ROW + " = ?";
             String   selectionArgs[] = {fullNumber};
             Cursor   cursor          = null;
-            boolean ret = false;
+            String   sigs[]          = null;
 
             Log.d("elazarkin", "check database by " + fullNumber + " number");
 
@@ -154,31 +279,104 @@ public class SyncThread
 
             if(cursor == null || cursor.getCount() <= 0)
             {
-                ret = true;
+                // DO NOTHING
             }
             else if(cursor.getCount() != 1)
             {
                 Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
-                ret = false;
             }
             else
             {
                 while (cursor.moveToNext())
                 {
-                    String signatures = cursor.getString(cursor.getColumnIndexOrThrow(SIGNATURES_ROW));;
+                    String signatures = cursor.getString(cursor.getColumnIndexOrThrow(SIGNATURES_ROW));
                     String uuid       = cursor.getString(cursor.getColumnIndexOrThrow(USER_UUID_ROW));
 
                     if (!userUuid.equals("" + uuid) || !signaturesString.equals("" + signatures))
                     {
-                        ret = true;
-                        break;
+                        if(!userUuid.equals("" + uuid))
+                        {
+                            tasks.add(new ContactUpdateTask(ContactUpdateTask.COMMAND_UPDATE_DB, uuid));
+                        }
                     }
                 }
             }
 
             cursor.close();
 
-            return ret;
+            // DOWNLOAD MISSED ZIPS TASKS
+            sigs = signaturesString.split(",");
+
+            if(sigs != null || sigs.length > 0)
+            {
+                for (String uuid : sigs)
+                {
+                    if(uuid.length() > 0)
+                    {
+                        File zip = mCloud.getSignutareFilePathByUUID(uuid);
+
+                        if(!zip.exists())
+                        {
+                            tasks.add(new ContactUpdateTask(ContactUpdateTask.COMMAND_DOWNLOAD_ZIP, uuid));
+                        }
+                        else
+                        {
+                            /**
+                             * we update signatures data base anyway to be shore that everything alright
+                             *
+                             * if need dowload this task will be done onDownloadFinished
+                             */
+                            tasks.add(new ContactUpdateTask(ContactUpdateTask.UPDATE_SIGNATURE_DB, uuid));
+
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private boolean downloadZipIfNeed(String s)
+        {
+            File zip = mCloud.getSignutareFilePathByUUID(s);
+
+            if(!zip.exists())
+            {
+                mCloud.downloadSignature(s, new AWS.OnDownloadListener()
+                {
+                    @Override
+                    public void onDownloadStarted(String path)
+                    {
+                        Log.d("elazarkin", "onDownloadStarted " + path);
+                    }
+
+                    @Override
+                    public void onDownloadProgress(String path, float percentage)
+                    {
+                        Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
+                    }
+
+                    @Override
+                    public void onDownloadFinished(String path)
+                    {
+                        // TODO improve syntax
+                        String fileName  = new File(path).getName();
+                        String uuid = fileName.substring(0, fileName.length() - 4);
+
+                        Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
+                        updateSignatureDatabase(parent.signaturesDB, uuid);
+                    }
+
+                    @Override
+                    public void onDownloadError(String path, int errorId, Exception ex)
+                    {
+                        Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
+                    }
+                });
+
+                return true;
+            }
+
+            return false;
         }
 
         private String splitedNumberToFullNumber(String[] number)
