@@ -143,11 +143,96 @@ public class ZipManager
         return ret;
     }
 
+
+    public static boolean unzip(Context applicationContext, String zipFileName, String unzippedDir, String file)
+    {
+        int         BUFFER                       = 2048;
+        File        sourceZipFile                = new File(zipFileName);
+        File        unzippedDestinationDirectory = new File(unzippedDir);
+        ZipFile     zipFile                      = null;
+        Enumeration zipFileEntries               = null;
+        boolean     ret                          = false;
+
+        try
+        {
+            unzippedDestinationDirectory.mkdir();unzippedDestinationDirectory.mkdirs();
+
+            zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
+            zipFileEntries = zipFile.entries();
+
+            while (zipFileEntries.hasMoreElements())
+            {
+                ZipEntry entry             = (ZipEntry) zipFileEntries.nextElement();
+                String   currentEntry      = entry.getName();
+                File     destFile          = new File(unzippedDestinationDirectory, currentEntry);
+
+                try
+                {
+                    if (!entry.isDirectory() && entry.getName().equals(file))
+                    {
+                        BufferedInputStream  is          = new BufferedInputStream(zipFile.getInputStream(entry));
+                        int                  currentByte = 0;
+                        byte                 data[]      = new byte[BUFFER];
+                        FileOutputStream     fos         = new FileOutputStream(destFile);
+                        BufferedOutputStream dest        = new BufferedOutputStream(fos, BUFFER);
+
+                        while ((currentByte = is.read(data, 0, BUFFER)) != -1)
+                        {
+                            dest.write(data, 0, currentByte);
+                        }
+                        dest.flush();
+                        dest.close();
+                        is.close();
+
+                        ret = true;
+
+                    }
+                }
+                catch (IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (Exception e)
+        {
+            if (e.getMessage().equals("UnzippedDestinationDirectory_mkdir"))
+            {
+                Log.e(TAG, e.getMessage());
+            }
+            else if (e.getMessage().equals("DestinationParent_mkdirs"))
+            {
+                Log.e(TAG, e.getMessage());
+            }
+            else
+            {
+                e.printStackTrace();
+            }
+        }
+
+        try
+        {
+            zipFile.close();
+        }
+        catch (Exception e) {}
+
+        return ret;
+    }
+
     private static boolean mkdirIfNeeded(String dirName)
     {
         File dir = new File(dirName);
         return dir.mkdir();
     }
+
 
 //    public static void unzip(String zipFileName, String unzippedDir) {
 //        mkdirIfNeeded(unzippedDir);

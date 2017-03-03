@@ -1,6 +1,5 @@
 package com.lesswalk.database;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -9,7 +8,6 @@ import com.amazonaws.mobileconnectors.cognito.Dataset;
 import com.amazonaws.mobileconnectors.cognito.Record;
 import com.amazonaws.mobileconnectors.cognito.SyncConflict;
 import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
-import com.lesswalk.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,7 +15,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -307,6 +304,16 @@ public class AmazonCloud extends Cloud
             Log.d(TAG, String.format("Unzip succeeded into - '%s'", unzippedDir.getPath()));
         }
         return unzippedDir.getPath();
+    }
+
+    @Override
+    public boolean unzipFileFromSignatureByUUID(String uuid, File unzippedDir, String file)
+    {
+        String zipPath = getSignutareFilePathByUUID(uuid).getPath();
+
+        unzippedDir.mkdir();unzippedDir.mkdirs();
+
+        return ZipManager.unzip(mContext.getApplicationContext(), zipPath, unzippedDir.getPath(), file);
     }
 
 //    @Override

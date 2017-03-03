@@ -64,16 +64,18 @@ public abstract class Cloud
 
     //public abstract List<String> findSignaturesUuidsByOwnerPhone(String phone, String countryCode);
     public abstract File getSignutareFilePathByUUID(String uuid);
+
     //
     public abstract String downloadSignature(String uuid, AWS.OnDownloadListener onDownloadListener);
 
     /**
-     *
      * @param uuid
      * @param cacheDir
      * @return unzipped dir
      */
     public abstract String unzipSignatureByUUID(String uuid, File cacheDir);
+
+    public abstract boolean unzipFileFromSignatureByUUID(String uuid, File outDir, String contentFileName);
 
 //    public abstract String downloadAndUnzipSignature(String uuid);
 }

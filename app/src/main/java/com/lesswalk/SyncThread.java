@@ -191,71 +191,76 @@ public class SyncThread
 
         private synchronized void updateSignatureDatabase(LesswalkDbHelper db, String uuid)
         {
-            File          zip         = mCloud.getSignutareFilePathByUUID(uuid);
-            File          outDir      = new File(parent.mParent.getCacheDir(), "updateSignaturesDB");
-            ContentValues values      = new ContentValues();
-            InputStream   fis         = null;
-            File          contentFile = null;
-            byte          buffer[]    = null;
-            String        json        = null;
+            File          zip             = mCloud.getSignutareFilePathByUUID(uuid);
+            File          outDir          = new File(parent.mParent.getCacheDir(), "updateSignaturesDB");
+            ContentValues values          = new ContentValues();
+            InputStream   fis             = null;
+            String        contentFileName = "content.json";
+            File          contentFile     = null;
+            byte          buffer[]        = null;
+            String        json            = null;
 
             //
-            mCloud.unzipSignatureByUUID(uuid, outDir);
+            //mCloud.unzipSignatureByUUID(uuid, outDir);
 
-            try
+            if(mCloud.unzipFileFromSignatureByUUID(uuid, outDir, contentFileName))
             {
-                String type      = "";
-                String searchKey = "\"type\"";
-                int    MAX = 0;
-                int readedSize = 0;
 
-                contentFile = new File(outDir, "content.json");
-                fis = new FileInputStream(contentFile);
-                buffer = new byte[(int) contentFile.length()];
-                //
-                while(readedSize < buffer.length)
+                try
                 {
-                    readedSize += fis.read(buffer, readedSize, buffer.length - readedSize);
-                }
-                fis.close();
+                    String type       = "";
+                    String searchKey  = "\"type\"";
+                    int    MAX        = 0;
+                    int    readedSize = 0;
 
-                json = new String(buffer);
-
-                Log.d("elazarkin", "" + json);
-
-                for(int i = 0; i < json.length() - searchKey.length(); i++)
-                {
-                    if(json.substring(i, i + searchKey.length()).equals(searchKey))
+                    contentFile = new File(outDir, contentFileName);
+                    fis = new FileInputStream(contentFile);
+                    buffer = new byte[(int) contentFile.length()];
+                    //
+                    while (readedSize < buffer.length)
                     {
-                        i += searchKey.length();
-                        while(i < json.length() && json.charAt(i) != '"')
-                        {
-//                            Log.d("elazarkin", "not take " + );
-                            i++;
-                        }
-                        i++;
-                        while(i < json.length() && json.charAt(i) != '"')
-                        {
-                            type += json.charAt(i++);
-                        }
-                        i = json.length();
-                        break;
+                        readedSize += fis.read(buffer, readedSize, buffer.length - readedSize);
                     }
+                    fis.close();
+
+                    json = new String(buffer);
+
+                    Log.d("elazarkin", "" + json);
+
+                    for (int i = 0; i < json.length() - searchKey.length(); i++)
+                    {
+                        if (json.substring(i, i + searchKey.length()).equals(searchKey))
+                        {
+                            i += searchKey.length();
+                            while (i < json.length() && json.charAt(i) != '"')
+                            {
+                                //                            Log.d("elazarkin", "not take " + );
+                                i++;
+                            }
+                            i++;
+                            while (i < json.length() && json.charAt(i) != '"')
+                            {
+                                type += json.charAt(i++);
+                            }
+                            i = json.length();
+                            break;
+                        }
+                    }
+
+                    Log.d("elazarkin", "updateSignatureDatabase type = " + type);
+
+                    //            values.put(SIGNATURE_UUID_ROW, uuid);
+                    //            values.put(TYPE_ROW, userUuid);
+                    //            values.put(SIGNATURES_ROW, signaturesString);
+                    //
+                    //            db.getWritableDatabase().replace(db.table_name, null, values);
+
                 }
-
-                Log.d("elazarkin", "updateSignatureDatabase type = " + type);
-
-//            values.put(SIGNATURE_UUID_ROW, uuid);
-//            values.put(TYPE_ROW, userUuid);
-//            values.put(SIGNATURES_ROW, signaturesString);
-//
-//            db.getWritableDatabase().replace(db.table_name, null, values);
-
-            }
-            catch (Exception e)
-            {
-                Log.d("elazarkin", "updateSignatureDatabase error: " + e.getMessage());
-                e.printStackTrace();
+                catch (Exception e)
+                {
+                    Log.d("elazarkin", "updateSignatureDatabase error: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
         }
 
