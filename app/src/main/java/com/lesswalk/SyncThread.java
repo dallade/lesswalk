@@ -94,7 +94,7 @@ public class SyncThread
         @Override
         public void run()
         {
-            long MIN_LOOP_TIME     = 3 * 60 * 1000;
+            long MIN_LOOP_TIME     = 10 * 60 * 1000;
             long MIN_TIME_TO_SLEEP = 100;
 
             Vector<CarusselContact> contacts = new Vector<CarusselContact>();
@@ -225,7 +225,7 @@ public class SyncThread
 
                     json = new String(buffer);
 
-                    Log.d("elazarkin", "" + json);
+                    //Log.d("elazarkin", "" + json);
 
                     for (int i = 0; i < json.length() - searchKey.length(); i++)
                     {
@@ -234,7 +234,6 @@ public class SyncThread
                             i += searchKey.length();
                             while (i < json.length() && json.charAt(i) != '"')
                             {
-                                //                            Log.d("elazarkin", "not take " + );
                                 i++;
                             }
                             i++;
@@ -249,11 +248,11 @@ public class SyncThread
 
                     Log.d("elazarkin", "updateSignatureDatabase type = " + type);
 
-                    //            values.put(SIGNATURE_UUID_ROW, uuid);
-                    //            values.put(TYPE_ROW, userUuid);
-                    //            values.put(SIGNATURES_ROW, signaturesString);
-                    //
-                    //            db.getWritableDatabase().replace(db.table_name, null, values);
+                    values.put(SIGNATURE_UUID_ROW, uuid);
+                    values.put(TYPE_ROW, type);
+                    values.put(LAST_UPDATE_ROW, "Not_used_yet");
+
+                    db.getWritableDatabase().replace(db.table_name, null, values);
 
                 }
                 catch (Exception e)
