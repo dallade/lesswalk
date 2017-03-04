@@ -25,11 +25,22 @@ import android.widget.Toast;
 
 public class ContactSignatureSlideLayout extends View 
 {
+	public interface IContactSignatureSliderCallback
+	{
+		void onSignatureClicked(String path);
+	}
+
+	private class SignatureArea
+	{
+		String path      = "";
+		float x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+	}
+
 	private static final int   ICON_RESOLUTION          = 256;
 	private static final long  MAX_TOUCHED_TIME_PRESSED = 200;
 	private static final long  MAX_MOVED_DIST           = 10;
 	private static final float RETURN_VELOCATION        = 3000.0f;
-	
+
 	private static int ICONS_IDS[] =
 	{
 		R.drawable.dashed_border_2x,	//0
@@ -52,42 +63,30 @@ public class ContactSignatureSlideLayout extends View
 		R.drawable.sporticon,			//17
 		R.drawable.picnicicon			//18
 	};
-	
-	private ContactSignature faked = null;
-	
-	private class SignatureArea
-	{
-		String path      = "";
-		float x0 = 0, y0 = 0, x1 = 0, y1 = 0;
-	}
-	
-	private static  Vector<Bitmap>  ICONS_TYPES   	= null;
-	//
-	private Vector<ContactSignature> container     	= null;
-	private Vector<ContactSignature> workContainer 	= null;
-	private SignatureArea           areas[]     	= null;
 
-	private HandlerThread returnAnimation = null;
-	//
-	private int      icons_in_row     = 5;
-	private boolean  editable         = false;
-	
-	private Bitmap   screen           = null;
-	private Canvas   cscreen          = null;
-	
-	private float    offset           = 0.0f;
-	
-	private float    last_touched_x   = 0.0f;
-	private float    last_touched_y   = 0.0f;
-	private float    moved_dist       = 0.0f;
-	private float    last_speed       = 0.0f;
-	private long     last_time        = 0L;
-	private long     touched_time     = 0L;
-	private boolean  touched          = false;
-	private int      animation_target = 0;
-	private boolean  needRedraw       = false;
-	private boolean  animationAlive   = false;
-	private int      randomIndex      = 0;
+	private static Vector<Bitmap>                  ICONS_TYPES      = null;
+	private        ContactSignature                faked            = null;
+	private        IContactSignatureSliderCallback callback         = null;
+	private        Vector<ContactSignature>        container        = null;
+	private        Vector<ContactSignature>        workContainer    = null;
+	private        SignatureArea                   areas[]          = null;
+	private        HandlerThread                   returnAnimation  = null;
+	private        int                             icons_in_row     = 5;
+	private        boolean                         editable         = false;
+	private        Bitmap                          screen           = null;
+	private        Canvas                          cscreen          = null;
+	private        float                           offset           = 0.0f;
+	private        float                           last_touched_x   = 0.0f;
+	private        float                           last_touched_y   = 0.0f;
+	private        float                           moved_dist       = 0.0f;
+	private        float                           last_speed       = 0.0f;
+	private        long                            last_time        = 0L;
+	private        long                            touched_time     = 0L;
+	private        boolean                         touched          = false;
+	private        int                             animation_target = 0;
+	private        boolean                         needRedraw       = false;
+	private        boolean                         animationAlive   = false;
+	private        int                             randomIndex      = 0;
 	
 	public ContactSignatureSlideLayout(Context context, AttributeSet attrs) 
 	{
@@ -109,7 +108,12 @@ public class ContactSignatureSlideLayout extends View
 
 		randomIndex = (int) (Math.random()*65536);
 	}
-	
+
+	public void setCallback(IContactSignatureSliderCallback callback)
+	{
+		this.callback = callback;
+	}
+
 	public int addContactSignature(ContactSignature signature)
 	{
 		if(alreadyContainSignature(container, signature))
@@ -405,12 +409,8 @@ public class ContactSignatureSlideLayout extends View
 				{
 					if(intoArea(areas[index], last_touched_x, last_touched_y))
 					{
-						Toast.makeText(getContext(), "will open carussel path=" + areas[index].path, Toast.LENGTH_SHORT).show();
-//						if(actionListener != null)
-//						{
-//							actionListener.action(this, ButtonActionListener.CLICKED_ACTION);
-//						}
-
+//						Toast.makeText(getContext(), "will open carussel path=" + areas[index].path, Toast.LENGTH_SHORT).show();
+						if(callback != null) callback.onSignatureClicked(areas[index].path);
 					}
 				}
 				

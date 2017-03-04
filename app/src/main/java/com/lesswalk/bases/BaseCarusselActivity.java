@@ -19,10 +19,16 @@ public abstract class BaseCarusselActivity extends BaseActivity
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		
+
+        Log.d("elazarkin2", "BaseCarusselActivity onCreate");
+
 		setContentView(getContentView());
 		
 		screen = (RelativeLayout) findViewById(R.id.bc_gl_screen);
+
+        initButtons();
+        initSurface();
+        onLoadCarusselItems();
 	}
 	
     private void initSurface()
@@ -84,11 +90,6 @@ public abstract class BaseCarusselActivity extends BaseActivity
     protected void onResume() 
     {
     	super.onResume();
-		//
-		initButtons();
-        initSurface();
-    	//
-        onLoadCarusselItems();
     }
     
     public abstract void onLoadCarusselItems();

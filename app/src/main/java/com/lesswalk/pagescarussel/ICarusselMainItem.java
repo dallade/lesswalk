@@ -24,7 +24,7 @@ public abstract class ICarusselMainItem
 	 * 
 	 */
 	
-	public void loadJSON(String number){}
+	public void loadJSON(String dir){}
 	
 	/*
 	 * Must use Functions

@@ -2,6 +2,7 @@ package com.lesswalk;
 
 import java.util.Vector;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -39,7 +40,23 @@ public class ContactProfile extends BaseActivity
 		);
 
         Log.d("elazarkin", "signatures_size=" + signatures.size());
-		
+
+		contactSignatureLayout.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
+		{
+			@Override
+			public void onSignatureClicked(String path)
+			{
+				String dirPath = null;
+				if(path != null && (dirPath=getService().unzip(path)) != null)
+				{
+					Intent i = new Intent(ContactProfile.this, PlayerActivity.class);
+					//
+					i.putExtra("content_dir", dirPath);
+					startActivity(i);
+				}
+			}
+		});
+
 		for(ContactSignature c:signatures)
 		{
 			contactSignatureLayout.addContactSignature(c);

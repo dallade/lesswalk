@@ -275,7 +275,7 @@ public class CarusselPlayerMainItem extends ICarusselMainItem
         }
     }
 
-    public void loadJSON(String number)
+    public void loadJSON(String path)
     {
         String array[] = {GENERAL, "", "", "", "", ""};
         int    index   = 0;
@@ -285,7 +285,7 @@ public class CarusselPlayerMainItem extends ICarusselMainItem
             //
             //objectsDir = new File(Environment.getExternalStorageDirectory(), "801BFAF1-6480-481C-92C6-619C381E0222");
             //objectsDir = new File(Environment.getExternalStorageDirectory(), "E68F1C41-656A-4DA8-A001-10093F93E000");
-            objectsDir = new File("/sdcard/E68F1C41-656A-4DA8-A001-10093F93E000");
+            objectsDir = new File(path);
             
             reader    = new JsonReader(new InputStreamReader(new FileInputStream(new File(objectsDir, "content.json")), "UTF-8"));
 

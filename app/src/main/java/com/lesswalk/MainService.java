@@ -18,7 +18,9 @@ import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.bases.IContactManager;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
+import com.lesswalk.database.ZipManager;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
@@ -274,5 +276,20 @@ public class MainService extends Service implements ILesswalkService
 	public IContactManager getContactManager() 
 	{
 		return contactManager;
+	}
+
+	@Override
+	public String unzip(String path)
+	{
+		File outDir = new File(getCacheDir(), "signature");
+
+		outDir.mkdir();outDir.mkdirs();
+
+		if(ZipManager.unzip(this, path, outDir.getPath()))
+		{
+			return outDir.getPath();
+		}
+
+		return null;
 	}
 }
