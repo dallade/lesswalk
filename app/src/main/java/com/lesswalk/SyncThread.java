@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
@@ -41,8 +42,23 @@ public class SyncThread
 
     public SyncThread(MainService parent)
     {
+        Vector<DataBaseColums> usersColums      = new Vector<DataBaseColums>();
+        Vector<DataBaseColums> signaturesColums = new Vector<DataBaseColums>();
+
         mParent = parent;
         mCloud = new AmazonCloud(mParent);
+
+        usersColums.add(new DataBaseColums(FULL_PHONE_NUMBER_ROW, DataBaseColums.TEXT_PRIMARY_KEY));
+        usersColums.add(new DataBaseColums(USER_UUID_ROW, DataBaseColums.TEXT));
+        usersColums.add(new DataBaseColums(SIGNATURES_ROW, DataBaseColums.TEXT));
+
+        usersDB = new LesswalkDbHelper(mParent, "users", usersColums);
+
+        signaturesColums.add(new DataBaseColums(SIGNATURE_UUID_ROW, DataBaseColums.TEXT_PRIMARY_KEY));
+        signaturesColums.add(new DataBaseColums(TYPE_ROW, DataBaseColums.TEXT));
+        signaturesColums.add(new DataBaseColums(LAST_UPDATE_ROW, DataBaseColums.TEXT));
+
+        signaturesDB = new LesswalkDbHelper(mParent, "signatures", signaturesColums);
     }
 
     private class ContactUpdateTask
@@ -67,17 +83,15 @@ public class SyncThread
 
     /**
      * This thread will update data (files and database) by user existed contacts
-     *
+     * <p>
      * first (by loop of exist numbers) the thread check differences about the number on Amazon cloud and local
      * and update it if need
-     *
+     * <p>
      * databases:
      * 1 - number, uuid, signatures_uuids (sign1,sign2...)
      * 2 - signature_uuid, type, last_update
-     *
+     * <p>
      * files of signatures will be as zip files
-     *
-     *
      */
 
     private class DataBaseUpdater extends Thread
@@ -113,9 +127,16 @@ public class SyncThread
                 tdiff = System.currentTimeMillis() - t0;
                 t2sleep = MIN_LOOP_TIME - tdiff;
 
-                if(t2sleep < MIN_TIME_TO_SLEEP) t2sleep = MIN_TIME_TO_SLEEP;
+                if (t2sleep < MIN_TIME_TO_SLEEP) t2sleep = MIN_TIME_TO_SLEEP;
 
-                try {sleep(t2sleep);} catch (InterruptedException e) {e.printStackTrace();}
+                try
+                {
+                    sleep(t2sleep);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -146,9 +167,9 @@ public class SyncThread
 
             checkUserChanges(parent.usersDB, number, userUuid, signaturesString, tasks);
 
-            if(tasks.size() > 0)
+            if (tasks.size() > 0)
             {
-                for(ContactUpdateTask t:tasks)
+                for (ContactUpdateTask t : tasks)
                 {
                     switch (t.command)
                     {
@@ -179,7 +200,7 @@ public class SyncThread
 
         private void updateUserDataBase(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString)
         {
-            String        fullNumber = splitedNumberToFullNumber(number);
+            String        fullNumber = PhoneUtils.splitedNumberToFullNumber(number);
             ContentValues values     = new ContentValues();
             //
             values.put(FULL_PHONE_NUMBER_ROW, fullNumber);
@@ -203,7 +224,7 @@ public class SyncThread
             //
             //mCloud.unzipSignatureByUUID(uuid, outDir);
 
-            if(mCloud.unzipFileFromSignatureByUUID(uuid, outDir, contentFileName))
+            if (mCloud.unzipFileFromSignatureByUUID(uuid, outDir, contentFileName))
             {
 
                 try
@@ -265,7 +286,7 @@ public class SyncThread
 
         private void checkUserChanges(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString, Vector<ContactUpdateTask> tasks)
         {
-            String   fullNumber      = splitedNumberToFullNumber(number);
+            String   fullNumber      = PhoneUtils.splitedNumberToFullNumber(number);
             String[] projection      = new String[db.colums.size()];
             String   selection       = FULL_PHONE_NUMBER_ROW + " = ?";
             String   selectionArgs[] = {fullNumber};
@@ -274,18 +295,18 @@ public class SyncThread
 
             Log.d("elazarkin", "check database by " + fullNumber + " number");
 
-            for(int i = 0; i < projection.length; i++)
+            for (int i = 0; i < projection.length; i++)
             {
                 projection[i] = db.colums.elementAt(i).name;
             }
 
             cursor = db.getReadableDatabase().query(db.table_name, projection, selection, selectionArgs, null, null, null);
 
-            if(cursor == null || cursor.getCount() <= 0)
+            if (cursor == null || cursor.getCount() <= 0)
             {
-                // DO NOTHING
+                tasks.add(new ContactUpdateTask(ContactUpdateTask.COMMAND_UPDATE_DB, ""));
             }
-            else if(cursor.getCount() != 1)
+            else if (cursor.getCount() != 1)
             {
                 Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
             }
@@ -298,7 +319,7 @@ public class SyncThread
 
                     if (!userUuid.equals("" + uuid) || !signaturesString.equals("" + signatures))
                     {
-                        if(!userUuid.equals("" + uuid))
+                        if (!userUuid.equals("" + uuid))
                         {
                             tasks.add(new ContactUpdateTask(ContactUpdateTask.COMMAND_UPDATE_DB, uuid));
                         }
@@ -306,20 +327,20 @@ public class SyncThread
                 }
             }
 
-            cursor.close();
+            if(cursor != null) cursor.close();
 
             // DOWNLOAD MISSED ZIPS TASKS
             sigs = signaturesString.split(",");
 
-            if(sigs != null || sigs.length > 0)
+            if (sigs != null || sigs.length > 0)
             {
                 for (String uuid : sigs)
                 {
-                    if(uuid.length() > 0)
+                    if (uuid.length() > 0)
                     {
                         File zip = mCloud.getSignutareFilePathByUUID(uuid);
 
-                        if(!zip.exists())
+                        if (!zip.exists())
                         {
                             tasks.add(new ContactUpdateTask(ContactUpdateTask.COMMAND_DOWNLOAD_ZIP, uuid));
                         }
@@ -343,7 +364,7 @@ public class SyncThread
         {
             File zip = mCloud.getSignutareFilePathByUUID(s);
 
-            if(!zip.exists())
+            if (!zip.exists())
             {
                 mCloud.downloadSignature(s, new AWS.OnDownloadListener()
                 {
@@ -363,8 +384,8 @@ public class SyncThread
                     public void onDownloadFinished(String path)
                     {
                         // TODO improve syntax
-                        String fileName  = new File(path).getName();
-                        String uuid = fileName.substring(0, fileName.length() - 4);
+                        String fileName = new File(path).getName();
+                        String uuid     = fileName.substring(0, fileName.length() - 4);
 
                         Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
                         updateSignatureDatabase(parent.signaturesDB, uuid);
@@ -383,22 +404,17 @@ public class SyncThread
             return false;
         }
 
-        private String splitedNumberToFullNumber(String[] number)
-        {
-            return "+" + number[PhoneUtils.PHONE_INDEX_COUNTRY] + number[PhoneUtils.PHONE_INDEX_MAIN].substring(1);
-        }
-
         private String SignatureListToString(Vector<String> sinaturesList)
         {
             String ret = "";
 
             Collections.sort(sinaturesList);
 
-            for(int i = 0; i < sinaturesList.size(); i++)
+            for (int i = 0; i < sinaturesList.size(); i++)
             {
                 ret += sinaturesList.elementAt(i);
 
-                if(i < sinaturesList.size()-1) ret += ",";
+                if (i < sinaturesList.size() - 1) ret += ",";
             }
 
             return ret;
@@ -424,7 +440,7 @@ public class SyncThread
 
     private class LesswalkDbHelper extends SQLiteOpenHelper
     {
-        public static final int    DATABASE_VERSION = 1;
+        public static final int DATABASE_VERSION = 1;
         //public static final String DATABASE_NAME    = "users.db";
 
         private Vector<DataBaseColums> colums     = null;
@@ -442,11 +458,11 @@ public class SyncThread
         {
             String SQL_CREATE_ENTRIES = "CREATE TABLE " + table_name + " (";
 
-            for(int i = 0; i < colums.size(); i++)
+            for (int i = 0; i < colums.size(); i++)
             {
                 SQL_CREATE_ENTRIES += (colums.elementAt(i).name + " " + colums.elementAt(i).type);
 
-                if(i < colums.size() - 1)
+                if (i < colums.size() - 1)
                 {
                     SQL_CREATE_ENTRIES += ",";
                 }
@@ -472,21 +488,6 @@ public class SyncThread
 
     public void start()
     {
-        Vector<DataBaseColums> usersColums      = new Vector<DataBaseColums>();
-        Vector<DataBaseColums> signaturesColums = new Vector<DataBaseColums>();
-
-        usersColums.add(new DataBaseColums(FULL_PHONE_NUMBER_ROW, DataBaseColums.TEXT_PRIMARY_KEY));
-        usersColums.add(new DataBaseColums(USER_UUID_ROW, DataBaseColums.TEXT));
-        usersColums.add(new DataBaseColums(SIGNATURES_ROW, DataBaseColums.TEXT));
-
-        usersDB = new LesswalkDbHelper(mParent, "users", usersColums);
-
-        signaturesColums.add(new DataBaseColums(SIGNATURE_UUID_ROW, DataBaseColums.TEXT_PRIMARY_KEY));
-        signaturesColums.add(new DataBaseColums(TYPE_ROW, DataBaseColums.TEXT));
-        signaturesColums.add(new DataBaseColums(LAST_UPDATE_ROW, DataBaseColums.TEXT));
-
-        signaturesDB = new LesswalkDbHelper(mParent, "signatures", signaturesColums);
-
         if (!isAlive)
         {
             isAlive = true;
@@ -506,85 +507,113 @@ public class SyncThread
         {
             e.printStackTrace();
         }
-
-        usersDB.close();
-        signaturesDB.close();
     }
 
-    /*
-     * Sync Module API Methods
-     */
+    public void fillSignaturesOfPhoneNumber(String phoneNumber, Vector<ContactSignature> container)
+    {
+        String number[]     = PhoneUtils.splitPhoneNumber(phoneNumber);
+        String fixedNumber  = PhoneUtils.splitedNumberToFullNumber(number);
+        String signatures[] = getSignaturesOfNumber(usersDB, fixedNumber);
 
-    /**
-     * Get Locally stored phone numbers
-     *
-     * @return
-     */
-//    synchronized protected ArrayList<String> updateLocalContactsPhones()
-//    {
-//        ArrayList<String> uuidsList = new ArrayList<>();
-//        contacts = new Vector<>();
-//        SharedPreferences prefs = mParent.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        mParent.getContactManager().fillContactVector(contacts);
-//        for (CarusselContact c : contacts)
-//        {
-//            String originalPhone = c.getNumber();
-//            String localContact = prefs.getString(originalPhone, null);
-//            String userUuid;
-//            if (localContact == null)
-//            {
-//                String[] phoneNumber = splitPhoneNumber(originalPhone);
-//                if (phoneNumber == null) continue;
-//                userUuid = mCloud.getUserUuid(
-//                        phoneNumber[MainService.PHONE_INDEX_COUNTRY]
-//                        , phoneNumber[MainService.PHONE_INDEX_MAIN]
-//                );
-//                if (userUuid == null || userUuid.equals("")) continue;
-//                localContact =
-//                        userUuid + "," +
-//                                phoneNumber[MainService.PHONE_INDEX_COUNTRY] + "," +
-//                                phoneNumber[MainService.PHONE_INDEX_MAIN];
-//                editor.putString(originalPhone, localContact);
-//            }
-//            else
-//            {
-//                String[] fields = localContact.split(",");
-//                String localUuid = fields[0];
-//                if (localUuid == null || localUuid.equals(""))
-//                {
-//                    Log.e(TAG, "Bad local contact fields");
-//                    continue;
-//                }
-//                userUuid = mCloud.getUserUuid(
-//                        fields[2]
-//                        , fields[1]
-//                );
-//                if (userUuid == null || userUuid.equals(""))
-//                {
-//                    Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has removed the profile");
-//                    editor.remove(originalPhone);
-//                }
-//                else if (!userUuid.equals(localUuid))
-//                {
-//                    Log.d(TAG, "The user {" + userUuid + "," + fields[1] + "," + fields[2] + "} has changed the profile (used to be " + localUuid + ")");
-//                    editor.remove(originalPhone);
-//                    String[] phoneNumber = splitPhoneNumber(originalPhone);
-//                    if (phoneNumber == null)
-//                    {
-//                        Log.e(TAG, "Bad phoneNumber - the splitPhoneNumber method has probably changed since last time");
-//                        continue;
-//                    }
-//                    localContact =
-//                            userUuid + "," +
-//                                    phoneNumber[MainService.PHONE_INDEX_COUNTRY] + "," +
-//                                    phoneNumber[MainService.PHONE_INDEX_MAIN];
-//                    editor.putString(originalPhone, localContact);
-//                }
-//            }
-//            uuidsList.add(userUuid);
-//        }
-//        editor.commit();
-//        return uuidsList;
-//    }
+        Log.d("elazarkin1", "signatures = " + signatures);
+
+        if(signatures != null)
+        {
+            Log.d("elazarkin1", "signatures.length = " + signatures.length);
+
+            for (String uuid : signatures)
+            {
+                if (uuid.length() > 0)
+                {
+                    String type = getTypeOfSignature(signaturesDB, uuid);
+                    container.add(new ContactSignature
+                    (
+                            phoneNumber,
+                            ContactSignature.StringToType(type),
+                            mCloud.getSignutareFilePathByUUID(uuid).getPath()
+                    ));
+
+                    Log.d("elazarkin1", "add " + uuid + " type = " + type);
+                }
+            }
+        }
+    }
+
+    private String getTypeOfSignature(LesswalkDbHelper db, String uuid)
+    {
+        Cursor   cursor          = null;
+        String[] projection      = new String[db.colums.size()];
+        String   selection       = SIGNATURE_UUID_ROW + " = ?";
+        String   selectionArgs[] = {uuid};
+        String   type            = null;
+
+        for (int i = 0; i < projection.length; i++)
+        {
+            projection[i] = db.colums.elementAt(i).name;
+        }
+
+        cursor = db.getReadableDatabase().query(db.table_name, projection, selection, selectionArgs, null, null, null);
+
+        if (cursor == null || cursor.getCount() <= 0)
+        {
+            // DO NOTHING
+        }
+        else if (cursor.getCount() != 1)
+        {
+            Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
+        }
+        else
+        {
+            while (cursor.moveToNext())
+            {
+                type = cursor.getString(cursor.getColumnIndexOrThrow(TYPE_ROW));
+            }
+        }
+
+        if(cursor != null) cursor.close();
+
+        return type;
+    }
+
+    private String[] getSignaturesOfNumber(LesswalkDbHelper db, String fixedNumber)
+    {
+        Cursor   cursor          = null;
+        String[] projection      = new String[db.colums.size()];
+        String   selection       = FULL_PHONE_NUMBER_ROW + " = ?";
+        String   selectionArgs[] = {fixedNumber};
+        String   signatures[]    = null;
+
+        for (int i = 0; i < projection.length; i++)
+        {
+            projection[i] = db.colums.elementAt(i).name;
+        }
+
+        cursor = db.getReadableDatabase().query(db.table_name, projection, selection, selectionArgs, null, null, null);
+
+        if (cursor == null || cursor.getCount() <= 0)
+        {
+            Log.d("elazarkin1", "getSignaturesOfNumber cursor == null || cursor.getCount() number=" + fixedNumber);
+            // DO NOTHING
+        }
+        else if (cursor.getCount() != 1)
+        {
+            Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
+            Log.d("elazarkin1", "some problem with primary key in " + db.table_name + " database");
+        }
+        else
+        {
+            while (cursor.moveToNext())
+            {
+                String signaturesValue = cursor.getString(cursor.getColumnIndexOrThrow(SIGNATURES_ROW));
+                //
+                Log.d("elazarkin1", "signatureValue is: " + signaturesValue);
+                //
+                signatures = signaturesValue.split(",");
+            }
+        }
+
+        if(cursor != null) cursor.close();
+
+        return signatures;
+    }
 }

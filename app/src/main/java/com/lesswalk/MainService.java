@@ -18,8 +18,6 @@ import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.bases.IContactManager;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
-import com.lesswalk.database.AmazonCloud;
-import com.lesswalk.utils.PhoneUtils;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -30,15 +28,11 @@ import java.util.concurrent.Semaphore;
 
 public class MainService extends Service implements ILesswalkService
 {
-	private 	static final String TAG 				= "lesswalk_MainService";
-
-    private static Semaphore mutex = new Semaphore(1);
-	
-	private IBinder mBinder = new LocalBinder();
-	
-	private ContactManager contactManager = null;
-    private AmazonCloud cloud;
-	private SyncThread syncThread = null;
+	private static final String         TAG            = "lesswalk_MainService";
+	private static       Semaphore      mutex          = new Semaphore(1);
+	private              IBinder        mBinder        = new LocalBinder();
+	private              ContactManager contactManager = null;
+	private              SyncThread     syncThread     = null;
 
     @Override
 	public IBinder onBind(Intent intent) 
@@ -57,28 +51,26 @@ public class MainService extends Service implements ILesswalkService
 	@Override
 	public void onCreate() 
 	{
+		super.onCreate();
+
 		Log.d(TAG, "MainService onStartCommand!");
-		
+
+		syncThread = new SyncThread(this);
+
 		contactManager = new ContactManager(this);
 
 		contactManager.startLoadContacts();
-
-        cloud = new AmazonCloud(this);
-        
-		super.onCreate();
 	}
 
 	private void onFinishLoadContacts()
 	{
-		syncThread = new SyncThread(this);
-
 		syncThread.start();
 	}
 	
 	private class ContactManager implements IContactManager
 	{
-		private List<CarusselContact> contacts       = null;
-		private ContentResolver         cr           = null;
+		private List<CarusselContact> contacts = null;
+		private ContentResolver       cr       = null;
 		
 		protected ContactManager(Context context) 
 		{
@@ -236,7 +228,9 @@ public class MainService extends Service implements ILesswalkService
 
 			// TODO use local databases data
 
-//			//String[] fullPhoneNumber = splitPhoneNumber(phoneNumber);
+			syncThread.fillSignaturesOfPhoneNumber(phoneNumber, signatures);
+
+//			String[] fullPhoneNumber = splitPhoneNumber(phoneNumber);
 //			String[] fullPhoneNumber = new String[]{"972", "0526807577"};
 //			List<String> signaturesUuids = cloud.findSignaturesUuidsByOwnerPhone
 //			(

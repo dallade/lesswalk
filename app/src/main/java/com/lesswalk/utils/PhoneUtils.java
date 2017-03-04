@@ -38,4 +38,9 @@ public class PhoneUtils
         //
         return parts;
     }
+
+    public static String splitedNumberToFullNumber(String[] number)
+    {
+        return "+" + number[PhoneUtils.PHONE_INDEX_COUNTRY] + number[PhoneUtils.PHONE_INDEX_MAIN].substring(1);
+    }
 }
