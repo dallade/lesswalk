@@ -1,17 +1,7 @@
 package com.lesswalk;
 
-import com.google.zxing.android.ViewfinderView;
-import com.lesswalk.bases.BaseActivity;
-import com.lesswalk.bases.ContactSignature;
-import com.lesswalk.bases.ContactSignature.SignatureType;
-import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
-import com.lesswalk.contact_page.navigation_menu.NavigatiomMenuSurface;
-import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject;
-import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject.BarcodeDetectorCallback;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +10,15 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
+
+import com.google.zxing.android.ViewfinderView;
+import com.lesswalk.bases.BaseActivity;
+import com.lesswalk.bases.ContactSignature;
+import com.lesswalk.bases.ContactSignature.SignatureType;
+import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
+import com.lesswalk.contact_page.navigation_menu.NavigatiomMenuSurface;
+import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject;
+import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject.BarcodeDetectorCallback;
 
 public class MainActivity extends BaseActivity 
 {
