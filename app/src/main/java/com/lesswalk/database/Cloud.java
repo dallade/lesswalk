@@ -78,4 +78,6 @@ public abstract class Cloud
     public abstract boolean unzipFileFromSignatureByUUID(String uuid, File outDir, String contentFileName);
 
 //    public abstract String downloadAndUnzipSignature(String uuid);
+
+    public abstract String sendVerificationSms(String countryCode, String phone, String verificationCode);
 }

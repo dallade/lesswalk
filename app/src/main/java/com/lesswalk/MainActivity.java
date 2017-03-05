@@ -9,6 +9,7 @@ import com.lesswalk.contact_page.navigation_menu.NavigatiomMenuSurface;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject.BarcodeDetectorCallback;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.SurfaceView;
@@ -23,8 +24,14 @@ import android.widget.Toast;
 public class MainActivity extends BaseActivity 
 {
 	public static final String TAG = "lesswalkMainActivity";
-	
-	private enum MODE {CONTACT_CARUSSEL_MODE, QR_DETECTOR_MODE};
+
+    public void goToLoginPage(View view)//TODO remove later
+    {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    private enum MODE {CONTACT_CARUSSEL_MODE, QR_DETECTOR_MODE};
 	
     private NavigatiomMenuSurface   	navigationMenuGL 	= null;
     private SearchView 					searchFilter		= null;
