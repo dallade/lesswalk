@@ -15,6 +15,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.internal.RestUtils;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.util.Md5Utils;
 
 import java.io.File;
@@ -248,6 +249,10 @@ public class AWS
         return str;
     }
 
+    public static ObjectMetadata getFileMetadata(Context context, String pathOnServer) {
+        return getS3(context).getObjectMetadata(BUCKET, pathOnServer);
+    }
+
     public interface OnUploadListener
     {
         void onUploadStarted(String path);
@@ -268,6 +273,8 @@ public class AWS
         void onDownloadFinished(String path);
 
         void onDownloadError(String path, int errorId, Exception ex);
+
+        void onMetadataReceived(ObjectMetadata fileMetadata);
     }
 
 //    void other(){

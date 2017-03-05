@@ -67,6 +67,7 @@ public abstract class Cloud
 
     //
     public abstract String downloadSignature(String uuid, AWS.OnDownloadListener onDownloadListener);
+    //public abstract String getSignatureHeader(String uuid, AWS.OnDownloadListener onDownloadListener);
 
     /**
      * @param uuid

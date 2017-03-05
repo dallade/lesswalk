@@ -2,12 +2,12 @@ package com.lesswalk;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AWS;
@@ -30,7 +30,7 @@ public class SyncThread
     private static final String SIGNATURES_ROW        = "signatures_uuids";
     private static final String SIGNATURE_UUID_ROW    = "uuid";
     private static final String TYPE_ROW              = "type";
-    private static final String LAST_UPDATE_ROW       = "last_update";
+    private static final String LAST_UPDATE_ROW       = "last_update";// milliseconds as string
 
     private MainService      mParent         = null;
     private Cloud            mCloud          = null;
@@ -188,7 +188,7 @@ public class SyncThread
                         case ContactUpdateTask.UPDATE_SIGNATURE_DB:
                         {
                             Log.d("elazarkin", "will update signatureDB");
-                            updateSignatureDatabase(parent.signaturesDB, t.description);
+                            updateSignatureDatabase(parent.signaturesDB, t.description, null);
                             break;
                         }
                     }
@@ -210,7 +210,7 @@ public class SyncThread
             db.getWritableDatabase().replace(db.table_name, null, values);
         }
 
-        private synchronized void updateSignatureDatabase(LesswalkDbHelper db, String uuid)
+        private synchronized void updateSignatureDatabase(LesswalkDbHelper db, String uuid, ObjectMetadata metadata)
         {
             File          zip             = mCloud.getSignutareFilePathByUUID(uuid);
             File          outDir          = new File(parent.mParent.getCacheDir(), "updateSignaturesDB");
@@ -271,7 +271,10 @@ public class SyncThread
 
                     values.put(SIGNATURE_UUID_ROW, uuid);
                     values.put(TYPE_ROW, type);
-                    values.put(LAST_UPDATE_ROW, "Not_used_yet");
+                    if (metadata != null)
+                    {
+                        values.put(LAST_UPDATE_ROW, "" + metadata.getLastModified().getTime());
+                    }
 
                     db.getWritableDatabase().replace(db.table_name, null, values);
 
@@ -368,6 +371,8 @@ public class SyncThread
             {
                 mCloud.downloadSignature(s, new AWS.OnDownloadListener()
                 {
+                    public ObjectMetadata mFileMetadata = null;
+
                     @Override
                     public void onDownloadStarted(String path)
                     {
@@ -388,13 +393,18 @@ public class SyncThread
                         String uuid     = fileName.substring(0, fileName.length() - 4);
 
                         Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
-                        updateSignatureDatabase(parent.signaturesDB, uuid);
+                        updateSignatureDatabase(parent.signaturesDB, uuid, mFileMetadata);
                     }
 
                     @Override
                     public void onDownloadError(String path, int errorId, Exception ex)
                     {
                         Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
+                    }
+
+                    @Override
+                    public void onMetadataReceived(ObjectMetadata fileMetadata) {
+                        mFileMetadata = fileMetadata;
                     }
                 });
 
@@ -404,17 +414,17 @@ public class SyncThread
             return false;
         }
 
-        private String SignatureListToString(Vector<String> sinaturesList)
+        private String SignatureListToString(Vector<String> signaturesList)
         {
             String ret = "";
 
-            Collections.sort(sinaturesList);
+            Collections.sort(signaturesList);
 
-            for (int i = 0; i < sinaturesList.size(); i++)
+            for (int i = 0; i < signaturesList.size(); i++)
             {
-                ret += sinaturesList.elementAt(i);
+                ret += signaturesList.elementAt(i);
 
-                if (i < sinaturesList.size() - 1) ret += ",";
+                if (i < signaturesList.size() - 1) ret += ",";
             }
 
             return ret;

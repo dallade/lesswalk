@@ -8,6 +8,7 @@ import com.amazonaws.mobileconnectors.cognito.Dataset;
 import com.amazonaws.mobileconnectors.cognito.Record;
 import com.amazonaws.mobileconnectors.cognito.SyncConflict;
 import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -291,9 +292,21 @@ public class AmazonCloud extends Cloud
 //        String filePath = new File(signatureDir, uuid + SIGNATURE_EXTENSION).getPath();
         String filePath = getSignutareFilePathByUUID(uuid).getPath();
         //AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, onDownloadListener);
-        AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, onDownloadListener);
+        String pathOnServer = SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION;
+        ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
+        onDownloadListener.onMetadataReceived(fileMetadata);
+        AWS.download(mContext, pathOnServer, filePath, onDownloadListener);
         return filePath;
     }
+
+//    @Override
+//    public String getSignatureHeader(String uuid, AWS.OnDownloadListener onDownloadListener) {
+//        String filePath = getSignutareFilePathByUUID(uuid).getPath();
+//        //AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, onDownloadListener);
+//        //AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, onDownloadListener);
+//        AWS.getFileHeader(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath);
+//        return filePath;
+//    }
 
     @Override
     public String unzipSignatureByUUID(String uuid, File unzippedDir)
