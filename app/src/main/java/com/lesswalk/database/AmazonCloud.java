@@ -20,8 +20,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -40,7 +42,12 @@ public class AmazonCloud extends Cloud
     protected static final String GET_REQ_SIGNATURE_BY_OWNER       = "%s://%s:%d/cmd/%s/%s/%s";
     protected static final String CLOUD_MODULE_user                = "user";
     protected static final String CLOUD_FUNCTION_findByPhoneNumber = "findByPhoneNumber";
+    protected static final String CLOUD_FUNCTION_sendVerSms        = "request-confirmation-sms";
     protected static final String GET_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s?phone_number=%s&country_code=%s";
+    protected static final String PUT_REQ_USER_VER_SMS             = "%s://%s:%d/cmd/%s/%s";
+    protected static final String PUT_VERSMS_field_countryCode     = "country-code";
+    protected static final String PUT_VERSMS_field_phone           = "phone-number";
+    protected static final String PUT_VERSMS_field_veriCode        = "confirmation-code";
     protected static final String CLOUD_JSON_key                   = "key";
     protected static final String CLOUD_JSON_owner                 = "owner";
     private static final   String SIGNATURES_EXTRACT_PATH          = "sig_extracted";
@@ -314,6 +321,67 @@ public class AmazonCloud extends Cloud
         unzippedDir.mkdir();unzippedDir.mkdirs();
 
         return ZipManager.unzip(mContext.getApplicationContext(), zipPath, unzippedDir.getPath(), file);
+    }
+
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
+    String reqHttpPut(String url, String json)
+    {
+        RequestBody body = RequestBody.create(JSON, json);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .build();
+
+        Response response = null;
+        String   result   = null;
+        try
+        {
+            response = httpClient.newCall(request).execute();
+            result = response.body().string();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public String sendVerificationSms(String countryCode, String phone, String verificationCode)
+    {
+
+        String url = String.format
+                (
+                        Locale.getDefault(),
+                        PUT_REQ_USER_VER_SMS,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_user,
+                        CLOUD_FUNCTION_sendVerSms
+                );
+        JSONObject bodyJson = new JSONObject();
+        JSONObject json         = null;
+        try {
+            bodyJson.put(PUT_VERSMS_field_countryCode, countryCode);
+            bodyJson.put(PUT_VERSMS_field_phone, phone);
+            bodyJson.put(PUT_VERSMS_field_veriCode, verificationCode);
+            String     responseBody = reqHttpPut(url, bodyJson.toString());
+            JSONArray  jsonArr      = null;
+            jsonArr = new JSONArray(responseBody);
+            if (jsonArr.length() == 0) return null;
+            json = jsonArr.getJSONObject(0);
+            if (null == json) return "";
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+            return "";
+        }
+        return json.toString();
     }
 
 //    @Override
