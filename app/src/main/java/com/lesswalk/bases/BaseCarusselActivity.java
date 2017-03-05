@@ -37,7 +37,7 @@ public abstract class BaseCarusselActivity extends BaseActivity
         carusselGlSurfaceBase.initiation();
 
         screen.addView(carusselGlSurfaceBase);
-        //
+
 //        mapView = new MapView(this, "AIzaSyBrSg5cJyTE-HMNEEOASuqbVn8O0nThfkc");
 //        surfaceScreen.addView(mapView, new RelativeLayout.LayoutParams(300, 300));
     }
@@ -78,20 +78,14 @@ public abstract class BaseCarusselActivity extends BaseActivity
 		return screen;
 	}
 	
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus)
-    {
-        super.onWindowFocusChanged(hasFocus);
-
-        Log.d("elazarkin", "Activity - onWindowFocusChanged " + hasFocus);
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus)
+//    {
+//        super.onWindowFocusChanged(hasFocus);
+//
+//        Log.d("elazarkin", "Activity - onWindowFocusChanged " + hasFocus);
+//    }
 	
-    @Override
-    protected void onResume() 
-    {
-    	super.onResume();
-    }
-    
     public abstract void onLoadCarusselItems();
     
     public abstract int getContentView();

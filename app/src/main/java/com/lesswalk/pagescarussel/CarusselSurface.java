@@ -12,12 +12,12 @@ import android.view.MotionEvent;
 public class CarusselSurface extends GLSurfaceView
 {
 	private static final int MIN_MOVED_COUNTER = 5;
-	
-    private CarusselGlSurfaceRenderer renderer = null;
-    private Context context        = null;
-    private float   lastTouchedX   = 0.0f;
-    private float   lastTouchedY   = 0.0f;
-    private int     movedCounter[] = {0};
+
+    private CarusselGlSurfaceRenderer renderer       = null;
+    private Context                   context        = null;
+    private float                     lastTouchedX   = 0.0f;
+    private float                     lastTouchedY   = 0.0f;
+    private int                       movedCounter[] = {0};
 
     public CarusselSurface(Context context)
     {
@@ -28,7 +28,7 @@ public class CarusselSurface extends GLSurfaceView
     public void initiation()
     {
 //    	setZOrderMediaOverlay(true);
-//        setZOrderOnTop(true);
+        setZOrderOnTop(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         getHolder().setFormat(PixelFormat.RGBA_8888);
         setEGLContextClientVersion(2);

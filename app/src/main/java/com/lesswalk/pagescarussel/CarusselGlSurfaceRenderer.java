@@ -50,6 +50,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig)
     {
+		Log.d("elazarkin2", "onSurfaceCreated");
     	RectObject3D.init(context);
     }
 
@@ -71,7 +72,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     @Override
     public void onSurfaceChanged(GL10 gl10, int w, int h)
     {
-    	Log.d("elazarkin1", "onSurfaceChanged");
+    	Log.d("elazarkin2", "onSurfaceChanged");
     	
     	WIDTH  = w;
     	HEIGTH = h;
@@ -100,7 +101,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
         {
             container = new Vector<CarusselPageInterface>();
             carusselMainItem.fillContainerByItems(container);
-            Log.d("elazarkin1", "updateContainer: containerSize=" + container.size());
+            Log.d("elazarkin2", "updateContainer: containerSize=" + container.size());
         }
         else if(carusselMainItem == null) return;
 
