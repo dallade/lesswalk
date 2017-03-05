@@ -31,18 +31,16 @@ import android.util.Log;
 
 public abstract class ParkingDesignPage extends ParkingPageParametersBase
 {
-	private RectObject3D  goButton           = null;
-	private RectObject3D  arrivalTime        = null;
-	private VideoPlayer3D videoPlayer        = null;
-	
-	protected RectObject3D  mapAddress         = null;
-	protected RectObject3D  map_thumbnail_obj  = null;
-	protected RectObject3D  map_thumbnail_back = null;
-	
-	private File map_thumbnail = null;
-	private File audio_path    = null;
-	
-	private AlertDialog openWazeDialog  = null;
+	private   FlickerImageObject3D goButton           = null;
+	private   RectObject3D         arrivalTime        = null;
+	private   VideoPlayer3D        videoPlayer        = null;
+	protected RectObject3D         mapAddress         = null;
+	protected RectObject3D         map_thumbnail_obj  = null;
+	protected RectObject3D         map_thumbnail_back = null;
+	private   File                 map_thumbnail      = null;
+	private   File                 audio_path         = null;
+	private   AlertDialog          openWazeDialog     = null;
+	private   boolean              isAlive            = false;
 
 	public ParkingDesignPage(String title, Context context) 
 	{
@@ -150,8 +148,9 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 				public void run() 
 				{
 					Date date = new Date();
-					
-					while(true)
+					isAlive = true;
+
+					while(isAlive)
 					{
 						date.setTime(System.currentTimeMillis());
 						if(arrivalTime != null)
@@ -428,10 +427,10 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 		return ans;
 	}
 
-	private RectObject3D createGoButton(float aspect) 
+	private FlickerImageObject3D createGoButton(float aspect)
 	{
-		float internalWieght = 1.6f;
-		FlickerImageObject3D goButton = new FlickerImageObject3D("goButton");
+		float                internalWieght = 1.6f;
+		FlickerImageObject3D goButton       = new FlickerImageObject3D("goButton");
 		//
 		Bitmap car = BitmapFactory.decodeResource
 		(
@@ -484,6 +483,10 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 		{
 			street_view_back.destroy();
 		}
+
+		isAlive = false;
+
+		goButton.stop();
 		
 		super.destroy();
 	}

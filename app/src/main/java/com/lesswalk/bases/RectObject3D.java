@@ -416,7 +416,7 @@ public class RectObject3D extends BaseObject3D
 
 	public static void init(Context context) 
 	{
-		if(program < 0)
+		//if(program < 0)
 		{
 	        program = createProgram
 	        (
@@ -431,7 +431,7 @@ public class RectObject3D extends BaseObject3D
 	        loadHandlers(attrHandlers, unifHandlers, program);
 		}
 		
-		if(program_ext < 0)
+		//if(program_ext < 0)
 		{
 	        
 	        program_ext = createProgram
@@ -509,12 +509,12 @@ public class RectObject3D extends BaseObject3D
 	public void prepare() {}
 	public void release() {}
 	
-    protected static void checkGlError(String title)
+    public static void checkGlError(String title)
     {
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
         {
-            Log.e("elazarkin", "glError " + title + ": " + error);
+            Log.e("elazarkin3", "glError " + title + ": " + error);
         }
     }
     
