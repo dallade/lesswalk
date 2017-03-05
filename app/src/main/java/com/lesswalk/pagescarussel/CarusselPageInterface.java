@@ -429,9 +429,14 @@ public abstract class CarusselPageInterface extends RectObject3D
 	@Override
 	public void destroy() 
 	{
-		super.destroy();
-		
+		if(mediaPlayer != null)
+		{
+			mediaPlayer.reset();
+			mediaPlayer = null;
+		}
+
 		isInited = false;
+		super.destroy();
 	}
 
 	public void rotateIfNeed(float[] modelView, float[] rotationM) 

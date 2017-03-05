@@ -154,7 +154,7 @@ public class AmazonCloud extends Cloud
             if (jsonArr.length() == 0) return null;
             json = jsonArr.getJSONObject(0);
         }
-        catch (JSONException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }

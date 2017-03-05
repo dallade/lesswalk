@@ -29,8 +29,12 @@ public class PageDrawable3D extends RectObject3D
 	protected void removeBackgrounds()
 	{
 		backgroundID = -1;
-		back_obj.release();
-		back_obj     = null;
+
+		if(back_obj != null)
+		{
+			back_obj.release();
+			back_obj = null;
+		}
 	}
 
 	public int getBackgroundID() 
@@ -74,6 +78,8 @@ public class PageDrawable3D extends RectObject3D
 	{
 		if(currentRotationAngle < 90.0f)
 		{
+			backgroundIDBackup = -1;
+			back_obj_backup = null;
 			super.drawSelf();
 		}
 		else

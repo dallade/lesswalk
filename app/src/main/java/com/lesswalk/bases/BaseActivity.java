@@ -70,10 +70,15 @@ public abstract class BaseActivity extends Activity
 	@Override
 	protected void onPause() 
 	{
+		try
+		{
+			unbindService(mConnection);
+		}
+		catch (Exception e){}
+
 		super.onPause();
-//		unbindService(mConnection);
 	}
-	
+
 	private ServiceConnection mConnection = new ServiceConnection() 
 	{
 		@Override
