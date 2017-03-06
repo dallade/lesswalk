@@ -16,6 +16,7 @@ public class ContactProfile extends BaseActivity
 	private TextView                    contact_profile_name_tv = null;
 	private ContactSignatureSlideLayout contactSignatureLayout  = null;
 	private ContactSignatureSlideLayout userSignatureLayout     = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -77,7 +78,6 @@ public class ContactProfile extends BaseActivity
 			userSignatureLayout.pause();
 		}
 
-        finish();
 		super.onPause();
 	}
 

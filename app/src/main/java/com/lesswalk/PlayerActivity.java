@@ -20,12 +20,15 @@ public class PlayerActivity extends BaseCarusselActivity
     @Override
     protected void onPause()
     {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
         getCarusselSurface().removeCarusselItems();
         carusselMainItem = null;
-        //
-        finish();
-        //
-        super.onPause();
+        super.onDestroy();
     }
 
     @Override

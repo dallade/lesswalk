@@ -15,20 +15,25 @@ import android.util.Log;
 
 public abstract class BaseActivity extends Activity
 {
-	private ILesswalkService mainServer = null;
-	
-	private static final String TAG = "lesswalkBaseActivity";
+	private static final String           TAG          = "lesswalkBaseActivity";
+	private static       Intent           mainActivity = null;
+	private              ILesswalkService mainServer   = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		
+
+		if(mainActivity == null)
+		{
+			mainActivity = new Intent(getIntent());
+		}
+
 		Log.d("lesswalk", "BaseActivity - onCreate");
 		connectToService();
 	}
-	
-	private boolean isMyServiceRunning(Context context) 
+
+	private boolean isMyServiceRunning(Context context)
 	{
 	    ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 	    
@@ -43,7 +48,29 @@ public abstract class BaseActivity extends Activity
 	    return false;
 	}
 
-	
+	private boolean ifIsSameActivity(Intent i1, Intent i2)
+	{
+		return i1.getComponent().getClassName().equals(i2.getComponent().getClassName());
+	}
+
+	private boolean ifIsMainActivity(Intent i)
+	{
+		return ifIsSameActivity(mainActivity, i);
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		if(!ifIsMainActivity(getIntent()))
+		{
+			finish();
+
+			return;
+		}
+
+		super.onBackPressed();
+	}
+
 	@Override
 	protected void onResume() 
 	{
@@ -68,8 +95,10 @@ public abstract class BaseActivity extends Activity
 
 
 	@Override
-	protected void onPause() 
+	protected void onPause()
 	{
+		//if(!ifIsMainActivity(getIntent())) finish();
+
 		try
 		{
 			unbindService(mConnection);

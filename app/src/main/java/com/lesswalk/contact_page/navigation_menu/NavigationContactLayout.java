@@ -437,4 +437,9 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 	{
 		contactFilter  = text;
 	}
+
+	public String getContactFilter()
+	{
+		return contactFilter;
+	}
 }

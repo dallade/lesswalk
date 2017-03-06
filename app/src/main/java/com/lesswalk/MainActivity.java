@@ -31,15 +31,13 @@ public class MainActivity extends BaseActivity
     }
 
     private enum MODE {CONTACT_CARUSSEL_MODE, QR_DETECTOR_MODE};
-	
-    private NavigatiomMenuSurface   	navigationMenuGL 	= null;
-    private SearchView 					searchFilter		= null;
-    private BarcodeDecoderObject		barcodeObject		= null;
-    
-    private ContactSignatureSlideLayout signatureSlider		= null;
-    private ImageButton					qrcodeButton		= null;
-    
-    private MODE						currentMode			= MODE.CONTACT_CARUSSEL_MODE;
+
+	private NavigatiomMenuSurface       navigationMenuGL = null;
+	private SearchView                  searchFilter     = null;
+	private BarcodeDecoderObject        barcodeObject    = null;
+	private ContactSignatureSlideLayout signatureSlider  = null;
+	private ImageButton                 qrcodeButton     = null;
+	private MODE                        currentMode      = MODE.CONTACT_CARUSSEL_MODE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -190,11 +188,28 @@ public class MainActivity extends BaseActivity
 	@Override
 	public void onBackPressed()
 	{
+		String filter = null;
+
 		if(currentMode == MODE.QR_DETECTOR_MODE)
 		{
 			setMode(MODE.CONTACT_CARUSSEL_MODE);
 			return;
 		}
+		else if((filter=navigationMenuGL.getContactFilter()) != null && filter.length() > 0)
+		{
+			navigationMenuGL.setContactFilter("");
+			runOnUiThread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					searchFilter.setQuery("", true);
+				}
+			});
+
+			return;
+		}
+
 		super.onBackPressed();
 	}
 }

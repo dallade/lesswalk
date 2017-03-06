@@ -121,6 +121,8 @@ public class NavigatiomMenuSurface extends GLSurfaceView
 		navigationContactLayout.setContactFilter(text);
 	}
 
+    public String getContactFilter() {return navigationContactLayout.getContactFilter();}
+
 	public void setOn()
 	{
 		if(navigationMenuR != null)
