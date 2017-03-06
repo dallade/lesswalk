@@ -16,7 +16,7 @@ public class CarusselPlayerIndoorItem extends CarusselPageInterface
 {
 	private static final String  INDOOR_NAME  = "indoor";
 	
-	private static ImageObject3D INDOOR_ICON  = null;
+	private ImageObject3D INDOOR_ICON  = null;
 	
 	
 	public CarusselPlayerIndoorItem(Context context) 

@@ -20,8 +20,8 @@ public class CarusselPlayerParkingItem extends ParkingDesignPage
 {
     private int ID = -1;
 
-    private static ImageObject3D PARKING_ICON  = null;
-    private static ImageObject3D PARKING_TITLE = null;
+    private ImageObject3D PARKING_ICON  = null;
+    private ImageObject3D PARKING_TITLE = null;
     
     public CarusselPlayerParkingItem(Context context, int _ID)
     {
