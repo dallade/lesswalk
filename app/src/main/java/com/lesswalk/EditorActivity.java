@@ -27,20 +27,23 @@ import android.widget.TextView;
 
 public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager
 {
-	private CarusselSurface   carusselGlSurfaceBase = null;
-	private ICarusselMainItem carusselMainItem      = null;
-	private RelativeLayout    addFamilyView         = null;
-	private LinearLayout      editorTextTipView     = null;
-	private LinearLayout      editorTakePhotoMenu   = null;
-	private LinearLayout      manualAddress         = null;
-	private Vector<View>      additionViews         = null;
-	
+	private ICarusselMainItem carusselMainItem    = null;
+	private RelativeLayout    addFamilyView       = null;
+	private LinearLayout      editorTextTipView   = null;
+	private LinearLayout      editorTakePhotoMenu = null;
+	private LinearLayout      manualAddress       = null;
+	private Button            backButton          = null;
+	private Vector<View>      additionViews       = null;
+	private Vector<View>      currentDisplayed    = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		
 		addAdditionLayouts();
+
+		currentDisplayed = new Vector<View>();
 	}
 	
 	private void addAdditionLayouts() 
@@ -59,6 +62,16 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			getScreen().addView(v, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 			v.setVisibility(View.GONE);
 		}
+
+		backButton = (Button) findViewById(R.id.bc_back_button);
+		backButton.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				onBackAction();
+			}
+		});
 	}
 
 	@Override
@@ -83,7 +96,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 		final EditText cityET        = (EditText) (manualAddress.findViewById(R.id.editor_manual_text_get_city_et));
 		final EditText streetET      = (EditText) (manualAddress.findViewById(R.id.editor_manual_text_get_street_et));
 		final EditText street_numET  = (EditText) (manualAddress.findViewById(R.id.editor_manual_text_get_street_num_et));
-		
+
 		countryET.setText(country);
 		cityET.setText(city);
 		streetET.setText(street);
@@ -94,13 +107,16 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			@Override
 			public void onClick(View v) 
 			{
-				manualAddress.setVisibility(View.GONE);
+//				manualAddress.setVisibility(View.GONE);
+//				getCarusselSurface().bringToFront();
+//				getCarusselSurface().setVisiable(true);
+
+				removeAdditionDislays();
+
 				if(callback != null)
 				{
 					callback.onReturn(countryET.getText().toString(), cityET.getText().toString(), streetET.getText().toString(), street_numET.getText().toString());
 				}
-				getCarusselSurface().bringToFront();
-//				getCarusselSurface().setZOrderMediaOverlay(true);
 			}
 		});
 		
@@ -109,9 +125,11 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			@Override
 			public void run() 
 			{
-//				getCarusselSurface().setZOrderMediaOverlay(false);
+				getCarusselSurface().setVisiable(false);
 				manualAddress.bringToFront();
 				manualAddress.setVisibility(View.VISIBLE);
+
+				currentDisplayed.add(manualAddress);
 			}
 		});
 	}
@@ -146,12 +164,14 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			@Override
 			public void onClick(View v) 
 			{
-				editorTextTipView.setVisibility(View.GONE);
+//				editorTextTipView.setVisibility(View.GONE);
+//				getCarusselSurface().bringToFront();
+//				getCarusselSurface().setVisiable(true);
+				removeAdditionDislays();
 				if(callback != null)
 				{
 					callback.onReturn(editor.getText().toString());
 				}
-				getCarusselSurface().bringToFront();
 			}
 		});
 		
@@ -160,9 +180,11 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			@Override
 			public void run() 
 			{
+				getCarusselSurface().setVisiable(false);
 				editor.setText(tip);
 				editorTextTipView.bringToFront();
 				editorTextTipView.setVisibility(View.VISIBLE);
+				currentDisplayed.add(editorTextTipView);
 			}
 		});
 	}
@@ -180,6 +202,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 				final MyCameraView cameraView = new MyCameraView(EditorActivity.this);
 				final ImageView    imageView  = new ImageView(EditorActivity.this);
 				//
+				getCarusselSurface().setVisiable(false);
 				editorTakePhotoMenu.bringToFront();
 				menuArea.setVisibility(View.INVISIBLE);
 				
@@ -187,20 +210,24 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 				cameraArea.addView(cameraView, new RelativeLayout.LayoutParams(1, 1));
 				cameraArea.addView(imageView, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 				imageView.bringToFront();
-				
+
 				imageView.setOnClickListener(new OnClickListener() 
 				{
 					@Override
 					public void onClick(View v) 
 					{
-						cameraArea.removeView(cameraView);
-						editorTakePhotoMenu.setVisibility(View.GONE);
+						removeAdditionDislays();
 						if(callback != null)
 						{
 							callback.onReturn(imageView.getBitmap());
 						}
-						cameraArea.removeAllViews();
-						getCarusselSurface().bringToFront();
+
+//						cameraArea.removeView(cameraView);
+//						editorTakePhotoMenu.setVisibility(View.GONE);
+//
+//						cameraArea.removeAllViews();
+//						getCarusselSurface().bringToFront();
+//						getCarusselSurface().setVisiable(true);
 					}
 				});
 			}
@@ -229,13 +256,11 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			@Override
 			public void onClick(View v) 
 			{
-				cameraArea.removeAllViews();
-				editorTakePhotoMenu.setVisibility(View.GONE);
+				removeAdditionDislays();
 				if(callback != null)
 				{
 					callback.onReturn(null);
 				}
-				getCarusselSurface().bringToFront();
 			}
 		});
 		
@@ -244,9 +269,13 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			@Override
 			public void run() 
 			{
+				getCarusselSurface().setVisiable(false);
 				editorTakePhotoMenu.bringToFront();
  				menuArea.setVisibility(View.VISIBLE);
 				editorTakePhotoMenu.setVisibility(View.VISIBLE);
+
+				currentDisplayed.add(editorTakePhotoMenu);
+				currentDisplayed.add(menuArea);
 			}
 		});
 	}
@@ -255,15 +284,50 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 	protected void onResume() 
 	{
 		super.onResume();
-//		if(getCarusselSurface() != null)
-//		{
-//			getCarusselSurface().bringToFront();
-//		}
 	}
 
 	@Override
-	protected void mainServiceConnected() {
+	protected void mainServiceConnected()
+	{
 		// TODO Auto-generated method stub
-		
+	}
+
+	private void onBackAction()
+	{
+		if(currentDisplayed != null && currentDisplayed.size() > 0)
+		{
+			removeAdditionDislays();
+			//
+			return;
+		}
+		super.onBackPressed();
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		onBackAction();
+	}
+
+	private void removeAdditionDislays()
+	{
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				final RelativeLayout cameraArea = (RelativeLayout)(editorTakePhotoMenu.findViewById(R.id.editor_take_photo_camera_area));
+
+				for(View v:currentDisplayed)
+				{
+					v.setVisibility(View.INVISIBLE);
+				}
+
+				if(cameraArea.getChildCount() > 0) cameraArea.removeAllViews();
+
+				currentDisplayed.removeAllElements();
+				getCarusselSurface().setVisiable(true);
+			}
+		});
 	}
 }

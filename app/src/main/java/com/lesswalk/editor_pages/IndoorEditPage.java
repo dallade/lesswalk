@@ -12,10 +12,10 @@ import android.graphics.Color;
 
 public class IndoorEditPage extends CarusselPageInterface 
 {
-	private static final int STATE_HELP_INIT    = 0;
-	private static final int STATE_EDIT_PROCCES = 1;
+	private final int STATE_HELP_INIT    = 0;
+	private final int STATE_EDIT_PROCCES = 1;
 	
-	private static ImageObject3D INDOOR_ICON  = null;
+	private ImageObject3D INDOOR_ICON  = null;
 	
 	public IndoorEditPage(String title, Context context) 
 	{

@@ -100,4 +100,9 @@ public class CarusselSurface extends GLSurfaceView
     {
         renderer.setCarusselMainItem(item);
     }
+
+    public void setVisiable(boolean b)
+    {
+        if(renderer != null) renderer.setVisiable(b);
+    }
 }

@@ -11,31 +11,31 @@ import com.lesswalk.bases.BaseRenderer;
 import com.lesswalk.bases.RectObject3D;
 
 import android.content.Context;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
 public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurfaceView.Renderer
 {
-    private static final float SELF_ROTATION_SPEED          = 0.05f;
-    private static final float TOUCH_ROTATION_SPEED         = 0.4f;
-    //
-    private static final float HVA                          = 15.0f;
+	private static final float         SELF_ROTATION_SPEED  = 0.05f;
+	private static final float         TOUCH_ROTATION_SPEED = 0.4f;
+	private static final float         HVA                  = 15.0f;
+	private              boolean       isVisiable           = false;
+	private              GLSurfaceView parent               = null;
 
-    @Override
+	@Override
     public String getRendererName()
     {
         return "CarusselGlSurfaceRenderer";
     }
 
-    private Vector<CarusselPageInterface> container  = null;
-
-    private ICarusselMainItem carusselMainItem = null;
-
-    private float perspectiveMat[]    = null;
-    //
-    private boolean       touched           = false;
-    private Context       context           = null;
+	private Vector<CarusselPageInterface> container        = null;
+	private ICarusselMainItem             carusselMainItem = null;
+	private float                         perspectiveMat[] = null;
+	//
+	private boolean                       touched          = false;
+	private Context                       context          = null;
 	
 //    private GLSurfaceView parent            = null;
     private int WIDTH  = 0;
@@ -44,7 +44,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     public CarusselGlSurfaceRenderer(Context context, GLSurfaceView parent)
     {
         this.context = context;
-//        this.parent  = parent;
+        this.parent  = parent;
     }
 
     @Override
@@ -97,6 +97,12 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 	@Override
     public void onDrawFrame(GL10 gl10)
     {
+		if(!isVisiable)
+		{
+			carusselMainItem.clearScreen();
+			return;
+		}
+
         if(carusselMainItem != null && container == null)
         {
             container = new Vector<CarusselPageInterface>();
@@ -114,7 +120,13 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
         	drawCarrusselObj();
         }
     }
-	
+
+	public void setVisiable(boolean b)
+	{
+		isVisiable = b;
+		parent.requestRender();
+	}
+
 	private class AngleManager implements Comparator<CarusselPageInterface> 
 	{
 		float currentAngleOffset = 0.0f;

@@ -59,8 +59,22 @@ public class MainActivity extends BaseActivity
         
         searchFilter    = (SearchView) findViewById(R.id.contact_search_filter);
         signatureSlider = (ContactSignatureSlideLayout) findViewById(R.id.contact_act_signatures_slider);
-        
-        qrcodeButton	= (ImageButton) findViewById(R.id.contact_act_qrcode_bt);
+
+		signatureSlider.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
+		{
+			@Override
+			public void onSignatureClicked(String path)
+			{
+				Toast.makeText(MainActivity.this, "will open carussel path=" + path, Toast.LENGTH_SHORT).show();
+
+				if(path == null || path.length() <= 0 || path.equals("null"))
+				{
+					startActivity(new Intent(MainActivity.this, EditorActivity.class));
+				}
+			}
+		});
+
+		qrcodeButton	= (ImageButton) findViewById(R.id.contact_act_qrcode_bt);
         
         qrcodeButton.setOnClickListener(new OnClickListener()
 		{

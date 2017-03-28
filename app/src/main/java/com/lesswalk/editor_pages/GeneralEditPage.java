@@ -11,8 +11,8 @@ import android.graphics.Color;
 
 public class GeneralEditPage extends EditParkingBasePage 
 {
-	private static ImageObject3D GENERAL_ICON  = null;
-	private static ImageObject3D GENERAL_TITLE = null;
+	private ImageObject3D GENERAL_ICON  = null;
+	private ImageObject3D GENERAL_TITLE = null;
 	
 	public GeneralEditPage(String title, Context context) 
 	{

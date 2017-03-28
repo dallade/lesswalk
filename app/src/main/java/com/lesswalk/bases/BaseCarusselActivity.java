@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+// release 1.1
+
 public abstract class BaseCarusselActivity extends BaseActivity 
 {
 	private CarusselSurface carusselGlSurfaceBase = null;
@@ -35,6 +37,7 @@ public abstract class BaseCarusselActivity extends BaseActivity
     {
         carusselGlSurfaceBase = new CarusselSurface(this);
         carusselGlSurfaceBase.initiation();
+        carusselGlSurfaceBase.setVisiable(true);
 
         screen.addView(carusselGlSurfaceBase);
 
