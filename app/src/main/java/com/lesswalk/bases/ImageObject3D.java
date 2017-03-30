@@ -113,8 +113,48 @@ public class ImageObject3D extends RectObject3D
 			);
 		}
 	}
-	
-	public static void drawTextToRect(String fullText, float addressTextSize, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset) 
+
+
+	// TODO create one fixed function
+	public static void drawTextToRect(String fullText, float addressTextSize, float  addressTextStart, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset, float textOffsetStep)
+	{
+		String currentText      = "";
+		String words[]          = fullText.split(" ");
+		Rect   bounds           = new Rect();
+		//
+		pwork.setTextSize(addressTextSize);
+		pwork.setTextSkewX(0.0f);
+		//
+		for (int i = 0; i < words.length;)
+		{
+			int start_i   = i;
+			int end_i     = start_i;
+			do
+			{
+				currentText += words[end_i] + " ";
+				pwork.getTextBounds(currentText, 0, currentText.length(), bounds);
+				if(bounds.width() < work.getWidth() - addressTextStart*2.0f) end_i++;
+				else break;
+			}
+			while(end_i < words.length);
+
+			Log.d("elazarkin1", "currentText=" + currentText);
+
+			currentText   = "";
+			for(int j = start_i; j < end_i; j++)
+			{
+				currentText += words[j] + " ";
+			}
+
+			pwork.getTextBounds(currentText, 0, currentText.length(), bounds);
+			textOffset[0] += textOffsetStep;
+			cwork.drawText(currentText, addressTextStart, textOffset[0], pwork);
+
+			i = end_i;
+		}
+	}
+
+	public static void drawTextToRect(String fullText, float addressTextSize, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset)
 	{
 		String currentText      = "";
 		String words[]          = fullText.split(" ");

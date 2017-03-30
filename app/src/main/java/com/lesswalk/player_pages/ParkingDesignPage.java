@@ -38,6 +38,7 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 	protected RectObject3D         map_thumbnail_obj  = null;
 	protected RectObject3D         map_thumbnail_back = null;
 	private   File                 map_thumbnail      = null;
+	private   String               text_tip           = null;
 	private   File                 audio_path         = null;
 	private   AlertDialog          openWazeDialog     = null;
 	private   boolean              isAlive            = false;
@@ -56,6 +57,10 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 		else if(key.equals("audio"))
 		{
 			audio_path = new File(objectsDir, value);
+		}
+		else if(key.equals("tips"))
+		{
+			text_tip = value;
 		}
     }
 
@@ -268,10 +273,40 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 			
 			drawableArea.addChild(audioButton);
 		}
+
+		if
+		(
+			(textTipObj =createTextTip(drawableArea.aspect()*textTipsRect().height()/textTipsRect().width())) != null
+		)
+		{
+			textTipObj.initObject
+			(
+				drawableArea,
+				textTipsRect().centerX(),
+				textTipsRect().centerY(),
+				textTipsRect().width(),
+				drawableArea.aspect()*textTipsRect().height()/textTipsRect().width(),
+				USE_WEIGHT ? 1.0f:1.0f
+			);
+
+			drawableArea.addChild(textTipObj);
+		}
 		// TODO Auto-generated method stub
 	}
 
-	private RectObject3D createVideoButton(float aspect) 
+	private RectObject3D createTextTip(float aspect)
+	{
+		RectObject3D ret  = new RectObject3D("TextTip");
+		Bitmap       work = getTextTipImage((text_tip == null ? "No remarks" : text_tip), aspect);
+
+		ret.generateTextureID(work);
+
+		work.recycle();
+
+		return ret;
+	}
+
+	private RectObject3D createVideoButton(float aspect)
 	{
 		RectObject3D ans      = new ImageObject3D("VideoButton");
 		Bitmap       bit      = null;

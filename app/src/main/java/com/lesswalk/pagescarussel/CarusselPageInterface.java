@@ -216,6 +216,30 @@ public abstract class CarusselPageInterface extends RectObject3D
 		//
 		return work;
 	}
+
+	protected Bitmap getTextTipImage(String text_tip, float aspect)
+	{
+		Bitmap work       = ImageObject3D.createBitmap(aspect);
+		Canvas cwork      = new Canvas(work);
+		Paint  pwork      = new Paint();
+		int    lineCount  = 5;
+		float  lineSpaceH = work.getHeight() / lineCount;
+
+		pwork.setColor(Color.GRAY);
+		pwork.setStrokeWidth(3.0f);
+
+		for(int i = 0; i < lineCount; i++)
+		{
+			cwork.drawLine(0, lineSpaceH*(i+1)-1, work.getWidth(), lineSpaceH*(i+1)-2, pwork);
+		}
+
+		if(text_tip != null)
+		{
+			ImageObject3D.drawTextToRect(text_tip, lineSpaceH*4/5, 0.0f, work, cwork, pwork, new float[]{-lineSpaceH*0.1f}, lineSpaceH);
+		}
+
+		return work;
+	}
 	
 	protected Bitmap createMapAddresBitmap(float aspect, String additionText) 
 	{

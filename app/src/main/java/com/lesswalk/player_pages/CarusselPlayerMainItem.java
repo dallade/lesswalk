@@ -3,6 +3,7 @@ package com.lesswalk.player_pages;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Timer;
 import java.util.Vector;
 
 import com.lesswalk.pagescarussel.CarusselPageInterface;
@@ -19,14 +20,14 @@ public class CarusselPlayerMainItem extends ICarusselMainItem
 {
     private static final int MAX_PARKING_SIZE = 10;
     //
-    private static final String GENERAL            = "general";
-    private static final String PARKING            = "parkings";
-    private static final String IMAGE              = "image";
-    private static final String VIDEO              = "video";
-    private static final String MAPADDR            = "map_address";
-    private static final String STRADDR            = "street_address";
-    private static final String INDOOR             = "indoor";
-    private static final String INDOOR_ADDR        = "indoor_address";
+    private static final String GENERAL     = "general";
+    private static final String PARKING     = "parkings";
+    private static final String IMAGE       = "image";
+    private static final String VIDEO       = "video";
+    private static final String MAPADDR     = "map_address";
+    private static final String STRADDR     = "street_address";
+    private static final String INDOOR      = "indoor";
+    private static final String INDOOR_ADDR = "indoor_address";
 
     private static final String GENERAL_JSON_STATE[]            = {GENERAL};
     private static final String GENERAL_IMAGE_JSON_STATE[]      = {GENERAL, IMAGE};

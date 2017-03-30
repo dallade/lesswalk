@@ -8,29 +8,31 @@ import android.graphics.RectF;
 
 public abstract class ParkingPageParametersBase extends CarusselPageInterface 
 {
-	private RectF titleRect                  = null;
-	private RectF addressRect                = null;
-	private RectF youShouldNotRect           = null;
-	private RectF tipsRect                   = null;
-	
+	private RectF titleRect        = null;
+	private RectF addressRect      = null;
+	private RectF youShouldNotRect = null;
+	private RectF tipsRect         = null;
+
 	// TODO move and recalculate this into addressRect!
-	private RectF mapAddrRect                = null;
-	private RectF goButtonRect               = null;
-	private RectF mapThumbnailRect           = null;
-	private RectF arrivalTimeRect            = null;
+	private RectF mapAddrRect      = null;
+	private RectF goButtonRect     = null;
+	private RectF mapThumbnailRect = null;
+	private RectF arrivalTimeRect  = null;
 	// end todo
 	
 	// TODO remove it and add info into tips area right way
-	private RectF infoHelpViews[]            = null;
+	private RectF textTipsRect    = null;
+	private RectF infoHelpViews[] = null;
 	// end todo
 
 	
 	
 	// TODO protected2private
-	protected RectObject3D  streetViewImage  = null;
-	protected RectObject3D  street_view_back = null;
-	protected RectObject3D  audioButton      = null;
-	protected RectObject3D  videoButton      = null;
+	protected RectObject3D streetViewImage  = null;
+	protected RectObject3D street_view_back = null;
+	protected RectObject3D audioButton      = null;
+	protected RectObject3D videoButton      = null;
+	protected RectObject3D textTipObj       = null;
 	// end todo
 
 	private RectObject3D  title              = null;
@@ -133,6 +135,14 @@ public abstract class ParkingPageParametersBase extends CarusselPageInterface
 				youShouldNotRect.top - noticeIconHeight
 			)
     	};
+
+		textTipsRect = new RectF
+		(
+			-0.5f,
+			youShouldNotRect.top - 2.0f*noticeIconHeight,
+			infoHelpViews[0].left - 0.05f,
+			youShouldNotRect.top
+		);
 	}
 	
 	protected ImageObject3D createTitleObj(String text, float aspect) 
@@ -188,13 +198,14 @@ public abstract class ParkingPageParametersBase extends CarusselPageInterface
 		}
 		return tipsArea;
 	}
-	
+
 	// TODO move it to player ParkingDesignPage
 	protected RectF mapAddrRect() {return mapAddrRect;}
 	protected RectF goButtonRect() {return goButtonRect;}
 	protected RectF mapThumbnailRect() {return mapThumbnailRect;}
 	protected RectF arrivalTimeRect() {return arrivalTimeRect;}
 	protected RectF infoHelpViews(int index) {return infoHelpViews[index];}
+	protected RectF textTipsRect() {return textTipsRect;}
 	// end todo
 	
 	protected abstract RectObject3D createTitle(float aspect);

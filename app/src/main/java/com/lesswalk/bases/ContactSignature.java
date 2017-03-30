@@ -29,7 +29,7 @@ public class ContactSignature
 
 	public static SignatureType StringToType(String s)
 	{
-		Log.d("elazarkin5", "ContactSignature.StringToType(" + s + ")");
+		//Log.d("elazarkin5", "ContactSignature.StringToType(" + s + ")");
 
 		if(s == null || s.length() < 0) return SignatureType.NO_TYPE;
 		else if(s.equals("home")) return SignatureType.HOME;
