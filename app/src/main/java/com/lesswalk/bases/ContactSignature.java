@@ -1,6 +1,8 @@
 package com.lesswalk.bases;
 
-public class ContactSignature 
+import android.util.Log;
+
+public class ContactSignature
 {
 	public static enum SignatureType
 	{
@@ -27,15 +29,17 @@ public class ContactSignature
 
 	public static SignatureType StringToType(String s)
 	{
+		Log.d("elazarkin5", "ContactSignature.StringToType(" + s + ")");
+
 		if(s == null || s.length() < 0) return SignatureType.NO_TYPE;
 		else if(s.equals("home")) return SignatureType.HOME;
 		else if(s.equals("work")) return SignatureType.WORK;
 		else if(s.equals("family")) return SignatureType.FAMILY;
-		else if(s.equals("social")) return SignatureType.SOCIAL;
-		else if(s.equals("shoping")) return SignatureType.SHOPING;
+		else if(s.equals("social") || s.equals("friends")) return SignatureType.SOCIAL;
+		else if(s.equals("shoping") || s.equals("shopping")) return SignatureType.SHOPING;
 		else if(s.equals("medical")) return SignatureType.MEDICAL;
 		else if(s.equals("food")) return SignatureType.FOOD;
-		else if(s.equals("accommodation")) return SignatureType.ACCOMMODATION;
+		else if(s.equals("accommodation") || s.equals("accomodation")) return SignatureType.ACCOMMODATION;
 		else if(s.equals("coffe")) return SignatureType.COFFE;
 		else if(s.equals("cinema")) return SignatureType.CINEMA;
 		else if(s.equals("theatre")) return SignatureType.THEATRE;

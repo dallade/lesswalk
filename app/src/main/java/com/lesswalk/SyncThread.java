@@ -418,7 +418,7 @@ public class SyncThread
         {
             String ret = "";
 
-            Collections.sort(signaturesList);
+            //Collections.sort(signaturesList);
 
             for (int i = 0; i < signaturesList.size(); i++)
             {
