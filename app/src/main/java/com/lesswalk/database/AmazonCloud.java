@@ -35,16 +35,18 @@ public class AmazonCloud extends Cloud
 {
 
     protected static final String TAG                              = "AmazonCloud";
-    protected static final String CLOUD_SCHEME                     = "http";
+    protected static final String CLOUD_SCHEME                     = "http";//"https";//http
     protected static final String CLOUD_HOST                       = "52.70.155.39";
-    protected static final int    CLOUD_PORT                       = 30082;
+    protected static final int    CLOUD_PORT                       = 30082;//443;//30082
     protected static final String CLOUD_MODULE_signature           = "signature";
     protected static final String CLOUD_FUNCTION_findByUser        = "findByOwner";
     protected static final String GET_REQ_SIGNATURE_BY_OWNER       = "%s://%s:%d/cmd/%s/%s/%s";
+    protected static final String PUT_REQ_SIGNATURE_BY_OWNER       = "%s://%s:%d/cmd/%s/%s/%s";
     protected static final String CLOUD_MODULE_user                = "user";
     protected static final String CLOUD_FUNCTION_findByPhoneNumber = "findByPhoneNumber";
     protected static final String CLOUD_FUNCTION_sendVerSms        = "request-confirmation-sms";
     protected static final String GET_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s?phone_number=%s&country_code=%s";
+    protected static final String PUT_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s";//?phone_number=%s&country_code=%s
     protected static final String PUT_REQ_USER_VER_SMS             = "%s://%s:%d/cmd/%s/%s";
     protected static final String PUT_VERSMS_field_countryCode     = "country-code";
     protected static final String PUT_VERSMS_field_phone           = "phone-number";
@@ -54,14 +56,18 @@ public class AmazonCloud extends Cloud
     private static final   String SIGNATURES_EXTRACT_PATH          = "sig_extracted";
     private static final   String SIGNATURES_PATH                  = "signatures";
     private static final   String SIGNATURE_EXTENSION              = ".zip";
-    protected Context            mContext;
-    protected CognitoSyncManager syncClient;
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    protected Context               mContext;
+    protected CognitoSyncManager    syncClient;
+    protected OkHttpClient          httpClient = null;
 
     public AmazonCloud(Context context)
     {
         super();
         mContext = context;
         syncClient = AWS.getSyncClient(mContext);
+        httpClient = new OkHttpClient();
     }
 
     @Override
@@ -115,10 +121,7 @@ public class AmazonCloud extends Cloud
         });
     }
 
-
-    OkHttpClient httpClient = new OkHttpClient();
-
-    String reqHttp(String url)
+    String reqHttpGet(String url)
     {
         Request request = new Request.Builder()
                 .url(url)
@@ -144,16 +147,23 @@ public class AmazonCloud extends Cloud
         String url = String.format
         (
             Locale.getDefault(),
-            GET_REQ_USER_BY_PHONE,
+                PUT_REQ_USER_BY_PHONE,
             CLOUD_SCHEME,
             CLOUD_HOST,
             CLOUD_PORT,
             CLOUD_MODULE_user,
-            CLOUD_FUNCTION_findByPhoneNumber,
-            phone,
-            countryCode
+            CLOUD_FUNCTION_findByPhoneNumber
         );
-        String     responseBody = reqHttp(url);
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("phone_number", phone);
+            jsonParams.put("country_code", countryCode);
+        } catch (JSONException e) {
+            Log.e(TAG, "Couldn't build the params JSON for the post request. e.msg="+e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+        String     responseBody = reqHttpPut(url, jsonParams.toString());
         JSONArray  jsonArr      = null;
         JSONObject json         = null;
         try
@@ -188,22 +198,6 @@ public class AmazonCloud extends Cloud
 
 //    /updateAllReferences
 
-    private JSONArray response(String url)
-    {
-        String    responseBody = reqHttp(url);
-        JSONArray jsonArray    = null;
-
-        try
-        {
-            jsonArray = new JSONArray(responseBody);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        return  jsonArray;
-    }
 
 //    public JSONArray updateAllReferences()
 //    {
@@ -235,8 +229,18 @@ public class AmazonCloud extends Cloud
                 CLOUD_FUNCTION_findByUser,
                 uuid
         );
-
-        return response(url);
+        JSONArray jsonArray;
+        try
+        {
+            String jsonArrStr = reqHttpGet(url);
+            jsonArray = new JSONArray(jsonArrStr);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        return jsonArray;
     }
 
     @Override
@@ -336,9 +340,6 @@ public class AmazonCloud extends Cloud
         return ZipManager.unzip(mContext.getApplicationContext(), zipPath, unzippedDir.getPath(), file);
     }
 
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
-
     String reqHttpPut(String url, String json)
     {
         RequestBody body = RequestBody.create(JSON, json);
@@ -365,7 +366,6 @@ public class AmazonCloud extends Cloud
     @Override
     public String sendVerificationSms(String countryCode, String phone, String verificationCode)
     {
-
         String url = String.format
                 (
                         Locale.getDefault(),
@@ -389,7 +389,7 @@ public class AmazonCloud extends Cloud
             json = jsonArr.getJSONObject(0);
             if (null == json) return "";
         }
-        catch (JSONException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return "";
