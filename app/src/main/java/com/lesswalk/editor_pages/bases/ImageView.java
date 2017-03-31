@@ -1,7 +1,5 @@
 package com.lesswalk.editor_pages.bases;
 
-import com.lesswalk.views.MyCameraView.CameraViewBitmapCallback;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +9,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.view.View;
+
+import com.lesswalk.views.MyCameraView.CameraViewBitmapCallback;
 
 public class ImageView extends View 
 {

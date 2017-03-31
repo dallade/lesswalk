@@ -1,13 +1,12 @@
 package com.lesswalk.contact_page.navigation_menu;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
-import com.lesswalk.bases.BaseInterRendererLayout;
-import com.lesswalk.bases.IContactManager;
-
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+
+import com.lesswalk.bases.BaseInterRendererLayout;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created by elazarkin on 1/22/16.

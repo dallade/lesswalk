@@ -1,8 +1,5 @@
 package com.lesswalk.views;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +12,9 @@ import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class MyCameraView extends SurfaceView implements SurfaceHolder.Callback 
 {

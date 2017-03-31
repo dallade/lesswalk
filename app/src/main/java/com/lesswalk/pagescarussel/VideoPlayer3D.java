@@ -1,7 +1,5 @@
 package com.lesswalk.pagescarussel;
 
-import com.lesswalk.bases.RectObject3D;
-
 import android.graphics.SurfaceTexture;
 import android.graphics.SurfaceTexture.OnFrameAvailableListener;
 import android.media.MediaPlayer;
@@ -10,6 +8,8 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.opengl.GLES20;
 import android.util.Log;
 import android.view.Surface;
+
+import com.lesswalk.bases.RectObject3D;
 
 public class VideoPlayer3D extends RectObject3D 
 {

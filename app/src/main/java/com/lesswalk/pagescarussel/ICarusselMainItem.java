@@ -1,8 +1,8 @@
 package com.lesswalk.pagescarussel;
 
-import java.util.Vector;
-
 import com.lesswalk.bases.RectObject3D;
+
+import java.util.Vector;
 
 public abstract class ICarusselMainItem 
 {

@@ -1,18 +1,5 @@
 package com.lesswalk.player_pages;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Date;
-
-import com.lesswalk.R;
-import com.lesswalk.bases.FlickerImageObject3D;
-import com.lesswalk.bases.ImageObject3D;
-import com.lesswalk.bases.ParkingPageParametersBase;
-import com.lesswalk.bases.RectObject3D;
-import com.lesswalk.pagescarussel.DriveTakeText3D;
-import com.lesswalk.pagescarussel.VideoPlayer3D;
-
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -28,6 +15,19 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.HandlerThread;
 import android.util.Log;
+
+import com.lesswalk.R;
+import com.lesswalk.bases.FlickerImageObject3D;
+import com.lesswalk.bases.ImageObject3D;
+import com.lesswalk.bases.ParkingPageParametersBase;
+import com.lesswalk.bases.RectObject3D;
+import com.lesswalk.pagescarussel.DriveTakeText3D;
+import com.lesswalk.pagescarussel.VideoPlayer3D;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Date;
 
 public abstract class ParkingDesignPage extends ParkingPageParametersBase
 {

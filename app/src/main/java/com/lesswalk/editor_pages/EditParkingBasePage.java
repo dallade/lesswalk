@@ -1,18 +1,5 @@
 package com.lesswalk.editor_pages;
 
-import com.lesswalk.bases.ImageObject3D;
-import com.lesswalk.bases.ParkingPageParametersBase;
-import com.lesswalk.bases.RectObject3D;
-import com.lesswalk.editor_pages.bases.EditAddressMapThumnail;
-import com.lesswalk.editor_pages.bases.EditObjects2dManager;
-import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectAddressCallback;
-import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCallback;
-import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectTextTipCallback;
-import com.lesswalk.editor_pages.objects3D.AddressObject3D;
-import com.lesswalk.editor_pages.objects3D.EditorImageTipObject3D;
-import com.lesswalk.editor_pages.objects3D.EditorTextTipObject3D;
-import com.lesswalk.editor_pages.objects3D.EditorVideoTipObject3D;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,6 +8,19 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.widget.Toast;
+
+import com.lesswalk.bases.ImageObject3D;
+import com.lesswalk.bases.ParkingPageParametersBase;
+import com.lesswalk.bases.RectObject3D;
+import com.lesswalk.editor_pages.bases.EditAddressMapThumnail;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectAddressCallback;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCallback;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectTextTipCallback;
+import com.lesswalk.editor_pages.bases.EditObjects2dManager;
+import com.lesswalk.editor_pages.objects3D.AddressObject3D;
+import com.lesswalk.editor_pages.objects3D.EditorImageTipObject3D;
+import com.lesswalk.editor_pages.objects3D.EditorTextTipObject3D;
+import com.lesswalk.editor_pages.objects3D.EditorVideoTipObject3D;
 
 public abstract class EditParkingBasePage extends ParkingPageParametersBase
 {

@@ -1,18 +1,5 @@
 package com.lesswalk;
 
-import java.util.Vector;
-
-import com.lesswalk.bases.BaseCarusselActivity;
-import com.lesswalk.editor_pages.CarusselEditorMainItem;
-import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectAddressCallback;
-import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCallback;
-import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectTextTipCallback;
-import com.lesswalk.editor_pages.bases.EditObjects2dManager;
-import com.lesswalk.editor_pages.bases.ImageView;
-import com.lesswalk.pagescarussel.CarusselSurface;
-import com.lesswalk.pagescarussel.ICarusselMainItem;
-import com.lesswalk.views.MyCameraView;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,6 +11,18 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
+
+import com.lesswalk.bases.BaseCarusselActivity;
+import com.lesswalk.editor_pages.CarusselEditorMainItem;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectAddressCallback;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCallback;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectTextTipCallback;
+import com.lesswalk.editor_pages.bases.EditObjects2dManager;
+import com.lesswalk.editor_pages.bases.ImageView;
+import com.lesswalk.pagescarussel.ICarusselMainItem;
+import com.lesswalk.views.MyCameraView;
+
+import java.util.Vector;
 
 public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager
 {

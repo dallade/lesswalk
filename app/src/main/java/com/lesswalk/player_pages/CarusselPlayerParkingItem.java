@@ -1,17 +1,17 @@
 package com.lesswalk.player_pages;
 
-import java.io.File;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.util.Log;
 
 import com.lesswalk.R;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
 import com.lesswalk.pagescarussel.DriveTakeText3D;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.util.Log;
+import java.io.File;
 
 /**
  * Created by root on 3/22/16.

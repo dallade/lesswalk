@@ -1,8 +1,8 @@
 package com.lesswalk.contact_page.navigation_menu;
 
-import java.io.InputStream;
-
 import android.util.Log;
+
+import java.io.InputStream;
 
 /**
  * Created by root on 2/28/16.

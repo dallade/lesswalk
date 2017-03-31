@@ -1,7 +1,5 @@
 package com.lesswalk.pagescarussel;
 
-import com.lesswalk.bases.RectObject3D;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -10,7 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
-import android.util.Log;
+
+import com.lesswalk.bases.RectObject3D;
 
 public class DriveTakeText3D extends RectObject3D 
 {

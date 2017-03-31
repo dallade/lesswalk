@@ -1,11 +1,5 @@
 package com.lesswalk.contact_page.navigation_menu;
 
-import java.util.Vector;
-
-import com.lesswalk.R;
-import com.lesswalk.bases.ContactSignature;
-import com.lesswalk.bases.ContactSignature.SignatureType;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -21,7 +15,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+
+import com.lesswalk.R;
+import com.lesswalk.bases.ContactSignature;
+import com.lesswalk.bases.ContactSignature.SignatureType;
+
+import java.util.Vector;
 
 public class ContactSignatureSlideLayout extends View 
 {

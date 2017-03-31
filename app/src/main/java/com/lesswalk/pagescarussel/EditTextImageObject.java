@@ -1,12 +1,11 @@
 package com.lesswalk.pagescarussel;
 
-import com.lesswalk.bases.ImageObject3D;
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Bitmap.Config;
+
+import com.lesswalk.bases.ImageObject3D;
 
 public class EditTextImageObject extends ImageObject3D 
 {

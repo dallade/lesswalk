@@ -1,7 +1,5 @@
 package com.lesswalk;
 
-import java.util.Vector;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +8,8 @@ import android.widget.TextView;
 import com.lesswalk.bases.BaseActivity;
 import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
+
+import java.util.Vector;
 
 public class ContactProfile extends BaseActivity 
 {

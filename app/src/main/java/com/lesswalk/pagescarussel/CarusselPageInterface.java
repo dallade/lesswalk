@@ -1,13 +1,7 @@
 package com.lesswalk.pagescarussel;
 
-import java.io.File;
-
-import com.lesswalk.bases.ImageObject3D;
-import com.lesswalk.bases.RectObject3D;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -19,6 +13,11 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
+
+import com.lesswalk.bases.ImageObject3D;
+import com.lesswalk.bases.RectObject3D;
+
+import java.io.File;
 
 /**
  * Created by root on 3/12/16.

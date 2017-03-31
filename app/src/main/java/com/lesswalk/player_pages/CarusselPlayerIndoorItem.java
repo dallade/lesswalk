@@ -1,16 +1,16 @@
 package com.lesswalk.player_pages;
 
-import java.io.File;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 
 import com.lesswalk.R;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
 import com.lesswalk.pagescarussel.CarusselPageInterface;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import java.io.File;
 
 public class CarusselPlayerIndoorItem extends CarusselPageInterface 
 {

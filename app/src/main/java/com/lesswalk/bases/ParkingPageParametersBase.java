@@ -1,10 +1,10 @@
 package com.lesswalk.bases;
 
-import com.lesswalk.pagescarussel.CarusselPageInterface;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
+
+import com.lesswalk.pagescarussel.CarusselPageInterface;
 
 public abstract class ParkingPageParametersBase extends CarusselPageInterface 
 {

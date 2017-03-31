@@ -16,9 +16,6 @@
 
 package com.google.zxing.android.camera;
 
-import com.google.zxing.android.camera.open.CameraFacing;
-import com.google.zxing.android.camera.open.OpenCamera;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -28,6 +25,9 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
+
+import com.google.zxing.android.camera.open.CameraFacing;
+import com.google.zxing.android.camera.open.OpenCamera;
 
 /**
  * A class which deals with reading, parsing, and setting the camera parameters

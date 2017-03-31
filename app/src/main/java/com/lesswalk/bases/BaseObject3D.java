@@ -1,11 +1,11 @@
 package com.lesswalk.bases;
 
+import android.content.res.Resources;
+import android.opengl.GLES20;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import android.content.res.Resources;
-import android.opengl.GLES20;
 
 public class BaseObject3D 
 {

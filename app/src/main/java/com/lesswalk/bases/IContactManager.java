@@ -1,9 +1,8 @@
 package com.lesswalk.bases;
 
-import java.util.List;
-import java.util.Vector;
-
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
+
+import java.util.Vector;
 
 public interface IContactManager 
 {

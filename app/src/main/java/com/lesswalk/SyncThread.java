@@ -18,7 +18,6 @@ import com.lesswalk.utils.PhoneUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Vector;
 
 public class SyncThread

@@ -1,14 +1,14 @@
 package com.lesswalk.bases;
 
-import com.lesswalk.R;
-import com.lesswalk.pagescarussel.CarusselSurface;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.lesswalk.R;
+import com.lesswalk.pagescarussel.CarusselSurface;
 
 // release 1.1
 

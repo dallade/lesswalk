@@ -1,8 +1,8 @@
 package com.lesswalk.pagescarussel;
 
-import com.lesswalk.bases.RectObject3D;
-
 import android.util.Log;
+
+import com.lesswalk.bases.RectObject3D;
 
 public class PageDrawable3D extends RectObject3D 
 {

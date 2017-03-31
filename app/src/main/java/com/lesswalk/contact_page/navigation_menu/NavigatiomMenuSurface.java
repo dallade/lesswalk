@@ -1,14 +1,14 @@
 package com.lesswalk.contact_page.navigation_menu;
 
-import com.lesswalk.bases.BaseInterRendererLayout;
-import com.lesswalk.bases.IContactManager;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.MotionEvent;
+
+import com.lesswalk.bases.BaseInterRendererLayout;
+import com.lesswalk.bases.IContactManager;
 
 /**
  * Created by elazarkin on 2/21/16.

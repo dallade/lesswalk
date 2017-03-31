@@ -1,20 +1,19 @@
 package com.lesswalk.pagescarussel;
 
+import android.content.Context;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
+
+import com.lesswalk.bases.BaseRenderer;
+import com.lesswalk.bases.RectObject3D;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import com.lesswalk.bases.BaseRenderer;
-import com.lesswalk.bases.RectObject3D;
-
-import android.content.Context;
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
-import android.opengl.Matrix;
-import android.util.Log;
 
 public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurfaceView.Renderer
 {

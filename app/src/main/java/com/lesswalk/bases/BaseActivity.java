@@ -1,7 +1,5 @@
 package com.lesswalk.bases;
 
-import com.lesswalk.MainService;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -12,6 +10,8 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.lesswalk.MainService;
 
 public abstract class BaseActivity extends Activity
 {

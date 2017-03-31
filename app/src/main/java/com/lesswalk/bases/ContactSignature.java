@@ -1,7 +1,5 @@
 package com.lesswalk.bases;
 
-import android.util.Log;
-
 public class ContactSignature
 {
 	public static enum SignatureType

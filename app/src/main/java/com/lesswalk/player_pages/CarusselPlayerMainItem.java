@@ -1,17 +1,16 @@
 package com.lesswalk.player_pages;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.Timer;
-import java.util.Vector;
+import android.content.Context;
+import android.util.JsonReader;
+import android.util.Log;
 
 import com.lesswalk.pagescarussel.CarusselPageInterface;
 import com.lesswalk.pagescarussel.ICarusselMainItem;
 
-import android.content.Context;
-import android.util.JsonReader;
-import android.util.Log;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.Vector;
 
 /**
  * Created by root on 4/4/16.

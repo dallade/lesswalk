@@ -1,14 +1,14 @@
 package com.lesswalk.contact_page.navigation_menu;
 
-import java.util.Vector;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.opengl.GLES20;
 
 import com.lesswalk.R;
 import com.lesswalk.bases.BaseInterRendererLayout;
 import com.lesswalk.bases.RectObject3D;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.opengl.GLES20;
+import java.util.Vector;
 
 /**
  * Created by root on 1/28/16.

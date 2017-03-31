@@ -1,15 +1,15 @@
 package com.lesswalk.editor_pages.objects3D;
 
-import com.lesswalk.R;
-import com.lesswalk.bases.ImageObject3D;
-import com.lesswalk.bases.RectObject3D;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+
+import com.lesswalk.R;
+import com.lesswalk.bases.ImageObject3D;
+import com.lesswalk.bases.RectObject3D;
 
 public class EditorVideoTipObject3D extends RectObject3D 
 {

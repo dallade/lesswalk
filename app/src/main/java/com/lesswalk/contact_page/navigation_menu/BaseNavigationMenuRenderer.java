@@ -1,8 +1,8 @@
 package com.lesswalk.contact_page.navigation_menu;
 
-import java.util.Vector;
-
 import com.lesswalk.bases.BaseInterRendererLayout;
+
+import java.util.Vector;
 
 /**
  * Created by elazarkin on 1/22/16.

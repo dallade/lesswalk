@@ -16,9 +16,6 @@
 
 package com.google.zxing.android;
 
-import com.google.zxing.android.camera.CameraManager;
-import com.google.zxing.android.camera.FrontLightMode;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -26,6 +23,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.preference.PreferenceManager;
+
+import com.google.zxing.android.camera.CameraManager;
+import com.google.zxing.android.camera.FrontLightMode;
 
 /**
  * Detects ambient light and switches on the front light when very dark, and off
