@@ -527,10 +527,10 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 	}
 	
 	@Override
-	protected String getYouShouldNoticeTitle() 
+	protected String getYouShouldNoticeTitle()
 	{
 		return "You Should Notice";
 	}
-	
+
 	protected abstract RectObject3D getArrivalTimeObj(float aspect);
 }

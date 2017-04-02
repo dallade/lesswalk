@@ -10,12 +10,15 @@ import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
 import com.lesswalk.pagescarussel.CarusselPageInterface;
 
+// TODO create IndoorBasePage!
+
 public class IndoorEditPage extends CarusselPageInterface 
 {
 	private final int STATE_HELP_INIT    = 0;
 	private final int STATE_EDIT_PROCCES = 1;
 	
 	private ImageObject3D INDOOR_ICON  = null;
+	private ImageObject3D INDOOR_TITLE = null;
 	
 	public IndoorEditPage(String title, Context context) 
 	{
@@ -51,6 +54,23 @@ public class IndoorEditPage extends CarusselPageInterface
 	protected void addChilds(RectObject3D drawableArea) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected RectObject3D createTitle(float aspect)
+	{
+		if(INDOOR_TITLE == null)
+		{
+			INDOOR_TITLE = createTitleObj(getPageTitle(), aspect);
+		}
+
+		return INDOOR_TITLE;
+	}
+
+	@Override
+	protected String getYouShouldNoticeTitle()
+	{
+		return "You Should Notice";
 	}
 
 }

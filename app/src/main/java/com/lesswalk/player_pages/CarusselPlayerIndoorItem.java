@@ -17,6 +17,7 @@ public class CarusselPlayerIndoorItem extends CarusselPageInterface
 	private static final String  INDOOR_NAME  = "indoor";
 	
 	private ImageObject3D INDOOR_ICON  = null;
+	private ImageObject3D INDOOR_TITLE = null;
 	
 	
 	public CarusselPlayerIndoorItem(Context context) 
@@ -56,6 +57,23 @@ public class CarusselPlayerIndoorItem extends CarusselPageInterface
 	public void initIndoorItem(File objectsDir, String key, String value) 
 	{
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected RectObject3D createTitle(float aspect)
+	{
+		if(INDOOR_TITLE == null)
+		{
+			INDOOR_TITLE = createTitleObj(getPageTitle(), aspect);
+		}
+
+		return INDOOR_TITLE;
+	}
+
+	@Override
+	protected String getYouShouldNoticeTitle()
+	{
+		return "You Should Notice";
 	}
 
 }

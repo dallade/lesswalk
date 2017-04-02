@@ -129,7 +129,7 @@ public class ImageObject3D extends RectObject3D
 		{
 			int start_i   = i;
 			int end_i     = start_i;
-			
+
 			currentText = "";
 			do
 			{

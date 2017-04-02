@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -24,27 +25,31 @@ import java.io.File;
  */
 public abstract class CarusselPageInterface extends RectObject3D
 {
-	protected static final boolean USE_WEIGHT = true;
-	
-	private static final float   PAGE_Y_START    = 0.06f;
-	private static final float   ARC_RADIUS      = PAGE_Y_START*1.0f;
-	
-    private static final float   FRAME_WEIGHT    = USE_WEIGHT ? 0.9f:1.0f;
-    private static final float   FRAME_ASPECT    = 1.6f;
-    private static final float   FRAME_W_RADIUS  = 0.45f;
-    private static final int     FRAME_PIXEL_W   = 1024;
-    
-    private static final float   FRAME_X0        = 0.0f;
-    private static final float   FRAME_Y0        =-0.9f*FRAME_ASPECT+FRAME_W_RADIUS*FRAME_ASPECT;
-    
-    private static final float   VIEW_W_WEIGHT   = 0.5f;
-    private static final float   VIEW_H_WEIGHT   = 1.0f;
-    
-    private static final float   STEP_ROTATION   = 4.0f;
-    
-    private static MediaPlayer   mediaPlayer     = null;
-    
-    protected class ImageItem
+	protected static final boolean      USE_WEIGHT     = true;
+	private static final   float        PAGE_Y_START   = 0.06f;
+	private static final   float        ARC_RADIUS     = PAGE_Y_START * 1.0f;
+	private static final   float        FRAME_WEIGHT   = USE_WEIGHT ? 0.9f : 1.0f;
+	private static final   float        FRAME_ASPECT   = 1.6f;
+	private static final   float        FRAME_W_RADIUS = 0.45f;
+	private static final   int          FRAME_PIXEL_W  = 1024;
+	private static final   float        FRAME_X0       = 0.0f;
+	private static final   float        FRAME_Y0       = -0.9f * FRAME_ASPECT + FRAME_W_RADIUS * FRAME_ASPECT;
+	private static final   float        VIEW_W_WEIGHT  = 0.5f;
+	private static final   float        VIEW_H_WEIGHT  = 1.0f;
+	private static final   float        STEP_ROTATION  = 4.0f;
+	private static         MediaPlayer  mediaPlayer    = null;
+
+	private RectF titleRect           = null;
+	private RectF addressRect         = null;
+	private RectF youShouldNoticeRect = null;
+	private RectF tipsRect            = null;
+
+	private RectObject3D titleObj                = null;
+	private RectObject3D addressRectArea         = null;
+	private RectObject3D youShouldNoticeTitleObj = null;
+	private RectObject3D tipsArea                = null;
+
+	protected class ImageItem
     {
         String imagePath = null;
         String direction = "0";
@@ -93,13 +98,35 @@ public abstract class CarusselPageInterface extends RectObject3D
     public CarusselPageInterface(String title, Context context)
     {
     	super(title + "_page");
-    	//
+		//
         this.title   = title + "";
         this.context = context;
         initObject(null, FRAME_X0, FRAME_Y0, page_width(), page_aspect(), FRAME_WEIGHT);
+
+		initDefaultLayoutParams();
     }
 
-    //
+	private void initDefaultLayoutParams()
+	{
+		float title_start         = 0.5f;
+		float title_h             = 0.07f;
+		float address_start       = title_start - title_h;
+		float address_h           = 0.6f;
+		float youShoudNoticeTitleStart = address_start - address_h;
+		float youShoudNoticeTitle_h    = title_h;
+		float tips_start          = 0.0f;
+		float tips_h              = 0.0f;
+
+		titleRect           = new RectF(-0.5f, (title_start- title_h), 0.5f, title_start);
+		addressRect         = new RectF(-0.5f, address_start - address_h, 0.5f, address_start);
+		youShouldNoticeRect = new RectF(-0.5f, youShoudNoticeTitleStart - youShoudNoticeTitle_h, 0.5f, youShoudNoticeTitleStart);
+
+		tips_start          = youShoudNoticeTitleStart - youShoudNoticeTitleStart;
+		tips_h              = tips_start - (-0.5f);
+		tipsRect            = new RectF(-0.5f, tips_start - tips_h, 0.5f, tips_start);
+	}
+
+	//
     public boolean isInited() {return isInited;}
     //
 	public void setIndex(int index) {this.index = index;}
@@ -517,4 +544,102 @@ public abstract class CarusselPageInterface extends RectObject3D
 	{
 		GLES20.glUniformMatrix4fv(getUnifHandler(HANDLER_UNIF_MV_MAT_INDEX), 1, false, modelView, 0);
 	}
+
+	protected RectObject3D getTitleObj(RectObject3D drawableArea)
+	{
+		if(titleObj == null)
+		{
+			titleObj = createTitle(drawableArea.aspect()*titleRect.height()/titleRect.width());
+			titleObj.initObject
+			(
+					drawableArea,
+					titleRect.centerX(),
+					titleRect.centerY(),
+					titleRect.width(),
+					drawableArea.aspect()*titleRect.height()/titleRect.width(),
+					USE_WEIGHT ? 1.0f:1.0f
+			);
+		}
+
+		return titleObj;
+	}
+
+	protected RectObject3D getAddressRectArea(RectObject3D drawableArea)
+	{
+		if(addressRectArea == null)
+		{
+			addressRectArea = new RectObject3D("addressRectArea");
+
+			addressRectArea.initObject
+					(
+							drawableArea,
+							addressRect.centerX(),
+							addressRect.centerY(),
+							addressRect.width(),
+							drawableArea.aspect()*addressRect.height()/addressRect.width(),
+							USE_WEIGHT ? 1.0f:1.0f
+					);
+
+			drawableArea.addChild(addressRectArea);
+		}
+		return addressRectArea;
+	}
+
+	protected RectObject3D getYouShouldNoticeTitleObj(RectObject3D drawableArea)
+	{
+		if(youShouldNoticeTitleObj == null)
+		{
+			youShouldNoticeTitleObj = createTitleObj(getYouShouldNoticeTitle(), this.drawableArea.aspect()* youShouldNoticeRect.height()/ youShouldNoticeRect.width());
+		}
+		youShouldNoticeTitleObj.initObject
+		(
+				this.drawableArea,
+				youShouldNoticeRect.centerX(),
+				youShouldNoticeRect.centerY(),
+				youShouldNoticeRect.width(),
+				this.drawableArea.aspect()* youShouldNoticeRect.height()/ youShouldNoticeRect.width(),
+				USE_WEIGHT ? 1.0f:1.0f
+		);
+
+		return youShouldNoticeTitleObj;
+	}
+
+	protected RectObject3D getTipsArea(RectObject3D drawableArea)
+	{
+		if(tipsArea == null)
+		{
+			tipsArea = new RectObject3D("tipsArea");
+		}
+		tipsArea.initObject
+		(
+				drawableArea,
+				tipsRect.centerX(),
+				tipsRect.centerY(),
+				tipsRect.width(),
+				drawableArea.aspect()*tipsRect.height()/tipsRect.width(),
+				USE_WEIGHT ? 1.0f:1.0f
+		);
+		return tipsArea;
+	}
+
+	protected ImageObject3D createTitleObj(String text, float aspect)
+	{
+		ImageObject3D ret  = null;
+		Bitmap titleBitmap = createTitleBitmap(text, aspect);
+		//
+		ret  = new ImageObject3D(text);
+		ret.generateTextureID(titleBitmap);
+		titleBitmap.recycle();
+
+		return ret;
+	}
+
+	protected abstract RectObject3D createTitle(float aspect);
+	protected abstract String getYouShouldNoticeTitle();
+
+
+	// TODO delete
+
+	protected RectF getTitleRect() {return titleRect;}
+	protected RectF getYouShouldNoticeRect() {return youShouldNoticeRect;}
 }
