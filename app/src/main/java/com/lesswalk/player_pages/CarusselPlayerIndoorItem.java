@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.RectF;
 
 import com.lesswalk.R;
 import com.lesswalk.bases.ImageObject3D;
@@ -15,11 +16,11 @@ import java.io.File;
 public class CarusselPlayerIndoorItem extends CarusselPageInterface 
 {
 	private static final String  INDOOR_NAME  = "indoor";
-	
+
 	private ImageObject3D INDOOR_ICON  = null;
 	private ImageObject3D INDOOR_TITLE = null;
-	
-	
+	private String        text_tip     = null;
+
 	public CarusselPlayerIndoorItem(Context context) 
 	{
 		super(INDOOR_NAME, context);
@@ -28,7 +29,27 @@ public class CarusselPlayerIndoorItem extends CarusselPageInterface
 	@Override
 	protected void addChilds(RectObject3D drawableArea) 
 	{
-		
+		RectObject3D tipsObj      = getTipsArea(drawableArea);
+		RectObject3D textTipObj   = null;
+		RectF        textTipsRect = new RectF(-0.5f, -0.5f, 0.5f, 0.5f);
+
+		textTipObj = createTextTip(tipsObj.aspect()*textTipsRect.height()/textTipsRect.width(), text_tip);
+		textTipObj.initObject
+		(
+				tipsObj,
+				textTipsRect.centerX(),
+				textTipsRect.centerY(),
+				textTipsRect.width(),
+				tipsObj.aspect()*textTipsRect.height()/textTipsRect.width(),
+				USE_WEIGHT ? 1.0f:1.0f
+		);
+		tipsObj.addChild(textTipObj);
+
+		drawableArea.addChild(getTitleObj(drawableArea));
+
+		drawableArea.addChild(getYouShouldNoticeTitleObj(drawableArea));
+
+		drawableArea.addChild(tipsObj);
 	}
 
 	@Override
@@ -51,12 +72,17 @@ public class CarusselPlayerIndoorItem extends CarusselPageInterface
 	@Override
 	protected String getPageTitle() 
 	{
-		return null;
+		return "Indoor";
 	}
 
 	public void initIndoorItem(File objectsDir, String key, String value) 
 	{
 		// TODO Auto-generated method stub
+
+		if(key.equals("tips"))
+		{
+			text_tip = value;
+		}
 	}
 
 	@Override

@@ -141,7 +141,10 @@ public class RectObject3D extends BaseObject3D
 	    
 	    public float height() {return width()*aspect();}
 	    
-	    //public float aspect() {return (parent != null ? parent.aspect:1.0f)*aspect;}
+//	    public float aspect()
+//		{
+//			return (parent != null ? parent.aspect():1.0f)*aspect;
+//		}
 	    public float aspect() {return aspect;}
 	    
 	}

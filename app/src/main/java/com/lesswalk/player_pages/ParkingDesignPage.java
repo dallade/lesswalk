@@ -276,7 +276,7 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 
 		if
 		(
-			(textTipObj =createTextTip(drawableArea.aspect()*textTipsRect().height()/textTipsRect().width())) != null
+			(textTipObj = createTextTip(drawableArea.aspect()*textTipsRect().height()/textTipsRect().width(), text_tip)) != null
 		)
 		{
 			textTipObj.initObject
@@ -292,18 +292,6 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 			drawableArea.addChild(textTipObj);
 		}
 		// TODO Auto-generated method stub
-	}
-
-	private RectObject3D createTextTip(float aspect)
-	{
-		RectObject3D ret  = new RectObject3D("TextTip");
-		Bitmap       work = getTextTipImage((text_tip == null ? "No remarks" : text_tip), aspect);
-
-		ret.generateTextureID(work);
-
-		work.recycle();
-
-		return ret;
 	}
 
 	private RectObject3D createVideoButton(float aspect)

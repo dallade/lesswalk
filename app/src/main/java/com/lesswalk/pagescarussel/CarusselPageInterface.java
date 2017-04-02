@@ -121,7 +121,7 @@ public abstract class CarusselPageInterface extends RectObject3D
 		addressRect         = new RectF(-0.5f, address_start - address_h, 0.5f, address_start);
 		youShouldNoticeRect = new RectF(-0.5f, youShoudNoticeTitleStart - youShoudNoticeTitle_h, 0.5f, youShoudNoticeTitleStart);
 
-		tips_start          = youShoudNoticeTitleStart - youShoudNoticeTitleStart;
+		tips_start          = youShoudNoticeTitleStart - youShoudNoticeTitle_h;
 		tips_h              = tips_start - (-0.5f);
 		tipsRect            = new RectF(-0.5f, tips_start - tips_h, 0.5f, tips_start);
 	}
@@ -241,6 +241,18 @@ public abstract class CarusselPageInterface extends RectObject3D
 		}
 		//
 		return work;
+	}
+
+	protected RectObject3D createTextTip(float aspect, String text_tip)
+	{
+		RectObject3D ret  = new RectObject3D("TextTip");
+		Bitmap       work = getTextTipImage((text_tip == null ? "No remarks" : text_tip), aspect);
+
+		ret.generateTextureID(work);
+
+		work.recycle();
+
+		return ret;
 	}
 
 	protected Bitmap getTextTipImage(String text_tip, float aspect)
@@ -550,16 +562,17 @@ public abstract class CarusselPageInterface extends RectObject3D
 		if(titleObj == null)
 		{
 			titleObj = createTitle(drawableArea.aspect()*titleRect.height()/titleRect.width());
-			titleObj.initObject
-			(
-					drawableArea,
-					titleRect.centerX(),
-					titleRect.centerY(),
-					titleRect.width(),
-					drawableArea.aspect()*titleRect.height()/titleRect.width(),
-					USE_WEIGHT ? 1.0f:1.0f
-			);
 		}
+
+		titleObj.initObject
+		(
+				drawableArea,
+				titleRect.centerX(),
+				titleRect.centerY(),
+				titleRect.width(),
+				drawableArea.aspect()*titleRect.height()/titleRect.width(),
+				USE_WEIGHT ? 1.0f:1.0f
+		);
 
 		return titleObj;
 	}
@@ -610,6 +623,7 @@ public abstract class CarusselPageInterface extends RectObject3D
 		{
 			tipsArea = new RectObject3D("tipsArea");
 		}
+
 		tipsArea.initObject
 		(
 				drawableArea,
@@ -619,6 +633,7 @@ public abstract class CarusselPageInterface extends RectObject3D
 				drawableArea.aspect()*tipsRect.height()/tipsRect.width(),
 				USE_WEIGHT ? 1.0f:1.0f
 		);
+
 		return tipsArea;
 	}
 
