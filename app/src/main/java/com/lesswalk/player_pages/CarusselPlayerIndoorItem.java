@@ -31,7 +31,7 @@ public class CarusselPlayerIndoorItem extends CarusselPageInterface
 	{
 		RectObject3D tipsObj      = getTipsArea(drawableArea);
 		RectObject3D textTipObj   = null;
-		RectF        textTipsRect = new RectF(-0.5f, -0.5f, 0.5f, 0.5f);
+		RectF        textTipsRect = new RectF(-0.5f, -0.5f, 0.25f, 0.5f);
 
 		textTipObj = createTextTip(tipsObj.aspect()*textTipsRect.height()/textTipsRect.width(), text_tip);
 		textTipObj.initObject

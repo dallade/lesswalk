@@ -10,14 +10,16 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Window;
 
 import com.lesswalk.MainService;
+import com.lesswalk.RegistrationActivity;
 
 public abstract class BaseActivity extends Activity
 {
 	private static final String           TAG          = "lesswalkBaseActivity";
 	private static       Intent           mainActivity = null;
-	private              ILesswalkService mainServer   = null;
+	private static       ILesswalkService mainServer   = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -121,8 +123,13 @@ public abstract class BaseActivity extends Activity
 		{
 			Log.d(TAG, String.format("service=%s getService=%s", service, ((MainService.LocalBinder) service).getService()));
 			mainServer = (ILesswalkService) ((MainService.LocalBinder) service).getService();
-			Log.d(TAG, "mainServer = " + mainServer);
-			mainServiceConnected();
+			Log.d(TAG, "mainServer = " + mainServer + " is registration - " + (BaseActivity.this instanceof RegistrationActivity));
+
+			if(!(BaseActivity.this instanceof RegistrationActivity) && !mainServer.haveLocalNumber())
+			{
+				startActivity(new Intent(BaseActivity.this, RegistrationActivity.class));
+			}
+			else mainServiceConnected();
 		}
 	};
 	

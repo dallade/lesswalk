@@ -13,5 +13,6 @@
     <string name="response_text"><font style='text-weight:bold;color:green;'>yesss</font> sir!</string>
     <string name="title_activity_editor">EditorActivity</string>
     <string name="title_activity_contact_profile">ContactProfile</string>
+    <string name="st_registration_set_number">To get Started, Please Entrer your Phone Number</string>
 
 </resources>

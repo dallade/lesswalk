@@ -12,6 +12,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.text.Editable;
 import android.util.Log;
 
 import com.lesswalk.bases.ContactSignature;
@@ -291,5 +292,17 @@ public class MainService extends Service implements ILesswalkService
 		}
 
 		return null;
+	}
+
+	@Override
+	public boolean haveLocalNumber()
+	{
+		return false;
+	}
+
+	@Override
+	public int setLocalNumber(Editable text, ISetLocalNumberCallback iSetLocalNumberCallback)
+	{
+		return 0;
 	}
 }

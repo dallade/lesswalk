@@ -1,8 +1,10 @@
 apply plugin: 'com.android.application'
+dependencies {
+}
 android {
     compileSdkVersion 24        //should have a corresponding android platform version
     buildToolsVersion "25.0"    //should be set according to the revision of the latest -
-                                //      build tools: "<build_tools_ver>.<revision>" (i.e. "25.0")
+    //      build tools: "<build_tools_ver>.<revision>" (i.e. "25.0")
     defaultConfig {
         applicationId "com.lesswalk"
         minSdkVersion 19

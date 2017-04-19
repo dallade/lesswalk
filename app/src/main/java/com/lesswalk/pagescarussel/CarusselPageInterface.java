@@ -108,14 +108,16 @@ public abstract class CarusselPageInterface extends RectObject3D
 
 	private void initDefaultLayoutParams()
 	{
-		float title_start         = 0.5f;
-		float title_h             = 0.07f;
-		float address_start       = title_start - title_h;
-		float address_h           = 0.6f;
-		float youShoudNoticeTitleStart = address_start - address_h;
+		float title_start              = 0.5f;
+		float title_h                  = 0.07f;
+		float address_start            = title_start - title_h;
+		float address_h                = 0.4f;
+		float araive_start             = address_start - address_h;
+		float araive_h                 = 0.1f;
+		float youShoudNoticeTitleStart = araive_start - araive_h;
 		float youShoudNoticeTitle_h    = title_h;
-		float tips_start          = 0.0f;
-		float tips_h              = 0.0f;
+		float tips_start               = 0.0f;
+		float tips_h                   = 0.0f;
 
 		titleRect           = new RectF(-0.5f, (title_start- title_h), 0.5f, title_start);
 		addressRect         = new RectF(-0.5f, address_start - address_h, 0.5f, address_start);
