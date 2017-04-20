@@ -10,16 +10,15 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Window;
 
-import com.lesswalk.MainService;
+import com.lesswalk.system.MainService;
 import com.lesswalk.RegistrationActivity;
 
 public abstract class BaseActivity extends Activity
 {
 	private static final String           TAG          = "lesswalkBaseActivity";
 	private static       Intent           mainActivity = null;
-	private static       ILesswalkService mainServer   = null;
+	private              ILesswalkService mainServer   = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -32,7 +31,7 @@ public abstract class BaseActivity extends Activity
 		}
 
 		Log.d("lesswalk", "BaseActivity - onCreate");
-		connectToService();
+		//connectToService();
 	}
 
 	private boolean isMyServiceRunning(Context context)
@@ -84,23 +83,18 @@ public abstract class BaseActivity extends Activity
 	private void connectToService() 
 	{
 		Log.d(TAG, "connectToService() mainServer=" + mainServer);
-		if(mainServer == null)
+		if(!isMyServiceRunning(this))
 		{
-			if(!isMyServiceRunning(this))
-			{
-				startService(new Intent(BaseActivity.this, MainService.class));
-				android.util.Log.d(TAG, "BaseActivity: MainService.class started! ");
-			}
-			bindService(new Intent(this, MainService.class), mConnection, Context.BIND_AUTO_CREATE);
+			startService(new Intent(BaseActivity.this, MainService.class));
+			android.util.Log.d(TAG, "BaseActivity: MainService.class started! ");
 		}
+		bindService(new Intent(this, MainService.class), mConnection, Context.BIND_AUTO_CREATE);
 	}
 
 
 	@Override
 	protected void onPause()
 	{
-		//if(!ifIsMainActivity(getIntent())) finish();
-
 		try
 		{
 			unbindService(mConnection);

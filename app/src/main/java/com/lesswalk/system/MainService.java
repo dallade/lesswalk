@@ -1,4 +1,4 @@
-package com.lesswalk;
+package com.lesswalk.system;
 
 import android.app.Service;
 import android.content.ContentResolver;
@@ -12,7 +12,6 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.text.Editable;
 import android.util.Log;
 
 import com.lesswalk.bases.ContactSignature;
@@ -69,12 +68,46 @@ public class MainService extends Service implements ILesswalkService
 	{
 		syncThread.start();
 	}
+
+	private enum SyncThreadIDs
+	{
+		STORE_LOCAL_CONTACT_TASK;
+	}
+
+	private interface ISyncThreadTasks
+	{
+		void DO();
+		SyncThreadIDs getID();
+	}
+
+	private class StoreLocalContactTask implements ISyncThreadTasks
+	{
+		String                  number   = null;
+		ISetLocalNumberCallback callback = null;
+
+		StoreLocalContactTask(String number, ISetLocalNumberCallback callback)
+		{
+			this.number = number;
+			this.callback = callback;
+		}
+		@Override
+		public void DO()
+		{
+
+		}
+
+		@Override
+		public SyncThreadIDs getID()
+		{
+			return SyncThreadIDs.STORE_LOCAL_CONTACT_TASK;
+		}
+	}
 	
 	private class ContactManager implements IContactManager
 	{
-		private List<CarusselContact> contacts = null;
-		private ContentResolver       cr       = null;
-		
+		private List<CarusselContact> contacts             = null;
+		private ContentResolver       cr                   = null;
+
 		protected ContactManager(Context context) 
 		{
 			cr = context.getContentResolver();
@@ -232,23 +265,6 @@ public class MainService extends Service implements ILesswalkService
 			// TODO use local databases data
 
 			syncThread.fillSignaturesOfPhoneNumber(phoneNumber, signatures);
-
-//			String[] fullPhoneNumber = splitPhoneNumber(phoneNumber);
-//			String[] fullPhoneNumber = new String[]{"972", "0526807577"};
-//			List<String> signaturesUuids = cloud.findSignaturesUuidsByOwnerPhone
-//			(
-//				fullPhoneNumber[PhoneUtils.PHONE_INDEX_COUNTRY],
-//				fullPhoneNumber[PhoneUtils.PHONE_INDEX_MAIN]
-//			);
-//			for (int i = 0; i < signaturesUuids.size(); i++)
-//			{
-//				ContactSignature signature = new ContactSignature(
-//						phoneNumber
-//						, ContactSignature.SignatureType.COFFE
-//						, signaturesUuids.get(i)
-//				);
-//				signatures.add(signature);
-//			}
 		}
 	}
 
@@ -297,11 +313,11 @@ public class MainService extends Service implements ILesswalkService
 	@Override
 	public boolean haveLocalNumber()
 	{
-		return false;
+		return syncThread.getLocalNumber() != null;
 	}
 
 	@Override
-	public int setLocalNumber(Editable text, ISetLocalNumberCallback iSetLocalNumberCallback)
+	public int setLocalNumber(String number, ISetLocalNumberCallback callback)
 	{
 		return 0;
 	}

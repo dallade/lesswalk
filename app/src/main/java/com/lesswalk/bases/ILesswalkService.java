@@ -10,7 +10,7 @@ public interface ILesswalkService
 
 	boolean haveLocalNumber();
 
-	int setLocalNumber(Editable text, ISetLocalNumberCallback iSetLocalNumberCallback);
+	int setLocalNumber(String number, ISetLocalNumberCallback callback);
 
 	interface ISetLocalNumberCallback
 	{

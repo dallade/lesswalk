@@ -1,4 +1,4 @@
-package com.lesswalk;
+package com.lesswalk.system;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -31,13 +31,14 @@ public class SyncThread
     private static final String TYPE_ROW              = "type";
     private static final String LAST_UPDATE_ROW       = "last_update";// milliseconds as string
 
-    private MainService      mParent         = null;
-    private Cloud            mCloud          = null;
-    private DataBaseUpdater  dataBaseUpdater = null;
-    private LesswalkDbHelper usersDB         = null;
-    private LesswalkDbHelper signaturesDB    = null;
-
-    private boolean isAlive = false;
+    private MainService      mParent              = null;
+    private Cloud            mCloud               = null;
+    private DataBaseUpdater  dataBaseUpdater      = null;
+    private LesswalkDbHelper usersDB              = null;
+    private LesswalkDbHelper signaturesDB         = null;
+    private String           localNumber          = null;
+    private File             localNumberStoreFile = null;
+    private boolean          isAlive              = false;
 
     public SyncThread(MainService parent)
     {
@@ -58,6 +59,27 @@ public class SyncThread
         signaturesColums.add(new DataBaseColums(LAST_UPDATE_ROW, DataBaseColums.TEXT));
 
         signaturesDB = new LesswalkDbHelper(mParent, "signatures", signaturesColums);
+
+        localNumberStoreFile = new File(parent.getFilesDir(), "localNumberStore.txt");
+
+        if(localNumberStoreFile.exists() && localNumberStoreFile.length() > 0)
+        {
+            byte buffer[] = new byte[(int) localNumberStoreFile.length()];
+
+            try
+            {
+                InputStream is = new FileInputStream(localNumberStoreFile);
+                is.read(buffer);
+                localNumber = new String(buffer);
+            }
+            catch (Exception e) {e.printStackTrace();}
+
+        }
+    }
+
+    public String getLocalNumber()
+    {
+        return localNumber;
     }
 
     private class ContactUpdateTask

@@ -22,26 +22,30 @@ public class RegistrationActivity extends BaseActivity
     {
         final EditText    numberET  = (EditText) findViewById(R.id.registration_number_et);
         final ProgressBar waitWheel = (ProgressBar) findViewById(R.id.registration_wait_wheel);
-        Button            doneBT    = (Button) findViewById(R.id.registration_done_bt);
+        final Button      doneBT    = (Button) findViewById(R.id.registration_done_bt);
 
         doneBT.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
+                doneBT.setEnabled(false);
                 waitWheel.setVisibility(View.VISIBLE);
-                getService().setLocalNumber(numberET.getText(), new ILesswalkService.ISetLocalNumberCallback()
+                getService().setLocalNumber(numberET.getText().toString(), new ILesswalkService.ISetLocalNumberCallback()
                 {
                     @Override
                     public void onSuccess()
                     {
                         waitWheel.setVisibility(View.INVISIBLE);
+                        doneBT.setEnabled(true);
+                        finish();
                     }
 
                     @Override
                     public void onError(int errorID)
                     {
                         waitWheel.setVisibility(View.INVISIBLE);
+                        doneBT.setEnabled(true);
                     }
                 });
             }
