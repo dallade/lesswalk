@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.lesswalk.bases.ContactSignature;
+import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
@@ -40,7 +41,124 @@ public class SyncThread
     private File             localNumberStoreFile = null;
     private boolean          isAlive              = false;
 
-    public SyncThread(MainService parent)
+    enum SyncThreadIDs
+    {
+        STORE_LOCAL_CONTACT_TASK,
+        CHECK_CONTACT_UPDATE
+    }
+
+    interface ISyncThreadTasks
+    {
+        // TODO remove syncThread
+        void DO(SyncThread syncThread, LesswalkDbHelper userDB, LesswalkDbHelper signaturesDB);
+        SyncThreadIDs getID();
+    }
+
+    class StoreLocalContactTask implements ISyncThreadTasks
+    {
+        String                                   number   = null;
+        ILesswalkService.ISetLocalNumberCallback callback = null;
+
+        StoreLocalContactTask(String number, ILesswalkService.ISetLocalNumberCallback callback)
+        {
+            this.number = number;
+            this.callback = callback;
+        }
+        @Override
+        public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
+        {
+            String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
+            String         userUuid      = null;
+            Vector<String> sinaturesList = null;
+
+            userUuid = mCloud.getUserUuid(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
+
+            if (userUuid == null)
+            {
+                callback.onError(-1); // TODO - set ERROR indexes
+                return;
+            }
+
+            sinaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
+
+
+            for(String s:sinaturesList)
+            {
+                mCloud.downloadSignature(s, new AWS.OnDownloadListener()
+                {
+                    public ObjectMetadata mFileMetadata = null;
+
+                    @Override
+                    public void onDownloadStarted(String path)
+                    {
+                        Log.d("elazarkin", "onDownloadStarted " + path);
+                    }
+
+                    @Override
+                    public void onDownloadProgress(String path, float percentage)
+                    {
+                        Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
+                    }
+
+                    @Override
+                    public void onDownloadFinished(String path)
+                    {
+                        // TODO improve syntax
+                        String fileName = new File(path).getName();
+                        String uuid     = fileName.substring(0, fileName.length() - 4);
+
+                        Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
+                        updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, mFileMetadata);
+                        callback.onSuccess();
+                    }
+
+                    @Override
+                    public void onDownloadError(String path, int errorId, Exception ex)
+                    {
+                        Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
+                    }
+
+                    @Override
+                    public void onMetadataReceived(ObjectMetadata fileMetadata)
+                    {
+                        mFileMetadata = fileMetadata;
+                    }
+                });
+            }
+        }
+
+        @Override
+        public SyncThreadIDs getID()
+        {
+            return SyncThreadIDs.STORE_LOCAL_CONTACT_TASK;
+        }
+    }
+
+    class CheckIfContactNeedBeUpdated implements ISyncThreadTasks
+    {
+        DataBaseUpdater dataBaseUpdater = null;
+        CarusselContact contact         = null;
+
+        CheckIfContactNeedBeUpdated(DataBaseUpdater _dataBaseUpdater, CarusselContact c)
+        {
+            dataBaseUpdater = _dataBaseUpdater;
+            contact = c;
+        }
+
+        @Override
+        public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
+        {
+            dataBaseUpdater.updateContactIfNeed(contact);
+        }
+
+        @Override
+        public SyncThreadIDs getID()
+        {
+            return SyncThreadIDs.CHECK_CONTACT_UPDATE;
+        }
+    }
+
+    SyncThread(MainService parent)
     {
         Vector<DataBaseColums> usersColums      = new Vector<DataBaseColums>();
         Vector<DataBaseColums> signaturesColums = new Vector<DataBaseColums>();
@@ -209,106 +327,16 @@ public class SyncThread
                         case ContactUpdateTask.UPDATE_SIGNATURE_DB:
                         {
                             Log.d("elazarkin", "will update signatureDB");
-                            updateSignatureDatabase(parent.signaturesDB, t.description, null);
+                            updateSignatureDatabase(parent.mParent, parent.mCloud, parent.signaturesDB, t.description, null);
                             break;
                         }
                     }
                 }
-
             }
             else Log.d("elazarkin", "no database need update!");
         }
 
-        private void updateUserDataBase(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString)
-        {
-            String        fullNumber = PhoneUtils.splitedNumberToFullNumber(number);
-            ContentValues values     = new ContentValues();
-            //
-            values.put(FULL_PHONE_NUMBER_ROW, fullNumber);
-            values.put(USER_UUID_ROW, userUuid);
-            values.put(SIGNATURES_ROW, signaturesString);
-
-            db.getWritableDatabase().replace(db.table_name, null, values);
-        }
-
-        private synchronized void updateSignatureDatabase(LesswalkDbHelper db, String uuid, ObjectMetadata metadata)
-        {
-            File          zip             = mCloud.getSignutareFilePathByUUID(uuid);
-            File          outDir          = new File(parent.mParent.getCacheDir(), "updateSignaturesDB");
-            ContentValues values          = new ContentValues();
-            InputStream   fis             = null;
-            String        contentFileName = "content.json";
-            File          contentFile     = null;
-            byte          buffer[]        = null;
-            String        json            = null;
-
-            //
-            //mCloud.unzipSignatureByUUID(uuid, outDir);
-
-            if (mCloud.unzipFileFromSignatureByUUID(uuid, outDir, contentFileName))
-            {
-
-                try
-                {
-                    String type       = "";
-                    String searchKey  = "\"type\"";
-                    int    MAX        = 0;
-                    int    readedSize = 0;
-
-                    contentFile = new File(outDir, contentFileName);
-                    fis = new FileInputStream(contentFile);
-                    buffer = new byte[(int) contentFile.length()];
-                    //
-                    while (readedSize < buffer.length)
-                    {
-                        readedSize += fis.read(buffer, readedSize, buffer.length - readedSize);
-                    }
-                    fis.close();
-
-                    json = new String(buffer);
-
-                    //Log.d("elazarkin", "" + json);
-
-                    for (int i = 0; i < json.length() - searchKey.length(); i++)
-                    {
-                        if (json.substring(i, i + searchKey.length()).equals(searchKey))
-                        {
-                            i += searchKey.length();
-                            while (i < json.length() && json.charAt(i) != '"')
-                            {
-                                i++;
-                            }
-                            i++;
-                            while (i < json.length() && json.charAt(i) != '"')
-                            {
-                                type += json.charAt(i++);
-                            }
-                            i = json.length();
-                            break;
-                        }
-                    }
-
-                    Log.d("elazarkin", "updateSignatureDatabase type = " + type);
-
-                    values.put(SIGNATURE_UUID_ROW, uuid);
-                    values.put(TYPE_ROW, type);
-                    if (metadata != null)
-                    {
-                        values.put(LAST_UPDATE_ROW, "" + metadata.getLastModified().getTime());
-                    }
-
-                    db.getWritableDatabase().replace(db.table_name, null, values);
-
-                }
-                catch (Exception e)
-                {
-                    Log.d("elazarkin", "updateSignatureDatabase error: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        private void checkUserChanges(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString, Vector<ContactUpdateTask> tasks)
+        private synchronized void checkUserChanges(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString, Vector<ContactUpdateTask> tasks)
         {
             String   fullNumber      = PhoneUtils.splitedNumberToFullNumber(number);
             String[] projection      = new String[db.colums.size()];
@@ -414,7 +442,7 @@ public class SyncThread
                         String uuid     = fileName.substring(0, fileName.length() - 4);
 
                         Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
-                        updateSignatureDatabase(parent.signaturesDB, uuid, mFileMetadata);
+                        updateSignatureDatabase(parent.mParent, parent.mCloud, parent.signaturesDB, uuid, mFileMetadata);
                     }
 
                     @Override
@@ -647,4 +675,95 @@ public class SyncThread
 
         return signatures;
     }
+
+    private static synchronized void updateUserDataBase(LesswalkDbHelper db, String[] number, String userUuid, String signaturesString)
+    {
+        String        fullNumber = PhoneUtils.splitedNumberToFullNumber(number);
+        ContentValues values     = new ContentValues();
+        //
+        values.put(FULL_PHONE_NUMBER_ROW, fullNumber);
+        values.put(USER_UUID_ROW, userUuid);
+        values.put(SIGNATURES_ROW, signaturesString);
+
+        db.getWritableDatabase().replace(db.table_name, null, values);
+    }
+
+    private static synchronized void updateSignatureDatabase(Context context, Cloud mCloud, LesswalkDbHelper db, String uuid, ObjectMetadata metadata)
+    {
+        // TODO move type to function values (and logic of getType up) and remove context value!
+        File          outDir          = new File(context.getCacheDir(), "updateSignaturesDB");
+        File          zip             = mCloud.getSignutareFilePathByUUID(uuid);
+        ContentValues values          = new ContentValues();
+        InputStream   fis             = null;
+        String        contentFileName = "content.json";
+        File          contentFile     = null;
+        byte          buffer[]        = null;
+        String        json            = null;
+
+        //
+        //mCloud.unzipSignatureByUUID(uuid, outDir);
+
+        if (mCloud.unzipFileFromSignatureByUUID(uuid, outDir, contentFileName))
+        {
+
+            try
+            {
+                String type       = "";
+                String searchKey  = "\"type\"";
+                int    MAX        = 0;
+                int    readedSize = 0;
+
+                contentFile = new File(outDir, contentFileName);
+                fis = new FileInputStream(contentFile);
+                buffer = new byte[(int) contentFile.length()];
+                //
+                while (readedSize < buffer.length)
+                {
+                    readedSize += fis.read(buffer, readedSize, buffer.length - readedSize);
+                }
+                fis.close();
+
+                json = new String(buffer);
+
+                //Log.d("elazarkin", "" + json);
+
+                for (int i = 0; i < json.length() - searchKey.length(); i++)
+                {
+                    if (json.substring(i, i + searchKey.length()).equals(searchKey))
+                    {
+                        i += searchKey.length();
+                        while (i < json.length() && json.charAt(i) != '"')
+                        {
+                            i++;
+                        }
+                        i++;
+                        while (i < json.length() && json.charAt(i) != '"')
+                        {
+                            type += json.charAt(i++);
+                        }
+                        i = json.length();
+                        break;
+                    }
+                }
+
+                Log.d("elazarkin", "updateSignatureDatabase type = " + type);
+
+                values.put(SIGNATURE_UUID_ROW, uuid);
+                values.put(TYPE_ROW, type);
+                if (metadata != null)
+                {
+                    values.put(LAST_UPDATE_ROW, "" + metadata.getLastModified().getTime());
+                }
+
+                db.getWritableDatabase().replace(db.table_name, null, values);
+
+            }
+            catch (Exception e)
+            {
+                Log.d("elazarkin", "updateSignatureDatabase error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
 }
+

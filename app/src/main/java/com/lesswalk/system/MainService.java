@@ -69,40 +69,6 @@ public class MainService extends Service implements ILesswalkService
 		syncThread.start();
 	}
 
-	private enum SyncThreadIDs
-	{
-		STORE_LOCAL_CONTACT_TASK;
-	}
-
-	private interface ISyncThreadTasks
-	{
-		void DO();
-		SyncThreadIDs getID();
-	}
-
-	private class StoreLocalContactTask implements ISyncThreadTasks
-	{
-		String                  number   = null;
-		ISetLocalNumberCallback callback = null;
-
-		StoreLocalContactTask(String number, ISetLocalNumberCallback callback)
-		{
-			this.number = number;
-			this.callback = callback;
-		}
-		@Override
-		public void DO()
-		{
-
-		}
-
-		@Override
-		public SyncThreadIDs getID()
-		{
-			return SyncThreadIDs.STORE_LOCAL_CONTACT_TASK;
-		}
-	}
-	
 	private class ContactManager implements IContactManager
 	{
 		private List<CarusselContact> contacts             = null;

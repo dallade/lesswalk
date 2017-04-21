@@ -57,4 +57,10 @@ public class RegistrationActivity extends BaseActivity
     {
         setViews();
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        finish();
+    }
 }
