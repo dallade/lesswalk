@@ -18,8 +18,12 @@ import com.lesswalk.utils.PhoneUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Vector;
+import java.util.concurrent.Semaphore;
 
 public class SyncThread
 {
@@ -31,6 +35,8 @@ public class SyncThread
     private static final String SIGNATURE_UUID_ROW    = "uuid";
     private static final String TYPE_ROW              = "type";
     private static final String LAST_UPDATE_ROW       = "last_update";// milliseconds as string
+
+    private static Semaphore mutex = new Semaphore(1);
 
     private MainService      mParent              = null;
     private Cloud            mCloud               = null;
@@ -68,6 +74,7 @@ public class SyncThread
         public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
         {
             String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
+            final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
             String         userUuid      = null;
             Vector<String> sinaturesList = null;
 
@@ -106,10 +113,22 @@ public class SyncThread
                         // TODO improve syntax
                         String fileName = new File(path).getName();
                         String uuid     = fileName.substring(0, fileName.length() - 4);
+                        OutputStream os = null;
 
                         Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
                         updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, mFileMetadata);
-                        callback.onSuccess();
+                        try
+                        {
+                            os = new FileOutputStream(syncThread.localNumberStoreFile);
+                            os.write(fixed_number.getBytes());
+                            os.close();
+                            callback.onSuccess();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            callback.onError(-2);
+                        }
                     }
 
                     @Override
@@ -237,44 +256,55 @@ public class SyncThread
     {
         private MainService service = null;
         private SyncThread  parent  = null;
+        private Vector<ISyncThreadTasks> tasks = null;
 
         public DataBaseUpdater(SyncThread _parent, MainService _service)
         {
             parent = _parent;
             service = _service;
+
+            tasks = new Vector<ISyncThreadTasks>();
         }
 
         @Override
         public void run()
         {
-            long MIN_LOOP_TIME     = 10 * 60 * 1000;
-            long MIN_TIME_TO_SLEEP = 100;
+            long TIME_TO_SYNC_CONTACTS = 10 * 60 * 1000;
+            long IDLE_SLEEP_TYPE       = 200;
+            long t0                    = 0L;
+            long currentTime           = 0L;
 
             Vector<CarusselContact> contacts = new Vector<CarusselContact>();
 
             while (isAlive)
             {
-                long t0      = System.currentTimeMillis();
-                long tdiff   = 0L;
-                long t2sleep = 0L;
-
                 contacts.removeAllElements();
                 service.getContactManager().fillContactVector(contacts);
 
-                for (CarusselContact c : contacts) updateContactIfNeed(c);
-
-                tdiff = System.currentTimeMillis() - t0;
-                t2sleep = MIN_LOOP_TIME - tdiff;
-
-                if (t2sleep < MIN_TIME_TO_SLEEP) t2sleep = MIN_TIME_TO_SLEEP;
-
-                try
+                if ((currentTime = System.currentTimeMillis()) - t0 > TIME_TO_SYNC_CONTACTS)
                 {
-                    sleep(t2sleep);
+                    for (CarusselContact c : contacts)
+                    {
+                        tasks.add(new CheckIfContactNeedBeUpdated(this, c));
+                    }
+                    //updateContactIfNeed(c);
                 }
-                catch (InterruptedException e)
+
+                if (tasks.size() >= 0)
                 {
-                    e.printStackTrace();
+                    try {mutex.acquire();} catch (InterruptedException e) {e.printStackTrace();}
+                    Log.d("elazarkin8", "do task: " + tasks.elementAt(0).getID());
+                    tasks.elementAt(0).DO(parent, parent.usersDB, parent.signaturesDB);
+                    tasks.removeElementAt(0);
+                    mutex.release();
+                }
+                else
+                {
+                    try
+                    {
+                        sleep(IDLE_SLEEP_TYPE);
+                    }
+                    catch (InterruptedException e)  {e.printStackTrace();}
                 }
             }
         }
@@ -764,6 +794,20 @@ public class SyncThread
                 e.printStackTrace();
             }
         }
+    }
+
+    void addImportantTask(ISyncThreadTasks task)
+    {
+        try {mutex.acquire();} catch (InterruptedException e) {e.printStackTrace();}
+        Log.d("elazarkin8", "add addImportantTask " + task.getID());
+        dataBaseUpdater.tasks.add(0, task);
+
+        for(int i = 0; i < dataBaseUpdater.tasks.size(); i++)
+        {
+            Log.d("elazarkin8", "look for my task " + dataBaseUpdater.tasks.elementAt(i).getID());
+        }
+
+        mutex.release();
     }
 }
 
