@@ -20,6 +20,8 @@ import com.lesswalk.contact_page.navigation_menu.NavigatiomMenuSurface;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject.BarcodeDetectorCallback;
 
+import java.util.Vector;
+
 public class MainActivity extends BaseActivity 
 {
 	public static final String TAG = "lesswalkMainActivity";
@@ -65,11 +67,20 @@ public class MainActivity extends BaseActivity
 			@Override
 			public void onSignatureClicked(String path)
 			{
-				Toast.makeText(MainActivity.this, "will open carussel path=" + path, Toast.LENGTH_SHORT).show();
-
 				if(path == null || path.length() <= 0 || path.equals("null"))
 				{
 					startActivity(new Intent(MainActivity.this, EditorActivity.class));
+				}
+				else
+				{
+					String dirPath = null;
+					if(path != null && (dirPath=getService().unzip(path)) != null)
+					{
+						Intent i = new Intent(MainActivity.this, PlayerActivity.class);
+						//
+						i.putExtra("content_dir", dirPath);
+						startActivity(i);
+					}
 				}
 			}
 		});
@@ -180,14 +191,21 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void mainServiceConnected() 
 	{
-		RelativeLayout navigationSurfaceScreen = null;
+		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
+		RelativeLayout navigationSurfaceScreen = (RelativeLayout) findViewById(R.id.navigation_surface_screen);
 		
-        navigationSurfaceScreen = (RelativeLayout) findViewById(R.id.navigation_surface_screen);
         navigationMenuGL        = new NavigatiomMenuSurface(this);
         navigationMenuGL.initiation();
 		navigationMenuGL.setContactManager(getService().getContactManager());
 		navigationSurfaceScreen.addView(navigationMenuGL);
-		
+
+		getService().getContactManager().fillSignaturesByPhoneNumber(getService().getLocalNumber(), signatures);
+
+		for(ContactSignature cs:signatures)
+		{
+			signatureSlider.addContactSignature(cs);
+		}
+
 		setMode(currentMode);
 	}
 	

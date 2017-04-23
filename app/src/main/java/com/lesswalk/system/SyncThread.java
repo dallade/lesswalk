@@ -85,7 +85,7 @@ public class SyncThread
 
             if (userUuid == null)
             {
-                callback.onError(-1); // TODO - set ERROR indexes
+                callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
                 return;
             }
 
@@ -100,7 +100,7 @@ public class SyncThread
             catch (Exception e)
             {
                 e.printStackTrace();
-                callback.onError(-2);
+                callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
             }
 
             sinaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
@@ -141,7 +141,7 @@ public class SyncThread
                         @Override
                         public void onDownloadError(String path, int errorId, Exception ex)
                         {
-                            callback.onError(-3);
+                            callback.onError(ILesswalkService.REGISTRATION_ERROR_DOWNLOAD_SIGNATURES);
                             Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
                         }
 

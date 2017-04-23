@@ -279,7 +279,7 @@ public class MainService extends Service implements ILesswalkService
 	@Override
 	public boolean haveLocalNumber()
 	{
-		return syncThread.getLocalNumber() != null;
+		return getLocalNumber() != null;
 	}
 
 	@Override
@@ -287,5 +287,11 @@ public class MainService extends Service implements ILesswalkService
 	{
 		syncThread.addImportantTask(syncThread.new StoreLocalContactTask(number, callback));
 		return 0;
+	}
+
+	@Override
+	public String getLocalNumber()
+	{
+		return syncThread.getLocalNumber();
 	}
 }

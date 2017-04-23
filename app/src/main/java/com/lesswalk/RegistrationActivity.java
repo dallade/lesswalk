@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.lesswalk.bases.BaseActivity;
 import com.lesswalk.bases.ILesswalkService;
@@ -46,9 +47,26 @@ public class RegistrationActivity extends BaseActivity
                     @Override
                     public void onError(int errorID)
                     {
-                        Log.d("elazarkin8", "onError: " + errorID);
-                        waitWheel.setVisibility(View.INVISIBLE);
-                        doneBT.setEnabled(true);
+                        switch (errorID)
+                        {
+                            case ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED:
+                            {
+                                Toast.makeText(RegistrationActivity.this, "In this alpha version still need be activated user from IPHONE", Toast.LENGTH_LONG);
+                                Log.d("elazarkin8", "onError: " + errorID);
+                                waitWheel.setVisibility(View.INVISIBLE);
+                                doneBT.setEnabled(true);
+                                break;
+                            }
+                            case ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM:
+                            {
+                                Toast.makeText(RegistrationActivity.this, "Some problem with file system, please check your memory!", Toast.LENGTH_LONG);
+                                Log.d("elazarkin8", "onError: " + errorID);
+                                waitWheel.setVisibility(View.INVISIBLE);
+                                doneBT.setEnabled(true);
+                                break;
+                            }
+                            default:finish();
+                        }
                     }
                 });
             }
