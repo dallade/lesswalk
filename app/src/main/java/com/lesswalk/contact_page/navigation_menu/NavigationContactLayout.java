@@ -270,12 +270,13 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 	{
 		Bitmap bit = null;
 
-		if (contact.getPictureIS() != null)
+		try
 		{
+			// TODO // FIXME: 23/4/17 Beknisa hashnia leaplikacia hatmuna neelemet!
 			bit = BitmapFactory.decodeStream(contact.getPictureIS()).copy(Config.ARGB_8888, true);
-
 			ImageObject3D.CircleCut(bit, Color.argb(255, 255, 255, 255));
-		} else
+		}
+		catch (Exception e)
 		{
 			bit = BitmapFactory.decodeResource(context.getResources(), R.drawable.contact_no_photo_2x);
 		}

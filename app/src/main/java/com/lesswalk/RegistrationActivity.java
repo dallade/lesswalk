@@ -1,6 +1,7 @@
 package com.lesswalk;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ public class RegistrationActivity extends BaseActivity
                     @Override
                     public void onSuccess()
                     {
+                        Log.d("elazarkin8", "onSuccess!");
                         waitWheel.setVisibility(View.INVISIBLE);
                         doneBT.setEnabled(true);
                         finish();
@@ -44,6 +46,7 @@ public class RegistrationActivity extends BaseActivity
                     @Override
                     public void onError(int errorID)
                     {
+                        Log.d("elazarkin8", "onError: " + errorID);
                         waitWheel.setVisibility(View.INVISIBLE);
                         doneBT.setEnabled(true);
                     }

@@ -73,10 +73,13 @@ public class SyncThread
         @Override
         public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
         {
+            // TODO have doble code - // FIXME: 23/4/17
             String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
             final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
             String         userUuid      = null;
             Vector<String> sinaturesList = null;
+
+            Log.d("elazarkin8", "StoreLocalContactTask - " + fixed_number + "(" + number[0] + " ," + number[1] + ")");
 
             userUuid = mCloud.getUserUuid(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
 
@@ -86,63 +89,73 @@ public class SyncThread
                 return;
             }
 
+            try
+            {
+                // TODO improve syntax
+                OutputStream os       = new FileOutputStream(syncThread.localNumberStoreFile);
+                os.write(fixed_number.getBytes());
+                os.close();
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                callback.onError(-2);
+            }
+
             sinaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
 
-
-            for(String s:sinaturesList)
+            if(sinaturesList.size() > 0)
             {
-                mCloud.downloadSignature(s, new AWS.OnDownloadListener()
+                String signaturesString = SignatureListToString(sinaturesList);
+                updateUserDataBase(userDB, number, userUuid, signaturesString);
+
+                for (String s : sinaturesList)
                 {
-                    public ObjectMetadata mFileMetadata = null;
-
-                    @Override
-                    public void onDownloadStarted(String path)
+                    mCloud.downloadSignature(s, new AWS.OnDownloadListener()
                     {
-                        Log.d("elazarkin", "onDownloadStarted " + path);
-                    }
+                        public ObjectMetadata mFileMetadata = null;
 
-                    @Override
-                    public void onDownloadProgress(String path, float percentage)
-                    {
-                        Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
-                    }
-
-                    @Override
-                    public void onDownloadFinished(String path)
-                    {
-                        // TODO improve syntax
-                        String fileName = new File(path).getName();
-                        String uuid     = fileName.substring(0, fileName.length() - 4);
-                        OutputStream os = null;
-
-                        Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
-                        updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, mFileMetadata);
-                        try
+                        @Override
+                        public void onDownloadStarted(String path)
                         {
-                            os = new FileOutputStream(syncThread.localNumberStoreFile);
-                            os.write(fixed_number.getBytes());
-                            os.close();
+                            Log.d("elazarkin", "onDownloadStarted " + path);
+                        }
+
+                        @Override
+                        public void onDownloadProgress(String path, float percentage)
+                        {
+                            Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
+                        }
+
+                        @Override
+                        public void onDownloadFinished(String path)
+                        {
+                            String       fileName = new File(path).getName();
+                            String       uuid     = fileName.substring(0, fileName.length() - 4);
+                            Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
+                            updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, mFileMetadata);
                             callback.onSuccess();
                         }
-                        catch (Exception e)
+
+                        @Override
+                        public void onDownloadError(String path, int errorId, Exception ex)
                         {
-                            e.printStackTrace();
-                            callback.onError(-2);
+                            callback.onError(-3);
+                            Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
                         }
-                    }
 
-                    @Override
-                    public void onDownloadError(String path, int errorId, Exception ex)
-                    {
-                        Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
-                    }
-
-                    @Override
-                    public void onMetadataReceived(ObjectMetadata fileMetadata)
-                    {
-                        mFileMetadata = fileMetadata;
-                    }
-                });
+                        @Override
+                        public void onMetadataReceived(ObjectMetadata fileMetadata)
+                        {
+                            mFileMetadata = fileMetadata;
+                        }
+                    });
+                }
+            }
+            else
+            {
+                callback.onSuccess();
             }
         }
 
@@ -185,6 +198,10 @@ public class SyncThread
         mParent = parent;
         mCloud = new AmazonCloud(mParent);
 
+        localNumberStoreFile = new File(mParent.getFilesDir(), "localNumberStore.txt");
+
+        localNumber = getLocalNumber();
+
         usersColums.add(new DataBaseColums(FULL_PHONE_NUMBER_ROW, DataBaseColums.TEXT_PRIMARY_KEY));
         usersColums.add(new DataBaseColums(USER_UUID_ROW, DataBaseColums.TEXT));
         usersColums.add(new DataBaseColums(SIGNATURES_ROW, DataBaseColums.TEXT));
@@ -197,7 +214,11 @@ public class SyncThread
 
         signaturesDB = new LesswalkDbHelper(mParent, "signatures", signaturesColums);
 
-        localNumberStoreFile = new File(parent.getFilesDir(), "localNumberStore.txt");
+    }
+
+    public String getLocalNumber()
+    {
+        String ret = null;
 
         if(localNumberStoreFile.exists() && localNumberStoreFile.length() > 0)
         {
@@ -207,16 +228,16 @@ public class SyncThread
             {
                 InputStream is = new FileInputStream(localNumberStoreFile);
                 is.read(buffer);
-                localNumber = new String(buffer);
+                ret = new String(buffer);
+                Log.d("elazarkin8", "localNumber="+localNumber);
             }
-            catch (Exception e) {e.printStackTrace();}
-
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
-    }
 
-    public String getLocalNumber()
-    {
-        return localNumber;
+        return ret;
     }
 
     private class ContactUpdateTask
@@ -283,6 +304,11 @@ public class SyncThread
 
                 if ((currentTime = System.currentTimeMillis()) - t0 > TIME_TO_SYNC_CONTACTS)
                 {
+                    if(getLocalNumber() != null)
+                    {
+                        tasks.add(new CheckIfContactNeedBeUpdated(this, new CarusselContact(null, "me", localNumber)));
+                    }
+
                     for (CarusselContact c : contacts)
                     {
                         tasks.add(new CheckIfContactNeedBeUpdated(this, c));
@@ -491,22 +517,6 @@ public class SyncThread
             }
 
             return false;
-        }
-
-        private String SignatureListToString(Vector<String> signaturesList)
-        {
-            String ret = "";
-
-            //Collections.sort(signaturesList);
-
-            for (int i = 0; i < signaturesList.size(); i++)
-            {
-                ret += signaturesList.elementAt(i);
-
-                if (i < signaturesList.size() - 1) ret += ",";
-            }
-
-            return ret;
         }
     }
 
@@ -796,17 +806,27 @@ public class SyncThread
         }
     }
 
+    private static String SignatureListToString(Vector<String> signaturesList)
+    {
+        String ret = "";
+
+        //Collections.sort(signaturesList);
+
+        for (int i = 0; i < signaturesList.size(); i++)
+        {
+            ret += signaturesList.elementAt(i);
+
+            if (i < signaturesList.size() - 1) ret += ",";
+        }
+
+        return ret;
+    }
+
     void addImportantTask(ISyncThreadTasks task)
     {
         try {mutex.acquire();} catch (InterruptedException e) {e.printStackTrace();}
         Log.d("elazarkin8", "add addImportantTask " + task.getID());
         dataBaseUpdater.tasks.add(0, task);
-
-        for(int i = 0; i < dataBaseUpdater.tasks.size(); i++)
-        {
-            Log.d("elazarkin8", "look for my task " + dataBaseUpdater.tasks.elementAt(i).getID());
-        }
-
         mutex.release();
     }
 }

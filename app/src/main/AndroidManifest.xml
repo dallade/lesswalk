@@ -55,11 +55,14 @@
             android:name=".ContactProfile"
             android:label="@string/title_activity_contact_profile"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
         </activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".RegistrationActivity">
+        <activity android:name=".RegistrationActivity"
+                  android:screenOrientation="portrait">
         </activity>
     </application>
 
