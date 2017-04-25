@@ -41,7 +41,6 @@
             android:layout_height="match_parent"
             android:src="@drawable/home_title_image_2x"
             android:layout_weight="4"
-            android:onClick="goToLoginPage"
             />
 
         <ImageButton
@@ -73,9 +72,11 @@
         android:weightSum="10"
         >
 
+        <!--
         <ImageButton
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:src="@drawable/recents_segment_icon_2x"
             android:scaleType="fitCenter"
             android:id="@+id/imageButton"
@@ -86,16 +87,26 @@
         <ImageButton
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:src="@drawable/contacts_segment_icon_2x"
             android:scaleType="fitCenter"
             android:id="@+id/imageButton2"
             android:layout_weight="1"
             android:background="@android:color/white"
             />
+            -->
+
+        <com.lesswalk.views.ContactsAllLastSwitcher
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:layout_margin="5dp"
+            />
 
         <SearchView
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:id="@+id/contact_search_filter"
             android:layout_weight="8"
             android:background="#7f7f7f"

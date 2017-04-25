@@ -38,8 +38,6 @@ public class NavigatiomMenuSurface extends GLSurfaceView
     	Log.d("lesswalk","setContactNavigationMenu " + w + "x" + h);
     	
     	navigationContactLayout.setWhParams(w, h, new BaseInterRendererLayout.RendererLayoutParams(0.0f, 0.0f, 1.0f, 1.0f));
-    	navigationContactLayout.init(getContext());
-        navigationMenuR.addLayoutItem(navigationContactLayout);
     }
     
     private static final float MAX_MOVED_DIST_TO_CLICK = 10.0f;
@@ -102,6 +100,8 @@ public class NavigatiomMenuSurface extends GLSurfaceView
             {
                 if(!alreadyAdded)
                 {
+                    navigationContactLayout.init(getContext());
+                    navigationMenuR.addLayoutItem(navigationContactLayout);
                     setContactNavigationMenu(w, h);
                     alreadyAdded = true;
                 }

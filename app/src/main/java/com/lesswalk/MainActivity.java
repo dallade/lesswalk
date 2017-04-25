@@ -1,6 +1,7 @@
 package com.lesswalk;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
@@ -26,12 +27,6 @@ public class MainActivity extends BaseActivity
 {
 	public static final String TAG = "lesswalkMainActivity";
 
-    public void goToLoginPage(View view)//TODO remove later
-    {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
     private enum MODE {CONTACT_CARUSSEL_MODE, QR_DETECTOR_MODE};
 
 	private NavigatiomMenuSurface       navigationMenuGL = null;
@@ -46,6 +41,10 @@ public class MainActivity extends BaseActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+		navigationMenuGL        = new NavigatiomMenuSurface(this);
+		navigationMenuGL.initiation();
+		((RelativeLayout) findViewById(R.id.navigation_surface_screen)).addView(navigationMenuGL);
 
 //		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //		StrictMode.setThreadPolicy(policy);
@@ -74,7 +73,7 @@ public class MainActivity extends BaseActivity
 				else
 				{
 					String dirPath = null;
-					if(path != null && (dirPath=getService().unzip(path)) != null)
+					if((dirPath=getService().unzip(path)) != null)
 					{
 						Intent i = new Intent(MainActivity.this, PlayerActivity.class);
 						//
@@ -115,7 +114,7 @@ public class MainActivity extends BaseActivity
 			}
 		});
     }
-    
+
     private BarcodeDetectorCallback barcodeDetectorCallback = new BarcodeDetectorCallback()
 	{
 		@Override
@@ -192,12 +191,8 @@ public class MainActivity extends BaseActivity
 	protected void mainServiceConnected() 
 	{
 		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
-		RelativeLayout navigationSurfaceScreen = (RelativeLayout) findViewById(R.id.navigation_surface_screen);
-		
-        navigationMenuGL        = new NavigatiomMenuSurface(this);
-        navigationMenuGL.initiation();
+
 		navigationMenuGL.setContactManager(getService().getContactManager());
-		navigationSurfaceScreen.addView(navigationMenuGL);
 
 		getService().getContactManager().fillSignaturesByPhoneNumber(getService().getLocalNumber(), signatures);
 

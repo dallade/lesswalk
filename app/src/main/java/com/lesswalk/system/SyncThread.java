@@ -313,10 +313,12 @@ public class SyncThread
                     {
                         tasks.add(new CheckIfContactNeedBeUpdated(this, c));
                     }
+
+                    t0 = currentTime;
                     //updateContactIfNeed(c);
                 }
 
-                if (tasks.size() >= 0)
+                if (tasks.size() > 0)
                 {
                     try {mutex.acquire();} catch (InterruptedException e) {e.printStackTrace();}
                     Log.d("elazarkin8", "do task: " + tasks.elementAt(0).getID());
@@ -337,14 +339,17 @@ public class SyncThread
 
         private void updateContactIfNeed(CarusselContact c)
         {
-            String                    number[]         = PhoneUtils.splitPhoneNumber(c.getNumber());
+            String                    number[]         = null;
             String                    userUuid         = null;
             Vector<String>            sinaturesList    = null;
-            Cursor                    cursor           = null;
             String                    signaturesString = null;
             Vector<ContactUpdateTask> tasks            = null;
 
-            if (number == null) return;
+            if (c == null) return;
+
+            number = PhoneUtils.splitPhoneNumber(c.getNumber());
+
+            if(number == null) return;
 
             Log.d("elazarkin", "fixed number: " + number[PhoneUtils.PHONE_INDEX_COUNTRY] + " " + number[PhoneUtils.PHONE_INDEX_MAIN] + " not lesswalk number");
 

@@ -1,5 +1,6 @@
 package com.lesswalk.bases;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -7,19 +8,24 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.lesswalk.MainActivity;
 import com.lesswalk.system.MainService;
 import com.lesswalk.RegistrationActivity;
 
 public abstract class BaseActivity extends Activity
 {
-	private static final String           TAG          = "lesswalkBaseActivity";
-	private static       Intent           mainActivity = null;
-	private              ILesswalkService mainServer   = null;
-	
+	private static final String           TAG           = "lesswalkBaseActivity";
+	private static       Intent           mainActivity  = null;
+	private              ILesswalkService mainServer    = null;
+	private              boolean          permissionsOK = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -30,8 +36,56 @@ public abstract class BaseActivity extends Activity
 			mainActivity = new Intent(getIntent());
 		}
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+		{
+			requestPermissions(new String[]
+					{
+							Manifest.permission.INTERNET,
+							Manifest.permission.READ_CONTACTS,
+							Manifest.permission.CAMERA,
+							Manifest.permission.READ_EXTERNAL_STORAGE,
+							Manifest.permission.WRITE_EXTERNAL_STORAGE
+					}, 1);
+		}
+		else
+		{
+			permissionsOK = true;
+		}
+
 		Log.d("lesswalk", "BaseActivity - onCreate");
-		//connectToService();
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+	{
+		Log.d("elazarkin9", "onRequestPermissionsResult");
+
+		switch (requestCode)
+		{
+			case 1:
+			{
+				for(int i = 0; i < permissions.length; i++)
+				{
+					// If request is cancelled, the result arrays are empty.
+					if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+					{
+						Log.d("elazarkin9", "onRequestPermissionsResult permission" + permissions[i]+ " is oK");
+					}
+					else
+					{
+						Log.d("elazarkin9", "problem with permission");
+						Toast.makeText(this, "application must have all permissions!", Toast.LENGTH_LONG).show();
+						finish();
+					}
+				}
+
+				if(!permissionsOK)
+				{
+					permissionsOK = true;
+					connectToService();
+				}
+			}
+		}
 	}
 
 	private boolean isMyServiceRunning(Context context)
@@ -73,11 +127,14 @@ public abstract class BaseActivity extends Activity
 	}
 
 	@Override
-	protected void onResume() 
+	protected void onResume()
 	{
 		super.onResume();
-		
-		connectToService();
+
+		if(permissionsOK)
+		{
+			connectToService();
+		}
 	}
 	
 	private void connectToService() 
@@ -121,9 +178,14 @@ public abstract class BaseActivity extends Activity
 
 			if(!(BaseActivity.this instanceof RegistrationActivity) && !mainServer.haveLocalNumber())
 			{
+				Log.d("elazarkin9", "BaseActivity.this instanceof RegistrationActivity is " + (BaseActivity.this instanceof RegistrationActivity) + " mainServer.haveLocalNumber() is " + mainServer.haveLocalNumber());
 				startActivity(new Intent(BaseActivity.this, RegistrationActivity.class));
 			}
-			else mainServiceConnected();
+			else
+			{
+				Log.d("elazarkin9", "BaseActivity.this instanceof RegistrationActivity is " + (BaseActivity.this instanceof RegistrationActivity) + " mainServer.haveLocalNumber() is " + mainServer.haveLocalNumber());
+				mainServiceConnected();
+			}
 		}
 	};
 	
