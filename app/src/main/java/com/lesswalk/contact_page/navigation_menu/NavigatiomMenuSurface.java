@@ -102,9 +102,10 @@ public class NavigatiomMenuSurface extends GLSurfaceView
                 {
                     navigationContactLayout.init(getContext());
                     navigationMenuR.addLayoutItem(navigationContactLayout);
-                    setContactNavigationMenu(w, h);
                     alreadyAdded = true;
                 }
+
+                setContactNavigationMenu(w, h);
             }
         }));
 

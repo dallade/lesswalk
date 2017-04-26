@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.lesswalk.R;
+import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
 
 /**
  * Created by elazarkin on 4/24/17.
@@ -29,11 +30,17 @@ public class ContactsAllLastSwitcher extends View
         MODE_ALL
     }
 
-    private Bitmap                      recentOn        = null;
-    private Bitmap                      allOn           = null;
-    private ContactAllLastSwitcherModes mode            = ContactAllLastSwitcherModes.MODE_ALL;
-    private RectF                       recentTouchArea = null;
-    private RectF                       allTouchArea    = null;
+    public interface IContactsAllLastSwitcherCallback
+    {
+        void onModeChanged(ContactAllLastSwitcherModes mode);
+    }
+
+    private Bitmap                           recentOn        = null;
+    private Bitmap                           allOn           = null;
+    private ContactAllLastSwitcherModes      mode            = ContactAllLastSwitcherModes.MODE_ALL;
+    private RectF                            recentTouchArea = null;
+    private RectF                            allTouchArea    = null;
+    private IContactsAllLastSwitcherCallback callback        = null;
 
     public ContactsAllLastSwitcher(Context context, AttributeSet attrs)
     {
@@ -215,17 +222,34 @@ public class ContactsAllLastSwitcher extends View
             float x = e.getX();
             float y = e.getY();
 
+            boolean mode_changed = false;
+
             Log.d("elazarkin3", "" + x + "," + y + "  " + allTouchArea + "  " + recentTouchArea);
 
             if(allTouchArea.contains(x, y))
             {
-                mode = ContactAllLastSwitcherModes.MODE_ALL;
-                invalidate();
+                if(mode != ContactAllLastSwitcherModes.MODE_ALL)
+                {
+                    mode = ContactAllLastSwitcherModes.MODE_ALL;
+                    mode_changed = true;
+                }
             }
             else if(recentTouchArea.contains(x, y))
             {
-                mode = ContactAllLastSwitcherModes.MODE_RECENT;
+                if(mode != ContactAllLastSwitcherModes.MODE_RECENT)
+                {
+                    mode = ContactAllLastSwitcherModes.MODE_RECENT;
+                    mode_changed = true;
+                }
+            }
+
+            if(mode_changed)
+            {
                 invalidate();
+                if(callback != null)
+                {
+                    callback.onModeChanged(mode);
+                }
             }
 
             Log.d("elazarkin3", "" + mode);
@@ -233,5 +257,10 @@ public class ContactsAllLastSwitcher extends View
             return false;
         }
         else return true;
+    }
+
+    public void setCallback(IContactsAllLastSwitcherCallback callback)
+    {
+        this.callback = callback;
     }
 }

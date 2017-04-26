@@ -20,6 +20,7 @@ import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
 import com.lesswalk.contact_page.navigation_menu.NavigatiomMenuSurface;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject.BarcodeDetectorCallback;
+import com.lesswalk.views.ContactsAllLastSwitcher;
 
 import java.util.Vector;
 
@@ -30,6 +31,7 @@ public class MainActivity extends BaseActivity
     private enum MODE {CONTACT_CARUSSEL_MODE, QR_DETECTOR_MODE};
 
 	private NavigatiomMenuSurface       navigationMenuGL = null;
+	private ContactsAllLastSwitcher     allLastSwitcher  = null;
 	private SearchView                  searchFilter     = null;
 	private BarcodeDecoderObject        barcodeObject    = null;
 	private ContactSignatureSlideLayout signatureSlider  = null;
@@ -41,6 +43,16 @@ public class MainActivity extends BaseActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+		allLastSwitcher = (ContactsAllLastSwitcher) findViewById(R.id.contacts_all_recent_switcher);
+		allLastSwitcher.setCallback(new ContactsAllLastSwitcher.IContactsAllLastSwitcherCallback()
+		{
+			@Override
+			public void onModeChanged(ContactsAllLastSwitcher.ContactAllLastSwitcherModes mode)
+			{
+				Toast.makeText(MainActivity.this, "will done soon!", Toast.LENGTH_SHORT).show();
+			}
+		});
 
 		navigationMenuGL        = new NavigatiomMenuSurface(this);
 		navigationMenuGL.initiation();

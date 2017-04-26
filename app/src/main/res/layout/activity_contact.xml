@@ -72,31 +72,8 @@
         android:weightSum="10"
         >
 
-        <!--
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:src="@drawable/recents_segment_icon_2x"
-            android:scaleType="fitCenter"
-            android:id="@+id/imageButton"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            />
-
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:src="@drawable/contacts_segment_icon_2x"
-            android:scaleType="fitCenter"
-            android:id="@+id/imageButton2"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            />
-            -->
-
         <com.lesswalk.views.ContactsAllLastSwitcher
+            android:id="@+id/contacts_all_recent_switcher"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
