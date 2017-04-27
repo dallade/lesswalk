@@ -517,7 +517,7 @@ public class RectObject3D extends BaseObject3D
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
         {
-            Log.e("elazarkin3", "glError " + title + ": " + error);
+            Log.e("elazarkin4", "glError " + title + ": " + error);
         }
     }
     

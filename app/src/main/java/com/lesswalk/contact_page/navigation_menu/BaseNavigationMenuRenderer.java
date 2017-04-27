@@ -14,6 +14,8 @@ public abstract class BaseNavigationMenuRenderer
     public interface OnSurfaceChangedCallback
     {
         void onSurfaceChanged(int w, int h);
+
+        void onSurfaceCreated();
     }
 
     public BaseNavigationMenuRenderer()

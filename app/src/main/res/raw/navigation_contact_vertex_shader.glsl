@@ -12,9 +12,8 @@ void main()
     n      = result[2];
     x      = result[0]/n;
     y      = result[1]/n;
-
+//
     v_TexCoordinate = a_TexCoordinate;
     v_position      = vec4(x, y, 1.0, 1.0);
     gl_Position     = v_position;
-//    gl_Position     = vec4(vPosition[0], vPosition[1], 1.0, 1.0);
 }

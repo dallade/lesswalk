@@ -2,6 +2,7 @@ package com.lesswalk.contact_page.navigation_menu;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import com.lesswalk.bases.BaseInterRendererLayout;
 
@@ -33,6 +34,7 @@ public class NavigationMenuRenderer extends BaseNavigationMenuRenderer implement
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig)
     {
+        onChangeCallback.onSurfaceCreated();
         // DO NOTHING
     }
 
@@ -47,7 +49,9 @@ public class NavigationMenuRenderer extends BaseNavigationMenuRenderer implement
     @Override
     public void onSurfaceChanged(GL10 gl10, int w, int h)
     {
+        Log.d("elazarkin4", "onSurfaceChanged start");
         onChangeCallback.onSurfaceChanged(w, h);
+        Log.d("elazarkin4", "onSurfaceChanged end");
     }
 
     @Override

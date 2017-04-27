@@ -12,6 +12,7 @@ import android.util.Log;
 import com.lesswalk.ContactProfile;
 import com.lesswalk.R;
 import com.lesswalk.bases.BaseInterRendererLayout;
+import com.lesswalk.bases.BaseObject3D;
 import com.lesswalk.bases.IContactManager;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
@@ -77,7 +78,8 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 			RectObject3D.loadShaderFromGlslFile(context.getResources(), R.raw.navigation_contact_vertex_shader),
 			RectObject3D.loadShaderFromGlslFile(context.getResources(), R.raw.navigation_contact_fragment_shader)
 		);
-		
+		RectObject3D.checkGlError("program");
+		Log.d("elazarkin4", "NavigationContactLayout.init program=" + program + " ");
 		attrHandlers = new int[getAttrHandlerAmmount()];
 		unifHandlers = new int[getUnifHandlerAmmount()];
 		loadHandlers(attrHandlers, unifHandlers, program);
@@ -147,13 +149,14 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 		
 		// Add program to OpenGL ES environment
 		GLES20.glUseProgram(program);
-
+		RectObject3D.checkGlError("glUseProgram");
 		attrNames[HANDLER_ATTR_VER_POS_INDEX] = "vPosition";
 		attrNames[HANDLER_ATTR_TEX_COORD_INDEX] = "a_TexCoordinate";
 
 		for (int i = 0; i < attrNames.length; i++)
 		{
 			attrHandlers[i] = GLES20.glGetAttribLocation(program, attrNames[i]);
+			Log.d("elazarkin4", "NavigationContactLayout.init loadHandlers=" + attrHandlers[i] + " " + attrNames[i]);
 		}
 
 		unifNames[HANDLER_UNIF_FIX_MAT_INDEX] = "u_FixMat";
@@ -162,6 +165,7 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 		for (int i = 0; i < unifNames.length; i++)
 		{
 			uniformHandler[i] = GLES20.glGetUniformLocation(program, unifNames[i]);
+			Log.d("elazarkin4", "NavigationContactLayout.init loadHandlers=" + uniformHandler[i] + " " + unifNames[i]);
 		}
 	}
 

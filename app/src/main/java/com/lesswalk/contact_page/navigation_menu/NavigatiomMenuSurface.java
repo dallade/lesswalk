@@ -20,8 +20,7 @@ public class NavigatiomMenuSurface extends GLSurfaceView
 
     private float   lastTouchedX = 0.0f;
     private float   lastTouchedY = 0.0f;
-    private boolean alreadyAdded = false;
-    
+
 //    private NavigationIconLayout    navigationIconLayout    = null;
     private NavigationContactLayout navigationContactLayout = null;
     
@@ -33,13 +32,6 @@ public class NavigatiomMenuSurface extends GLSurfaceView
         navigationContactLayout = new NavigationContactLayout(getContext());
     }
 
-    private void setContactNavigationMenu(int w, int h)
-    {
-    	Log.d("lesswalk","setContactNavigationMenu " + w + "x" + h);
-    	
-    	navigationContactLayout.setWhParams(w, h, new BaseInterRendererLayout.RendererLayoutParams(0.0f, 0.0f, 1.0f, 1.0f));
-    }
-    
     private static final float MAX_MOVED_DIST_TO_CLICK = 10.0f;
     private float moved_dist = 0.0f;
     private long  touch_time = 0L;
@@ -98,14 +90,14 @@ public class NavigatiomMenuSurface extends GLSurfaceView
             @Override
             public void onSurfaceChanged(int w, int h)
             {
-                if(!alreadyAdded)
-                {
-                    navigationContactLayout.init(getContext());
-                    navigationMenuR.addLayoutItem(navigationContactLayout);
-                    alreadyAdded = true;
-                }
+                navigationContactLayout.setWhParams(w, h, new BaseInterRendererLayout.RendererLayoutParams(0.0f, 0.0f, 1.0f, 1.0f));
+            }
 
-                setContactNavigationMenu(w, h);
+            @Override
+            public void onSurfaceCreated()
+            {
+                navigationContactLayout.init(getContext());
+                navigationMenuR.addLayoutItem(navigationContactLayout);
             }
         }));
 

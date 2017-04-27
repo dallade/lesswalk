@@ -5,7 +5,7 @@ varying vec4 v_position;
 
 void main() 
 {
-    float color_scale = 1.0f;
+    float color_scale = 1.0;
     float scale_x     = 1.0;
     float scale_ytop  = 1.0;
     float scale_ybot  = 1.0;
