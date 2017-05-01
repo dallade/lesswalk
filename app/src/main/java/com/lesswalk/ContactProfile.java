@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.lesswalk.bases.BaseActivity;
 import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
+import com.lesswalk.editor_pages.bases.ImageView;
 
 import java.util.Vector;
 
@@ -16,6 +17,8 @@ public class ContactProfile extends BaseActivity
 	private TextView                    contact_profile_name_tv = null;
 	private ContactSignatureSlideLayout contactSignatureLayout  = null;
 	private ContactSignatureSlideLayout userSignatureLayout     = null;
+	private ImageView                   sendMessage             = null;
+	private ImageView                   callNumber              = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
