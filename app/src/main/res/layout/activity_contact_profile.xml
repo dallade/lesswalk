@@ -59,13 +59,13 @@
 				 android:layout_weight="0.4"
 				 />
              
-             <ImageButton
+             <com.lesswalk.views.RoundedButtonWithText
 				 android:id="@+id/contact_profile_send_message"
                  android:layout_width="0dp"
 	             android:layout_height="wrap_content"
 	             android:layout_weight="1"
-				 android:scaleType="fitCenter"
 				 android:src="@drawable/contact_message_icon_2x"
+				 android:gravity="right"
 				 android:layout_margin="10dp"
                  />
              
@@ -76,13 +76,13 @@
 				 android:layout_weight="0.2"
 				 />
              
-             <ImageButton
+             <com.lesswalk.views.RoundedButtonWithText
 				 android:id="@+id/contact_profile_call_number"
                  android:layout_width="0dp"
 	             android:layout_height="wrap_content"
 	             android:layout_weight="1"
-				 android:scaleType="fitCenter"
 				 android:src="@drawable/contact_call_icon_2x"
+				 android:gravity="left"
 				 android:layout_margin="10dp"
                  />
 

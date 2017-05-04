@@ -12,4 +12,11 @@
         <attr name="textEditSuggestionItemLayout" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="RoundedButtonWithTextAttr">
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>
+        <attr name="android:src"/>
+        <attr name="android:gravity"/>
+    </declare-styleable>
+
 </resources>
