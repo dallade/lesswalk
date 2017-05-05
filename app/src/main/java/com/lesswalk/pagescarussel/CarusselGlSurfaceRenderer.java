@@ -152,7 +152,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 	        while(currentAngleOffset > 180.0f) currentAngleOffset -= 360.0f;
 	        while(currentAngleOffset < -180.0f) currentAngleOffset += 360.0f;
 
-	        Log.d("elazarkin", String.format("currentOffset=%3.2f", currentAngleOffset));
+	        //Log.d("elazarkin", String.format("currentOffset=%3.2f", currentAngleOffset));
 	    }
 		//
 	    @Override

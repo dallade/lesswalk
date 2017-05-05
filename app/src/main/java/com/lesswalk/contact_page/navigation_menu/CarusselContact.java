@@ -21,7 +21,7 @@ public class CarusselContact
         this.name    = name;
         this.number  = number;
         
-        Log.d(TAG, String.format("CarusselContact added: %s %s", this.name, this.number));
+        //Log.d(TAG, String.format("CarusselContact added: %s %s", this.name, this.number));
     }
 
     public InputStream getPictureIS()

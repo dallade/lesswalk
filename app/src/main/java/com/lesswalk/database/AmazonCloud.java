@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.Vector;
 
 import okhttp3.MediaType;
@@ -45,12 +46,19 @@ public class AmazonCloud extends Cloud
     protected static final String CLOUD_MODULE_user                = "user";
     protected static final String CLOUD_FUNCTION_findByPhoneNumber = "findByPhoneNumber";
     protected static final String CLOUD_FUNCTION_sendVerSms        = "request-confirmation-sms";
+    protected static final String CLOUD_FUNCTION_upload            = "upload";
     protected static final String GET_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s?phone_number=%s&country_code=%s";
     protected static final String PUT_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s";//?phone_number=%s&country_code=%s
     protected static final String PUT_REQ_USER_VER_SMS             = "%s://%s:%d/cmd/%s/%s";
+    protected static final String PUT_REQ_USER_UPLOAD              = "%s://%s:%d/cmd/%s/%s/%s";
     protected static final String PUT_VERSMS_field_countryCode     = "country-code";
     protected static final String PUT_VERSMS_field_phone           = "phone-number";
     protected static final String PUT_VERSMS_field_veriCode        = "confirmation-code";
+    protected static final String PUT_USER_UPLOAD_field_countryCode= "country_dial_code";//"0"
+    protected static final String PUT_USER_UPLOAD_field_firstName  = "first_name";//"elad"
+    protected static final String PUT_USER_UPLOAD_field_key        = "key";//013F70D2-3141-4BB3-8830-F3F6142BC9D9
+    protected static final String PUT_USER_UPLOAD_field_lastName   = "last_name";//"elad11_last"
+    protected static final String PUT_USER_UPLOAD_field_phoneNumber= "phone_number";//"+0 888 888 888 8"
     protected static final String CLOUD_JSON_key                   = "key";
     protected static final String CLOUD_JSON_owner                 = "owner";
     private static final   String SIGNATURES_EXTRACT_PATH          = "sig_extracted";
@@ -388,6 +396,42 @@ public class AmazonCloud extends Cloud
             if (jsonArr.length() == 0) return null;
             json = jsonArr.getJSONObject(0);
             if (null == json) return "";
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "";
+        }
+        return json.toString();
+    }
+
+    @Override
+    public String uploadUser(String countryCode, String phone, String firstName, String lastName) {
+        final String uuid = AWS.generateKey();
+        String url = String.format
+                (
+                        Locale.getDefault(),
+                        PUT_REQ_USER_UPLOAD,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_user,
+                        CLOUD_FUNCTION_upload,
+                        uuid
+                );
+        JSONObject bodyJson = new JSONObject();
+        JSONObject json         = null;
+        try {
+            bodyJson.put(PUT_USER_UPLOAD_field_countryCode, countryCode);
+            bodyJson.put(PUT_USER_UPLOAD_field_firstName, firstName);
+            bodyJson.put(PUT_USER_UPLOAD_field_key, uuid);
+            bodyJson.put(PUT_USER_UPLOAD_field_lastName, lastName);
+            bodyJson.put(PUT_USER_UPLOAD_field_phoneNumber, phone);
+
+            String     responseBody = reqHttpPut(url, bodyJson.toString());
+            JSONObject  jsonObject      = null;
+            jsonObject = new JSONObject(responseBody);
+            json = jsonObject;
         }
         catch (Exception e)
         {

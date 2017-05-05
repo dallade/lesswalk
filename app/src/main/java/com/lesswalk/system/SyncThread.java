@@ -85,8 +85,18 @@ public class SyncThread
 
             if (userUuid == null)
             {
-                callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
-                return;
+                //TODO elad - mCloud.createUser();
+                String firstName = "test_first";//TODO elad - change with real
+                String lastName = "test_last";//TODO elad - change with real
+                userUuid = mCloud.uploadUser(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN], firstName, lastName);
+                String output = String.format("userUuid(%s), phone{+%s %s}, firstName(%s), lastName(%s)", userUuid, number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN], firstName, lastName);
+                if (userUuid == null || userUuid.equals("")) {
+                    Log.e(TAG, "uploadUser failed: "+output);
+                    callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
+                    return;
+                }else{
+                    Log.d(TAG, String.format("uploadUser succeeded: %s", output));
+                }
             }
 
             try
@@ -830,8 +840,13 @@ public class SyncThread
     void addImportantTask(ISyncThreadTasks task)
     {
         try {mutex.acquire();} catch (InterruptedException e) {e.printStackTrace();}
-        Log.d("elazarkin8", "add addImportantTask " + task.getID());
-        dataBaseUpdater.tasks.add(0, task);
+        Log.d("elazarkin8", "add addImportantTask " + dataBaseUpdater + " " + task);
+        try {
+            dataBaseUpdater.tasks.add(0, task);
+        }catch (Exception e){
+            Log.e(TAG, String.format("e.msg: %s", e.getMessage()));
+            e.printStackTrace();
+        }
         mutex.release();
     }
 }

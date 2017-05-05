@@ -39,30 +39,49 @@ public class RegistrationActivity extends BaseActivity
                     public void onSuccess()
                     {
                         Log.d("elazarkin8", "onSuccess!");
-                        waitWheel.setVisibility(View.INVISIBLE);
-                        doneBT.setEnabled(true);
-                        finish();
+                        RegistrationActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                waitWheel.setVisibility(View.INVISIBLE);
+                                doneBT.setEnabled(true);
+                                finish();
+                            }
+                        });
                     }
 
                     @Override
-                    public void onError(int errorID)
+                    public void onError(final int errorID)
                     {
                         switch (errorID)
                         {
                             case ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED:
                             {
-                                Toast.makeText(RegistrationActivity.this, "In this alpha version still need be activated user from IPHONE", Toast.LENGTH_LONG);
-                                Log.d("elazarkin8", "onError: " + errorID);
-                                waitWheel.setVisibility(View.INVISIBLE);
-                                doneBT.setEnabled(true);
+                                RegistrationActivity.this.runOnUiThread(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        Toast.makeText(RegistrationActivity.this, "In this alpha version still need be activated user from IPHONE", Toast.LENGTH_LONG).show();
+                                        Log.d("elazarkin8", "onError: " + errorID);
+                                        waitWheel.setVisibility(View.INVISIBLE);
+                                        doneBT.setEnabled(true);
+                                    }
+                                });
                                 break;
                             }
                             case ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM:
                             {
-                                Toast.makeText(RegistrationActivity.this, "Some problem with file system, please check your memory!", Toast.LENGTH_LONG);
-                                Log.d("elazarkin8", "onError: " + errorID);
-                                waitWheel.setVisibility(View.INVISIBLE);
-                                doneBT.setEnabled(true);
+                                RegistrationActivity.this.runOnUiThread(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        Toast.makeText(RegistrationActivity.this, "Some problem with file system, please check your memory!", Toast.LENGTH_LONG).show();
+                                        Log.d("elazarkin8", "onError: " + errorID);
+                                        waitWheel.setVisibility(View.INVISIBLE);
+                                        doneBT.setEnabled(true);
+                                    }
+                                });
                                 break;
                             }
                             default:finish();

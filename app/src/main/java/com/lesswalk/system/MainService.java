@@ -62,11 +62,13 @@ public class MainService extends Service implements ILesswalkService
 		contactManager = new ContactManager(this);
 
 		contactManager.startLoadContacts();
+
+		syncThread.start();
 	}
 
 	private void onFinishLoadContacts()
 	{
-		syncThread.start();
+//		syncThread.start();
 	}
 
 	private class ContactManager implements IContactManager

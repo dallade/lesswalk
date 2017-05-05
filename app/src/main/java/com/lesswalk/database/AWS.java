@@ -236,7 +236,7 @@ public class AWS
         });
     }
 
-    private static String generateKey()
+    public static String generateKey()
     {
         String str = UUID.randomUUID().toString();
         //str += DATE_FORMAT_yyyyMMdd_HHmmss.format(new Date());

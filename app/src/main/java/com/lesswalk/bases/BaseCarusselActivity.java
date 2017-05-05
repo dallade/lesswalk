@@ -40,6 +40,7 @@ public abstract class BaseCarusselActivity extends BaseActivity
         carusselGlSurfaceBase.setVisiable(true);
 
         screen.addView(carusselGlSurfaceBase);
+        //TODO elad - add GoogleMaps
 
 //        mapView = new MapView(this, "AIzaSyBrSg5cJyTE-HMNEEOASuqbVn8O0nThfkc");
 //        surfaceScreen.addView(mapView, new RelativeLayout.LayoutParams(300, 300));

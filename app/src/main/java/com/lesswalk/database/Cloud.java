@@ -16,6 +16,8 @@ import java.util.Vector;
 public abstract class Cloud
 {
 
+    public abstract String uploadUser(String countryCode, String phone, String firstName, String lastName);
+
     public interface I_ProcessListener
     {
         void onSuccess(HashMap<String, String> result);
