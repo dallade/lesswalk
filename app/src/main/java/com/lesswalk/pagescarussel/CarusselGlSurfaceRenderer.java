@@ -30,6 +30,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     }
 
 	private Vector<CarusselPageInterface> container        = null;
+	private int                           targetIndex      = -1;
 	private ICarusselMainItem             carusselMainItem = null;
 	private float                         perspectiveMat[] = null;
 	//
@@ -107,6 +108,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
             container = new Vector<CarusselPageInterface>();
             carusselMainItem.fillContainerByItems(container);
             Log.d("elazarkin2", "updateContainer: containerSize=" + container.size());
+			if(container.size() >= 2) targetIndex = container.size()-1;
         }
         else if(carusselMainItem == null) return;
 
@@ -130,31 +132,43 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 	{
 		float currentAngleOffset = 0.0f;
 		int   containerSize      = 0;
+
+		private int checkCurrentAngleOffset(int size)
+		{
+			float step       = 360.0f/size;
+			float current_i  = currentAngleOffset/step;
+			int   wanted_i   = current_i >= 0 ? (int)(current_i + 0.5f) : (int)(current_i - 0.5f);
+
+			return checkCurrentAngleOffset(size, wanted_i, SELF_ROTATION_SPEED);
+		}
 		//
-		private void checkCurrentAngleOffset(int size)
-	    {
-	        float step       = 360.0f/size;
-	        float current_i  = currentAngleOffset/step;
-	        int   wanted_i   = current_i >= 0 ? (int)(current_i + 0.5f) : (int)(current_i - 0.5f);
+		private int checkCurrentAngleOffset(int size, int wanted_i, float speed)
+		{
+			int   ret       = wanted_i;
+			float step      = 360.0f / size;
+			float current_i = currentAngleOffset / step;
+			float diff1     = Math.abs(current_i - (current_i < wanted_i ? 0.0f:size) - wanted_i);
+			float diff2     = Math.abs(current_i + (current_i < wanted_i ? size:0.0f) - wanted_i);
+			//+ (current_i < wanted_i ? 1.0f:-1.0f)*size
 
-	        if(touched) {return;}
+			if(touched) {return -1;}
 
-	        if(Math.abs(current_i-wanted_i) <= SELF_ROTATION_SPEED)
-	        {
-	            currentAngleOffset = step*wanted_i;
-	            return;
-	        }
-	        else
-	        {
-	            currentAngleOffset += (current_i > wanted_i ? -1.0f : 1.0f)*SELF_ROTATION_SPEED*step;
-	        }
+			if(diff1 <= speed || diff2 <= speed)
+			{
+				currentAngleOffset = step*wanted_i;
+				ret =  -1;
+			}
+			else
+			{
+				currentAngleOffset += (diff1 > diff2 ? -1.0f : 1.0f)*speed*step;
+			}
 
-	        while(currentAngleOffset > 180.0f) currentAngleOffset -= 360.0f;
-	        while(currentAngleOffset < -180.0f) currentAngleOffset += 360.0f;
+			while(currentAngleOffset >= 360.0f) currentAngleOffset -= 360.0f;
+			while(currentAngleOffset < 0.0f) currentAngleOffset += 360.0f;
 
-	        Log.d("elazarkin", String.format("currentOffset=%3.2f", currentAngleOffset));
-	    }
-		//
+			return ret;
+		}
+
 	    @Override
 	    public int compare(CarusselPageInterface p1, CarusselPageInterface p2) 
 	    {
@@ -181,20 +195,32 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 		}
 	}
 	
-	private AngleManager angleManager = new AngleManager();
+	private AngleManager angleManager = null;
 	
     private void drawCarrusselObj() 
     {
-    	try 
-    	{
-	        float carruselR   = 0.0f;
-	        float viewOffset  = 0.0f;
-	
-	        float modelView[] = new float[16];
-	        float rotationM[] = new float[16];
-	        //
-	        angleManager.setCurrentContainerSize(container.size());
-	        angleManager.checkCurrentAngleOffset(container.size());
+    	try
+		{
+			float carruselR  = 0.0f;
+			float viewOffset = 0.0f;
+
+			float modelView[] = new float[16];
+			float rotationM[] = new float[16];
+
+			if (angleManager == null)
+			{
+				angleManager = new AngleManager();
+			}
+			//
+			angleManager.setCurrentContainerSize(container.size());
+			if (targetIndex >= 0)
+			{
+				targetIndex = angleManager.checkCurrentAngleOffset(container.size(), targetIndex, SELF_ROTATION_SPEED/10.0f);
+			}
+			else
+			{
+				angleManager.checkCurrentAngleOffset(container.size());
+			}
 	        //
 	        if(container.size() > 2)
 	        {
@@ -211,9 +237,9 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 	        
 	        for (int i = 0; i < container.size(); i++)
 	        {
-	            float MIN_COLOR_SCALE = 0.4f;
-	            float color_scale = 0.0f;
-	            //
+				float MIN_COLOR_SCALE = 0.4f;
+				float color_scale     = 0.0f;
+				//
 	            float rotationAngle = angleManager.calculateRotationAngle(container.elementAt(i).getIndex());
 	            
 	            if(!container.elementAt(i).isInited())

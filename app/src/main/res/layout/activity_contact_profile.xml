@@ -43,6 +43,7 @@
             android:layout_weight="4"
             android:gravity="center"
             android:text="No Name"
+			android:textStyle="bold"
             android:textSize="20sp" />
                  
          <LinearLayout
