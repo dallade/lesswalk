@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.lesswalk.R;
+import com.lesswalk.bases.ImageObject3D;
 
 /**
  * Created by elazarkin on 5/1/17.
@@ -80,8 +82,9 @@ public class RoundedButtonWithText extends View
 
     private void createIcon(int w, int h)
     {
-        int icon_h = (int) (h*0.8f + 0.5f);
-        int text_h = h-icon_h;
+        int   icon_h = (int) (h * 0.8f + 0.5f);
+        int   text_h = h - icon_h;
+        float scale  = 0.6f;
 
         if(icon != null && (icon.getWidth() != w || icon.getHeight() != h))
         {
@@ -121,8 +124,6 @@ public class RoundedButtonWithText extends View
             origin_icon.setBounds(0, 0, cwork.getWidth(), cwork.getHeight());
             origin_icon.draw(cwork);
 
-            Log.d("elazarkin6", "fit=" + fit);
-
             switch (fit)
             {
                 case LEFT:
@@ -144,20 +145,47 @@ public class RoundedButtonWithText extends View
                 }
             }
 
-            drawIcon(cIcon, work, x0, y0, Color.WHITE);
-            drawIcon(cPressedIcon, work, x0, y0, Color.YELLOW);
+            drawIcon(cIcon, work, x0, y0, scale, Color.WHITE);
+            drawIcon(cPressedIcon, work, x0, y0, scale, Color.YELLOW);
+
+            if(text != null && text.length() > 0)
+            {
+                Bitmap text_image    = Bitmap.createBitmap(icon.getWidth(), icon_h, Bitmap.Config.ARGB_8888);
+                Canvas ctext_image   = new Canvas(text_image);
+                Paint  p             = new Paint();
+                float  text_offset[] = {0.0f};
+
+                p.setColor(textColor);
+
+                ImageObject3D.drawTextToRect(text, text_h, text_image, ctext_image, p, text_offset);
+
+                cIcon.drawBitmap(text_image, x0, y0 + icon_h, null);
+
+                text_image.recycle();
+            }
 
             work.recycle();
         }
     }
 
-    private void drawIcon(Canvas c, Bitmap icon, int x0, int y0, int color)
+    private void drawIcon(Canvas c, Bitmap icon, int x0, int y0, float scale, int color)
     {
-        Paint p = new Paint();
+        int   diff_x = (int) (icon.getWidth() * (1 - scale) / 2.0f);
+        int   diff_y = (int) (icon.getHeight() * (1 - scale) / 2.0f);
+        Paint p      = new Paint();
+
         p.setColor(color);
         p.setStyle(Paint.Style.FILL);
         c.drawCircle(x0 + icon.getWidth()/2, y0 + icon.getHeight()/2, icon.getHeight()/2, p);
-        c.drawBitmap(icon, x0, y0, null);
+
+        //c.drawBitmap(icon, x0, y0, null);
+        c.drawBitmap
+        (
+            icon,
+            new Rect(0,0,icon.getWidth(), icon.getHeight()),
+            new Rect(x0 + diff_x, y0 + diff_y, x0 +  icon.getWidth() - diff_x, y0 + icon.getHeight() - diff_y),
+            null
+        );
     }
 
     @Override

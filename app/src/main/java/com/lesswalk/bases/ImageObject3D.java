@@ -116,13 +116,13 @@ public class ImageObject3D extends RectObject3D
 
 
 	// TODO create one fixed function
-	public static void drawTextToRect(String fullText, float addressTextSize, float  addressTextStart, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset, float textOffsetStep)
+	public static void drawTextToRect(String text, float textSize, float  textStart, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset, float textOffsetStep)
 	{
 		String currentText      = "";
-		String words[]          = fullText.split(" ");
+		String words[]          = text.split(" ");
 		Rect   bounds           = new Rect();
 		//
-		pwork.setTextSize(addressTextSize);
+		pwork.setTextSize(textSize);
 		pwork.setTextSkewX(0.0f);
 		//
 		for (int i = 0; i < words.length;)
@@ -135,7 +135,7 @@ public class ImageObject3D extends RectObject3D
 			{
 				currentText += words[end_i] + " ";
 				pwork.getTextBounds(currentText, 0, currentText.length(), bounds);
-				if(bounds.width() < work.getWidth() - addressTextStart*2.0f) end_i++;
+				if(bounds.width() < work.getWidth() - textStart*2.0f) end_i++;
 				else break;
 			}
 			while(end_i < words.length);
@@ -150,21 +150,21 @@ public class ImageObject3D extends RectObject3D
 
 			pwork.getTextBounds(currentText, 0, currentText.length(), bounds);
 			textOffset[0] += textOffsetStep;
-			cwork.drawText(currentText, addressTextStart, textOffset[0], pwork);
+			cwork.drawText(currentText, textStart, textOffset[0], pwork);
 
 			i = end_i;
 		}
 	}
 
-	public static void drawTextToRect(String fullText, float addressTextSize, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset)
+	public static void drawTextToRect(String text, float textSize, Bitmap work, Canvas cwork, Paint pwork, float[] textOffset)
 	{
 		String currentText      = "";
-		String words[]          = fullText.split(" ");
+		String words[]          = text.split(" ");
 		Rect   bounds           = new Rect();
 		float  addressTextStart = work.getWidth()*0.1f;
-		float  textStep         = addressTextSize/4.0f;
+		float  textStep         = textSize/4.0f;
 		//
-		pwork.setTextSize(addressTextSize);
+		pwork.setTextSize(textSize);
 		pwork.setTextSkewX(0.0f);
 		//
 		for (int i = 0; i < words.length;) 

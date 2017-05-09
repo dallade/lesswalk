@@ -67,6 +67,7 @@
 	             android:layout_weight="1"
 				 android:src="@drawable/contact_message_icon_2x"
 				 android:gravity="right"
+				 android:text="text"
 				 android:layout_margin="10dp"
                  />
              
@@ -84,6 +85,7 @@
 	             android:layout_weight="1"
 				 android:src="@drawable/contact_call_icon_2x"
 				 android:gravity="left"
+				 android:text="call"
 				 android:layout_margin="10dp"
                  />
 

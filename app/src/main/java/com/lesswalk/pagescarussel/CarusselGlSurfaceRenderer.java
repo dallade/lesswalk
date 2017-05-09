@@ -185,10 +185,12 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 			while(ret <-180.0f) ret += 360.0f;
 			return ret;
 		}
+
 		public float calculateRotationAngle(int index) 
 		{
 			return fix(index*360.0f/containerSize + angleManager.currentAngleOffset);
 		}
+
 		public void setCurrentContainerSize(int size) 
 		{
 			containerSize = size;
