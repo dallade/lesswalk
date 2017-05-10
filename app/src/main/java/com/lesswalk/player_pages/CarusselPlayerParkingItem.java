@@ -79,7 +79,13 @@ public class CarusselPlayerParkingItem extends ParkingDesignPage
 		ret.setDriveWalkText(-1, -1, -1, -1);
 		return ret;
 	}
-	
+
+	@Override
+	protected boolean goButtonExisted()
+	{
+		return true;
+	}
+
 	@Override
 	public void destroy() 
 	{

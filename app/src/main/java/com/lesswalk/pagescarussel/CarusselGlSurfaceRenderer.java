@@ -217,7 +217,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 			angleManager.setCurrentContainerSize(container.size());
 			if (targetIndex >= 0)
 			{
-				targetIndex = angleManager.checkCurrentAngleOffset(container.size(), targetIndex, SELF_ROTATION_SPEED/10.0f);
+				targetIndex = angleManager.checkCurrentAngleOffset(container.size(), targetIndex, SELF_ROTATION_SPEED/8.0f);
 			}
 			else
 			{

@@ -83,31 +83,34 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 		);
 		drawableArea.addChild(mapAddress);
 //		//
-		goButton = createGoButton(drawableArea.aspect()*goButtonRect().height()/goButtonRect().width());
-		goButton.initObject
-		(
-			drawableArea, 
-			goButtonRect().centerX(), 
-			goButtonRect().centerY(), 
-			goButtonRect().width(), 
-			drawableArea.aspect()*goButtonRect().height()/goButtonRect().width(),
-			USE_WEIGHT ? 0.8f:1.0f
-		);
-		
-		goButton.setOnClickCallback(new OnClickedAction() 
+		if(goButtonExisted())
 		{
-			@Override
-			public void onClicked() 
+			goButton = createGoButton(drawableArea.aspect() * goButtonRect().height() / goButtonRect().width());
+			goButton.initObject
+					(
+							drawableArea,
+							goButtonRect().centerX(),
+							goButtonRect().centerY(),
+							goButtonRect().width(),
+							drawableArea.aspect() * goButtonRect().height() / goButtonRect().width(),
+							USE_WEIGHT ? 0.8f : 1.0f
+					);
+
+			goButton.setOnClickCallback(new OnClickedAction()
 			{
-				if(openWazeDialog == null)
+				@Override
+				public void onClicked()
 				{
-					createOpenWazeDialog();
+					if (openWazeDialog == null)
+					{
+						createOpenWazeDialog();
+					}
+					openWazeDialog.show();
 				}
-				openWazeDialog.show();
-			}
-		});
-		
-		drawableArea.addChild(goButton);
+			});
+
+			drawableArea.addChild(goButton);
+		}
 //		//
 		if(map_thumbnail != null && (map_thumbnail_obj=createMapThumnail(drawableArea.aspect()*mapThumbnailRect().height()/mapThumbnailRect().width())) != null)
 		{
@@ -509,7 +512,7 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 
 		isAlive = false;
 
-		goButton.stop();
+		if(goButtonExisted()) goButton.stop();
 		
 		super.destroy();
 	}
@@ -521,4 +524,6 @@ public abstract class ParkingDesignPage extends ParkingPageParametersBase
 	}
 
 	protected abstract RectObject3D getArrivalTimeObj(float aspect);
+
+	protected abstract boolean goButtonExisted();
 }

@@ -116,4 +116,10 @@ public class CarusselPlayerGeneralItem extends ParkingDesignPage
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	protected boolean goButtonExisted()
+	{
+		return false;
+	}
 }
