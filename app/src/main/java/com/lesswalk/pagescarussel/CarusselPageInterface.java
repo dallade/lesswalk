@@ -584,19 +584,18 @@ public abstract class CarusselPageInterface extends RectObject3D
 		if(addressRectArea == null)
 		{
 			addressRectArea = new RectObject3D("addressRectArea");
-
-			addressRectArea.initObject
-					(
-							drawableArea,
-							addressRect.centerX(),
-							addressRect.centerY(),
-							addressRect.width(),
-							drawableArea.aspect()*addressRect.height()/addressRect.width(),
-							USE_WEIGHT ? 1.0f:1.0f
-					);
-
-			drawableArea.addChild(addressRectArea);
 		}
+
+		addressRectArea.initObject
+		(
+				drawableArea,
+				addressRect.centerX(),
+				addressRect.centerY(),
+				addressRect.width(),
+				drawableArea.aspect()*addressRect.height()/addressRect.width(),
+				USE_WEIGHT ? 1.0f:1.0f
+		);
+
 		return addressRectArea;
 	}
 
@@ -606,6 +605,7 @@ public abstract class CarusselPageInterface extends RectObject3D
 		{
 			youShouldNoticeTitleObj = createTitleObj(getYouShouldNoticeTitle(), this.drawableArea.aspect()* youShouldNoticeRect.height()/ youShouldNoticeRect.width());
 		}
+
 		youShouldNoticeTitleObj.initObject
 		(
 				this.drawableArea,

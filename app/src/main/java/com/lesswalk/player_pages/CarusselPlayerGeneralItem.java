@@ -20,32 +20,6 @@ public class CarusselPlayerGeneralItem extends ParkingDesignPage
 	private static ImageObject3D GENERAL_ICON  = null;
 	private static ImageObject3D GENERAL_TITLE = null;
 	//
-    private class IndoorAddress
-    {
-    	String entrance = null;
-    	String floor    = null;
-    	
-    	@Override
-    	public String toString() 
-    	{
-    		String text = "";
-    		
-    		if(floor != null)
-    		{
-    			text += "Floor " + floor;
-    			if(entrance != null) text += ", ";
-    		}
-    		
-    		if(entrance != null)
-    		{
-    			text += "Ent. " + entrance;
-    		}
-    		return text;
-    	}
-    }
-    
-    private IndoorAddress indoorAddress = null;
-    
     public CarusselPlayerGeneralItem(Context context)
     {
         super(GENERAL_NAME, context);
@@ -86,14 +60,6 @@ public class CarusselPlayerGeneralItem extends ParkingDesignPage
         return "Address";
     }
 
-	public void initIndoorAddressItem(File objectsDir, String key, String value) 
-	{
-		if(indoorAddress == null) indoorAddress = new IndoorAddress();
-		//
-		if(key.equals("entrance")) indoorAddress.entrance = value;
-		else if(key.equals("floor")) indoorAddress.floor = value;
-	}
-	
 	@Override
 	public void destroy() 
 	{

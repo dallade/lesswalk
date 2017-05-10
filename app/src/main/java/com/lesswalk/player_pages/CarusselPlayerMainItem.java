@@ -165,7 +165,7 @@ public class CarusselPlayerMainItem extends ICarusselMainItem
             }
             else if (checkJsonState(objArray, GENERAL_INDOORADDR_JSON_STATE, size))
             {
-            	((CarusselPlayerGeneralItem)generalItem).initIndoorAddressItem(objectsDir, key, value);
+            	((CarusselPlayerIndoorItem)indoorItem).initIndoorAddressItem(objectsDir, key, value);
             }
             else if (checkJsonState(objArray, GENERAL_JSON_STATE, size))
             {

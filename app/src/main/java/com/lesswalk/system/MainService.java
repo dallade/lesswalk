@@ -57,11 +57,11 @@ public class MainService extends Service implements ILesswalkService
 
 		Log.d(TAG, "MainService onStartCommand!");
 
-		syncThread = new SyncThread(this);
-
 		contactManager = new ContactManager(this);
 
 		contactManager.startLoadContacts();
+
+		syncThread = new SyncThread(this);
 
 		syncThread.start();
 	}
