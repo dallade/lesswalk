@@ -27,7 +27,7 @@ public class CarusselPlayerMainItem extends ICarusselMainItem
     private static final String STRADDR     = "street_address";
     private static final String INDOOR      = "indoor";
     private static final String INDOOR_ADDR = "indoor_address";
-
+    //
     private static final String GENERAL_JSON_STATE[]            = {GENERAL};
     private static final String GENERAL_IMAGE_JSON_STATE[]      = {GENERAL, IMAGE};
     private static final String GENERAL_MAPADDR_JSON_STATE[]    = {GENERAL, MAPADDR};
@@ -41,11 +41,11 @@ public class CarusselPlayerMainItem extends ICarusselMainItem
     //
     private enum LOAD_MODE{ OBJECT_MODE, ARRAY_MODE };
     //
-    private Context              context          = null;
-    private CarusselPlayerGeneralItem  generalItem      = null;
-    private CarusselPlayerParkingItem  parkingsItem[]   = null;
-    private int                        parkingsItemSize = 0;
-    private CarusselPlayerIndoorItem   indoorItem       = null;
+    private Context                   context          = null;
+    private CarusselPlayerGeneralItem generalItem      = null;
+    private CarusselPlayerParkingItem parkingsItem[]   = null;
+    private int                       parkingsItemSize = 0;
+    private CarusselPlayerIndoorItem  indoorItem       = null;
     
     private File objectsDir = null;
 

@@ -1,13 +1,18 @@
 package com.lesswalk;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,17 +25,21 @@ import java.util.Vector;
 
 public class ContactProfile extends BaseActivity
 {
+	private RelativeLayout              screen                  = null;
 	private TextView                    contact_profile_name_tv = null;
 	private ContactSignatureSlideLayout contactSignatureLayout  = null;
 	private ContactSignatureSlideLayout userSignatureLayout     = null;
 	private RoundedButtonWithText       sendMessage             = null;
 	private RoundedButtonWithText       callNumber              = null;
+	private LinearLayout                shareMenu               = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_contact_profile);
+
+		screen = (RelativeLayout) findViewById(R.id.contact_profile_screen);
 
 		contactSignatureLayout = (ContactSignatureSlideLayout) findViewById(R.id.contact_profile_visit_slider);
 		userSignatureLayout = (ContactSignatureSlideLayout) findViewById(R.id.contact_profile_invite_slider);
@@ -48,6 +57,8 @@ public class ContactProfile extends BaseActivity
 				startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", getIntent().getExtras().getString("phone_number", "No Number"), null)));
 			}
 		});
+
+		setShareMenu();
 
 		callNumber.setOnClickListener(new View.OnClickListener()
 		{
@@ -68,18 +79,79 @@ public class ContactProfile extends BaseActivity
 		});
 	}
 
+	private void setShareMenu()
+	{
+		Button inviteBt = null;
+		Button shareBt  = null;
+		Button editBt   = null;
+		Button cancelBt = null;
+
+		shareMenu = (LinearLayout) ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.share_contact_menu, null);
+		shareMenu.setVisibility(View.GONE);
+
+		screen.addView(shareMenu, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+
+		inviteBt = (Button) shareMenu.findViewById(R.id.contact_profile_menu_invite);
+		shareBt = (Button) shareMenu.findViewById(R.id.contact_profile_menu_share);
+		editBt = (Button) shareMenu.findViewById(R.id.contact_profile_menu_edit);
+		cancelBt = (Button) shareMenu.findViewById(R.id.contact_profile_menu_cancel);
+
+		cancelBt.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				shareMenu.setVisibility(View.GONE);
+			}
+		});
+	}
+
 	@Override
 	protected void mainServiceConnected() 
 	{
+		setContactSignatures();
+		setUserSignatures();
+	}
+
+	private void setUserSignatures()
+	{
 		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
-		
+
+		getService().getContactManager().fillSignaturesByPhoneNumber(getService().getLocalNumber(), signatures);
+
+		userSignatureLayout.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
+		{
+			@Override
+			public void onSignatureClicked(String path)
+			{
+				runOnUiThread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						shareMenu.setVisibility(View.VISIBLE);
+						shareMenu.bringToFront();
+					}
+				});
+			}
+		});
+
+		for(ContactSignature c:signatures)
+		{
+			userSignatureLayout.addContactSignature(c);
+			Log.d("elazarkin", "add signature" + c.getSignutarePath());
+		}
+	}
+
+	private void setContactSignatures()
+	{
+		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
+
 		getService().getContactManager().fillSignaturesByPhoneNumber
 		(
-			getIntent().getExtras().getString("phone_number", "No Number"), 
-			signatures
+				getIntent().getExtras().getString("phone_number", "No Number"),
+				signatures
 		);
-
-        Log.d("elazarkin", "signatures_size=" + signatures.size());
 
 		contactSignatureLayout.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
 		{
@@ -100,8 +172,8 @@ public class ContactProfile extends BaseActivity
 		for(ContactSignature c:signatures)
 		{
 			contactSignatureLayout.addContactSignature(c);
-            Log.d("elazarkin", "add signature" + c.getSignutarePath());
-        }
+			Log.d("elazarkin", "add signature" + c.getSignutarePath());
+		}
 	}
 
 	@Override
