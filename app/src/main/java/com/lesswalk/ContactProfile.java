@@ -96,6 +96,17 @@ public class ContactProfile extends BaseActivity
 		editBt = (Button) shareMenu.findViewById(R.id.contact_profile_menu_edit);
 		cancelBt = (Button) shareMenu.findViewById(R.id.contact_profile_menu_cancel);
 
+		inviteBt.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				// TODO check if number existed, if not - send sms with request download app. Anyway add task of invite
+				//https://play.google.com/store/apps/details?id=com.lesswalk
+				//https://itones.apple.com/app/lesswalk/id1025069015?mt=8
+			}
+		});
+
 		cancelBt.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
