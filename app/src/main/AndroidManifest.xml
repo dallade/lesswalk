@@ -56,14 +56,26 @@
             android:name=".ContactProfile"
             android:label="@string/title_activity_contact_profile"
             android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".RegistrationActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
+            android:label="@string/title_activity_settings">
         </activity>
-        <activity android:name=".LoginActivity"
-                  android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".RegistrationActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".LesswalkSettings"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_lesswalk_settings">
         </activity>
     </application>
 

@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 dependencies {
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:support-vector-drawable:24.2.1'
+    compile 'com.android.support.constraint:constraint-layout:+'
 }
 android {
     compileSdkVersion 24        //should have a corresponding android platform version
@@ -9,6 +12,7 @@ android {
         applicationId "com.lesswalk"
         minSdkVersion 19
         targetSdkVersion 24//shouldn't be higher than compileSdkVersion
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {

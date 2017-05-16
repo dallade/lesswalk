@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -35,6 +36,7 @@ public class MainActivity extends BaseActivity
 	private BarcodeDecoderObject        barcodeObject    = null;
 	private ContactSignatureSlideLayout signatureSlider  = null;
 	private ImageButton                 qrcodeButton     = null;
+	private ImageButton                 settingBt        = null;
 	private MODE                        currentMode      = MODE.CONTACT_CARUSSEL_MODE;
 
     @Override
@@ -56,9 +58,6 @@ public class MainActivity extends BaseActivity
 		navigationMenuGL        = new NavigatiomMenuSurface(this);
 		navigationMenuGL.initiation();
 		((RelativeLayout) findViewById(R.id.navigation_surface_screen)).addView(navigationMenuGL);
-
-//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//		StrictMode.setThreadPolicy(policy);
 
 		barcodeObject	= new BarcodeDecoderObject
 		(
@@ -122,6 +121,17 @@ public class MainActivity extends BaseActivity
 					navigationMenuGL.setContactFilter(text);
 				}
 				return false;
+			}
+		});
+
+		settingBt = (ImageButton) findViewById(R.id.contact_settings);
+
+		settingBt.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				startActivity(new Intent(MainActivity.this, LesswalkSettings.class));
 			}
 		});
     }
