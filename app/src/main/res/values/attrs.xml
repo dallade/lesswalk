@@ -25,4 +25,9 @@
         <attr name="android:description"/>
     </declare-styleable>
 
+    <declare-styleable name="SettingsOnOffItem">
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>
+    </declare-styleable>
+
 </resources>

@@ -39,36 +39,25 @@ public class SettingsNavigationItem extends LinearLayout
             description = a.getString(R.styleable.SettingsNavigationItem_android_description);
 
             a.recycle();
+        }
 
-            RelativeLayout navigationItem = null;
+        setItem();
+    }
 
-            removeAllViews();
+    private void setItem()
+    {
+        RelativeLayout navigationItem = (RelativeLayout) ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.settings_navigation_item, null);
 
-            navigationItem = (RelativeLayout) ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.settings_navigation_item, null);
+        if(navigationItem != null)
+        {
+            TextView textTV = (TextView) (navigationItem.findViewById(R.id.setting_navigation_app_name));
 
-            if(navigationItem != null)
+            addView(navigationItem, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            if(textTV != null)
             {
-                TextView textTV = (TextView) (navigationItem.findViewById(R.id.setting_navigation_app_name));
-
-                addView(navigationItem, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-                if(textTV != null)
-                {
-                    textTV.setText("" + text);
-
-                    Log.d("elazarkin9", "SettingsNavigationItem contructor textTV != null, text = " + text);
-                }
-                else Log.d("elazarkin9", "SettingsNavigationItem contructor textTV = null");
-
-                navigationItem.setVisibility(VISIBLE);
-                navigationItem.bringToFront();
+                textTV.setText("" + text);
             }
-            else
-            {
-                Log.d("elazarkin9", "SettingsNavigationItem contructor navigationItem = null");
-            }
-
-            Log.d("elazarkin9", "SettingsNavigationItem constructor! text = " + text);
         }
     }
 }

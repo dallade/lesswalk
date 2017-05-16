@@ -139,6 +139,110 @@
                     android:background="#FFFFFF" />
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
+
+            <com.lesswalk.views.SettingsOnOffItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show Hidden Contacts"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/setting_navigation_title3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text=" Fatal actions "
+                    android:textColor="#FFFFFF" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/setting_navigation_title3"
+                    android:background="#FFFFFF" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/setting_navigation_title3"
+                    android:background="#FFFFFF" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete My account"
+                android:background="@drawable/rounded_red"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/setting_navigation_title4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text=" About "
+                    android:textColor="#FFFFFF" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/setting_navigation_title4"
+                    android:background="#FFFFFF" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/setting_navigation_title4"
+                    android:background="#FFFFFF" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Version: 1.0.6 (Build:24)"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
         </LinearLayout>
 
     </ScrollView>
