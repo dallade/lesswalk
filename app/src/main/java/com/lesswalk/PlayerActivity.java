@@ -34,7 +34,7 @@ public class PlayerActivity extends BaseCarusselActivity
     @Override
     public void onLoadCarusselItems()
     {
-        String contect_dir = getIntent().getExtras().getString("content_dir");
+        String contect_dir = getIntent().getExtras().getString(INTENT_EXTRA_NAME_CONTENT_DIR);
         if(contect_dir != null && contect_dir.length() > 0)
         {
             loadCarusselItems(contect_dir);

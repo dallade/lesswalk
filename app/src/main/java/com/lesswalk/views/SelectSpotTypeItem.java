@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,5 +57,24 @@ public class SelectSpotTypeItem extends LinearLayout
 
         item.setGravity(Gravity.CENTER);
         layouts[i].addView(item);
+    }
+
+    public int getSelectSpotTypeChildCount()
+    {
+        int count = 0;
+
+        for(LinearLayout l:layouts)
+        {
+            count += l.getChildCount();
+        }
+
+        return count;
+    }
+
+    public View getSelectSpotTypeChildAt(int index)
+    {
+        int layoutIndex = index%layouts.length;
+
+        return layouts[layoutIndex].getChildAt(index/layouts.length);
     }
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@drawable/rounded_brown">
+
+    <TextView
+        android:id="@+id/select_spot_type_accept_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"/>
+
+    <Button
+        android:id="@+id/select_spot_type_accept_dialog_done_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/rounded_orange"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:text="Done"/>
+
+    <EditText
+        android:id="@+id/select_spot_type_accept_dialog_edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/select_spot_type_accept_dialog_done_bt"
+        android:layout_toEndOf="@id/select_spot_type_accept_dialog_title"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="10dp"
+        />
+
+
+</RelativeLayout>

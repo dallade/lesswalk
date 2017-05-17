@@ -15,12 +15,14 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.lesswalk.MainActivity;
 import com.lesswalk.system.MainService;
 import com.lesswalk.RegistrationActivity;
 
 public abstract class BaseActivity extends Activity
 {
+	protected static final String INTENT_EXTRA_NAME_CONTENT_DIR = "content_dir";
+	protected static final String INTENT_EXTRA_NAME_SPOT_NAME = "spot_name";
+
 	private static final String           TAG           = "lesswalkBaseActivity";
 	private static       Intent           mainActivity  = null;
 	private              ILesswalkService mainServer    = null;

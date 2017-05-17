@@ -1,17 +1,25 @@
 package com.lesswalk;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.lesswalk.bases.BaseActivity;
 import com.lesswalk.views.RoundedNegativeIconButtonWithText;
 import com.lesswalk.views.RoundedNegativeImageView;
+import com.lesswalk.views.SelectSpotTypeAcceptDialog;
 import com.lesswalk.views.SelectSpotTypeItem;
 
 public class SelectSpotTypeActivity extends BaseActivity
 {
+    private SelectSpotTypeAcceptDialog acceptDialog = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -35,6 +43,21 @@ public class SelectSpotTypeActivity extends BaseActivity
                 onBackPressed();
             }
         });
+
+        acceptDialog = new SelectSpotTypeAcceptDialog(this)
+        {
+            @Override
+            protected void donePressed(Editable text, Drawable icon)
+            {
+                if(text != null && text.length() > 0)
+                {
+                    Intent intent = new Intent(SelectSpotTypeActivity.this, EditorActivity.class);
+
+                    intent.putExtra(INTENT_EXTRA_NAME_SPOT_NAME, text);
+                    startActivity(intent);
+                }
+            }
+        };
     }
 
     private void addSpotTypes()
@@ -67,6 +90,22 @@ public class SelectSpotTypeActivity extends BaseActivity
                 list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Pub", Color.WHITE));
                 list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Party", Color.WHITE));
                 list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Restaurant", Color.WHITE));
+
+                for(int i = 0; i < list.getSelectSpotTypeChildCount(); i++)
+                {
+                    list.getSelectSpotTypeChildAt(i).setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            RoundedNegativeIconButtonWithText button = (RoundedNegativeIconButtonWithText) view;
+
+                            acceptDialog.setText(button.getText());
+                            acceptDialog.setIcon(button.getIcon());
+                            acceptDialog.show();
+                        }
+                    });
+                }
 
                 list.invalidate();
             }

@@ -44,7 +44,6 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         }
 
         setItem();
-
     }
 
     public RoundedNegativeIconButtonWithText(Context context, @Nullable AttributeSet attrs)
@@ -64,7 +63,6 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         }
         
         setItem();
-
     }
 
     private void setItem()
@@ -105,4 +103,8 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
     {
         listener = l;
     }
+
+    public String getText() {return text;}
+
+    public Drawable getIcon() {return src;}
 }

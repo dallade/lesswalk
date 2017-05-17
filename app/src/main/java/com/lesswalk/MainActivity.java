@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity
 					{
 						Intent i = new Intent(MainActivity.this, PlayerActivity.class);
 						//
-						i.putExtra("content_dir", dirPath);
+						i.putExtra(INTENT_EXTRA_NAME_CONTENT_DIR, dirPath);
 						startActivity(i);
 					}
 				}
