@@ -1,9 +1,11 @@
 package com.lesswalk.views;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -23,7 +25,6 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
     private int             textSize  = 16;
     private int             textColor = Color.WHITE;
     private Drawable        src       = null;
-    private int             resource  = -1;
     private OnClickListener listener  = null;
 
     public RoundedNegativeIconButtonWithText(Context context, int resource, String text, int textColor)
@@ -32,7 +33,17 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
 
         this.text = text;
         this.textColor = textColor;
-        this.resource = resource;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            this.src = getResources().getDrawable(resource, null);
+        }
+        else
+        {
+            //noinspection deprecation
+            this.src = getResources().getDrawable(resource);
+        }
+
+        setItem();
 
     }
 
@@ -65,10 +76,6 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         if (src != null)
         {
             icon.setImageDrawable(src);
-        }
-        else if (resource >= 0)
-        {
-            icon.setImageResource(resource);
         }
 
         if (text != null && text.length() > 0)

@@ -77,7 +77,8 @@
             android:label="@string/title_activity_lesswalk_settings"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".SelectSpotTypeActivity">
+        <activity android:name=".SelectSpotTypeActivity"
+                  android:screenOrientation="portrait">
         </activity>
     </application>
 

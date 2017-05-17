@@ -3,6 +3,7 @@ package com.lesswalk.views;
 import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
@@ -33,5 +34,11 @@ public class NegativeImageButton extends ImageButton
         drawable.setColorFilter(new ColorMatrixColorFilter(NEGATIVE));
 
         super.setImageDrawable(drawable);
+    }
+
+    @Override
+    public void setImageResource(@DrawableRes int resId)
+    {
+        super.setImageResource(resId);
     }
 }
