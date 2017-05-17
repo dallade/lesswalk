@@ -78,7 +78,8 @@ public class MainActivity extends BaseActivity
 			{
 				if(path == null || path.length() <= 0 || path.equals("null"))
 				{
-					startActivity(new Intent(MainActivity.this, EditorActivity.class));
+					//startActivity(new Intent(MainActivity.this, EditorActivity.class));
+					startActivity(new Intent(MainActivity.this, SelectSpotTypeActivity.class));
 				}
 				else
 				{
