@@ -268,7 +268,7 @@ public class AWS
 
         void onDownloadError(String path, int errorId, Exception ex);
 
-        void onMetadataReceived(ObjectMetadata fileMetadata);
+        void onMetadataReceived(AwsDowloadItem dowloadItem);
     }
 
 //    void other(){

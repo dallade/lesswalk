@@ -68,6 +68,18 @@ public class RegistrationActivity extends BaseActivity
                             default:finish();
                         }
                     }
+
+                    @Override
+                    public void onProgress(String path)
+                    {
+                        Toast.makeText(RegistrationActivity.this, path + " finish", Toast.LENGTH_SHORT);
+                    }
+
+                    @Override
+                    public void notSuccessFinish()
+                    {
+
+                    }
                 });
             }
         });

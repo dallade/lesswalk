@@ -291,26 +291,25 @@ public class AmazonCloud extends Cloud
     @Override
     public String downloadSignature(final String uuid, final AWS.OnDownloadListener onDownloadListener)
     {
-//        File signatureDir = Utils.createDirIfNeeded(mContext, SIGNATURES_PATH);
-//        if (signatureDir == null) return null;
-//        String filePath = new File(signatureDir, uuid + SIGNATURE_EXTENSION).getPath();
-        String filePath = getSignutareFilePathByUUID(uuid).getPath();
-        //AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, onDownloadListener);
-        String pathOnServer = SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION;
+        String         filePath     = getSignutareFilePathByUUID(uuid).getPath();
+        String         pathOnServer = SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION;
         ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
-        onDownloadListener.onMetadataReceived(fileMetadata);
+
+        onDownloadListener.onMetadataReceived(new AwsDowloadItem(filePath, pathOnServer, fileMetadata));
+
         AWS.download(mContext, pathOnServer, filePath, onDownloadListener);
+
         return filePath;
     }
 
-//    @Override
-//    public String getSignatureHeader(String uuid, AWS.OnDownloadListener onDownloadListener) {
-//        String filePath = getSignutareFilePathByUUID(uuid).getPath();
-//        //AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, onDownloadListener);
-//        //AWS.download(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath, onDownloadListener);
-//        AWS.getFileHeader(mContext, SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION, filePath);
-//        return filePath;
-//    }
+    @Override
+    public void downloadSignatures(Vector<String> signaturesUuid, AWS.OnDownloadListener onDownloadListener)
+    {
+        for(String uuid:signaturesUuid)
+        {
+            downloadSignature(uuid, onDownloadListener);
+        }
+    }
 
     @Override
     public String unzipSignatureByUUID(String uuid, File unzippedDir)

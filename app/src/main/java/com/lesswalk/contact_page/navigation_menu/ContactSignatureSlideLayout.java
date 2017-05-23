@@ -24,7 +24,7 @@ import java.util.Vector;
 
 public class ContactSignatureSlideLayout extends View 
 {
-	public interface IContactSignatureSliderCallback
+    public interface IContactSignatureSliderCallback
 	{
 		void onSignatureClicked(String path);
 	}
@@ -111,6 +111,11 @@ public class ContactSignatureSlideLayout extends View
 	public void setCallback(IContactSignatureSliderCallback callback)
 	{
 		this.callback = callback;
+	}
+
+	public void removeAllChilds()
+	{
+		container.removeAllElements();
 	}
 
 	public int addContactSignature(ContactSignature signature)

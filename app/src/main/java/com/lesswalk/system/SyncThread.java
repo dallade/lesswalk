@@ -13,6 +13,7 @@ import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
+import com.lesswalk.database.AwsDowloadItem;
 import com.lesswalk.database.Cloud;
 import com.lesswalk.utils.PhoneUtils;
 
@@ -107,51 +108,111 @@ public class SyncThread
 
             if(sinaturesList.size() > 0)
             {
-                String signaturesString = SignatureListToString(sinaturesList);
+                String         signaturesString           = SignatureListToString(sinaturesList);
+                Vector<String> needBeDownloadedSignatures = new Vector<>();
+
                 updateUserDataBase(userDB, number, userUuid, signaturesString);
 
-                for (String s : sinaturesList)
+                for(String uuid:sinaturesList)
                 {
-                    mCloud.downloadSignature(s, new AWS.OnDownloadListener()
+                    // FIXME TODO check if signature not exist or signature need be update
+                    if(!mCloud.getSignutareFilePathByUUID(uuid).exists())
                     {
-                        public ObjectMetadata mFileMetadata = null;
-
-                        @Override
-                        public void onDownloadStarted(String path)
-                        {
-                            Log.d("elazarkin", "onDownloadStarted " + path);
-                        }
-
-                        @Override
-                        public void onDownloadProgress(String path, float percentage)
-                        {
-                            Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
-                        }
-
-                        @Override
-                        public void onDownloadFinished(String path)
-                        {
-                            String       fileName = new File(path).getName();
-                            String       uuid     = fileName.substring(0, fileName.length() - 4);
-                            Log.d("elazarkin", "onDownloadFinished" + path + " uuid = " + uuid);
-                            updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, mFileMetadata);
-                            callback.onSuccess();
-                        }
-
-                        @Override
-                        public void onDownloadError(String path, int errorId, Exception ex)
-                        {
-                            callback.onError(ILesswalkService.REGISTRATION_ERROR_DOWNLOAD_SIGNATURES);
-                            Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
-                        }
-
-                        @Override
-                        public void onMetadataReceived(ObjectMetadata fileMetadata)
-                        {
-                            mFileMetadata = fileMetadata;
-                        }
-                    });
+                        needBeDownloadedSignatures.add(uuid);
+                    }
                 }
+
+                mCloud.downloadSignatures(sinaturesList, new AWS.OnDownloadListener()
+                {
+                    private Vector<AwsDowloadItem> items = null;
+
+                    @Override
+                    public void onDownloadStarted(String path)
+                    {
+                        Log.d("elazarkin", "onDownloadStarted " + path);
+                    }
+
+                    @Override
+                    public void onDownloadProgress(String path, float percentage)
+                    {
+                        Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
+                    }
+
+                    @Override
+                    public synchronized void onDownloadFinished(String path)
+                    {
+                        String fileName = new File(path).getName();
+                        String uuid     = fileName.substring(0, fileName.length() - 4);
+
+                        Log.d("elazarkin10", "onDownloadFinished " + path + " items.size()=" + items.size());
+
+                        if (items != null && items.size() > 0)
+                        {
+                            for (AwsDowloadItem item:items)
+                            {
+                                if(item.getFilePath().equals(path))
+                                {
+                                    updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, item.getMetadata());
+                                    items.removeElement(item);
+
+                                    if(items.size() <= 0)
+                                    {
+                                        Log.d("elazarkin10", "finish all");
+                                        callback.onSuccess();
+                                    }
+                                    else
+                                    {
+                                        Log.d("elazarkin10", "onProccess!");
+                                        callback.onProgress(path);
+                                    }
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            callback.onError(ILesswalkService.CODE_ERROR_METADATA_NOT_CREATED);
+                            return;
+                        }
+
+                        callback.onError(ILesswalkService.CODE_ERROR_STRANGE_METADATA_ITEM);
+                    }
+
+                    @Override
+                    public void onDownloadError(String path, int errorId, Exception ex)
+                    {
+                        for (AwsDowloadItem item:items)
+                        {
+                            if(item.getFilePath().equals(path))
+                            {
+                                items.removeElement(item);
+
+                                if(items.size() <= 0)
+                                {
+                                    callback.notSuccessFinish();
+                                }
+                                else
+                                {
+                                    callback.onError(ILesswalkService.REGISTRATION_ERROR_DOWNLOAD_SIGNATURES);
+                                }
+                            }
+                        }
+                        Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
+                    }
+
+                    @Override
+                    public void onMetadataReceived(AwsDowloadItem item)
+                    {
+                        Log.d("elazarkin10", "onMetadataReceived " + item.getFilePath());
+
+                        if(items == null)
+                        {
+                            items = new Vector<AwsDowloadItem>();
+                        }
+
+                        items.add(item);
+                    }
+                });
             }
             else
             {
@@ -301,22 +362,6 @@ public class SyncThread
             {
                 contacts.removeAllElements();
                 service.getContactManager().fillContactVector(contacts);
-
-                if ((currentTime = System.currentTimeMillis()) - t0 > TIME_TO_SYNC_CONTACTS)
-                {
-                    if(getLocalNumber() != null)
-                    {
-                        tasks.add(new CheckIfContactNeedBeUpdated(this, new CarusselContact(null, "me", localNumber)));
-                    }
-
-                    for (CarusselContact c : contacts)
-                    {
-                        tasks.add(new CheckIfContactNeedBeUpdated(this, c));
-                    }
-
-                    t0 = currentTime;
-                    //updateContactIfNeed(c);
-                }
 
                 if (tasks.size() > 0)
                 {
@@ -481,7 +526,7 @@ public class SyncThread
             {
                 mCloud.downloadSignature(s, new AWS.OnDownloadListener()
                 {
-                    public ObjectMetadata mFileMetadata = null;
+                    ObjectMetadata mFileMetadata = null;
 
                     @Override
                     public void onDownloadStarted(String path)
@@ -513,8 +558,9 @@ public class SyncThread
                     }
 
                     @Override
-                    public void onMetadataReceived(ObjectMetadata fileMetadata) {
-                        mFileMetadata = fileMetadata;
+                    public void onMetadataReceived(AwsDowloadItem item)
+                    {
+                        mFileMetadata = item.getMetadata();
                     }
                 });
 
