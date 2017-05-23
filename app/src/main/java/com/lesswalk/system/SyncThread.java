@@ -125,6 +125,7 @@ public class SyncThread
                 mCloud.downloadSignatures(sinaturesList, new AWS.OnDownloadListener()
                 {
                     private Vector<AwsDowloadItem> items = null;
+                    private int errorCount = 0;
 
                     @Override
                     public void onDownloadStarted(String path)
@@ -157,8 +158,16 @@ public class SyncThread
 
                                     if(items.size() <= 0)
                                     {
-                                        Log.d("elazarkin10", "finish all");
-                                        callback.onSuccess();
+                                        if(errorCount <= 0)
+                                        {
+                                            Log.d("elazarkin10", "finish all");
+                                            callback.onSuccess();
+                                        }
+                                        else
+                                        {
+                                            Log.d("elazarkin10", "not success 2");
+                                            callback.notSuccessFinish();
+                                        }
                                     }
                                     else
                                     {
@@ -181,6 +190,8 @@ public class SyncThread
                     @Override
                     public void onDownloadError(String path, int errorId, Exception ex)
                     {
+                        errorCount++;
+
                         for (AwsDowloadItem item:items)
                         {
                             if(item.getFilePath().equals(path))
