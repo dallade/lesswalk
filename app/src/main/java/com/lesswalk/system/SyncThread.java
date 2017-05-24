@@ -15,10 +15,10 @@ import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.Cloud;
 import com.lesswalk.utils.PhoneUtils;
+import com.lesswalk.utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +38,8 @@ public class SyncThread
 
     private static Semaphore mutex = new Semaphore(1);
 
+    enum SmsState{Uninitialized, OnGoing, TimedOut, Match, Mismatch}
+
     private MainService      mParent              = null;
     private Cloud            mCloud               = null;
     private DataBaseUpdater  dataBaseUpdater      = null;
@@ -46,6 +48,7 @@ public class SyncThread
     private String           localNumber          = null;
     private File             localNumberStoreFile = null;
     private boolean          isAlive              = false;
+    private SmsState         smsState             = SmsState.Uninitialized;
 
     enum SyncThreadIDs
     {
@@ -62,11 +65,15 @@ public class SyncThread
 
     class StoreLocalContactTask implements ISyncThreadTasks
     {
+        String                                   firstName   = null;
+        String                                   lastName   = null;
         String                                   number   = null;
         ILesswalkService.ISetLocalNumberCallback callback = null;
 
-        StoreLocalContactTask(String number, ILesswalkService.ISetLocalNumberCallback callback)
+        StoreLocalContactTask(String number, String firstName, String lastName, ILesswalkService.ISetLocalNumberCallback callback)
         {
+            this.firstName = firstName;
+            this.lastName = lastName;
             this.number = number;
             this.callback = callback;
         }
@@ -77,7 +84,7 @@ public class SyncThread
             String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
             final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
             String         userUuid      = null;
-            Vector<String> sinaturesList = null;
+            Vector<String> signaturesList = null;
 
             Log.d("elazarkin8", "StoreLocalContactTask - " + fixed_number + "(" + number[0] + " ," + number[1] + ")");
 
@@ -85,10 +92,17 @@ public class SyncThread
 
             if (userUuid == null)
             {
-//                callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
-//                return;
-                String firstName = "test_first";//TODO elad - change with real
-                String lastName = "test_last";//TODO elad - change with real
+                Log.d(TAG, String.format("StoreLocalContactTask - DO - smsState: %s", smsState.name()));
+                if (smsState != SmsState.Match){
+                    callback.onError(ILesswalkService.REGISTRATION_ERROR_SMS_STATE_NOT_READY);
+                    final String generatedPhrase = Utils.generateSmsPhrase(SmsReceiver.SMS_BODY_SIZE);
+                    String sendSmsResult = mCloud.sendVerificationSms(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN], generatedPhrase);
+                    if (sendSmsResult.equals("success")){
+                        smsState = SmsState.OnGoing;
+                        startWaitingForSms(generatedPhrase);
+                    }
+                    return;
+                }
                 userUuid = mCloud.uploadUser(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN], firstName, lastName);
                 String output = String.format("userUuid(%s), phone{+%s %s}, firstName(%s), lastName(%s)", userUuid, number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN], firstName, lastName);
                 if (userUuid == null || userUuid.equals("")) {
@@ -114,14 +128,14 @@ public class SyncThread
                 callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
             }
 
-            sinaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
+            signaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
 
-            if(sinaturesList.size() > 0)
+            if(signaturesList.size() > 0)
             {
-                String signaturesString = SignatureListToString(sinaturesList);
+                String signaturesString = SignatureListToString(signaturesList);
                 updateUserDataBase(userDB, number, userUuid, signaturesString);
 
-                for (String s : sinaturesList)
+                for (String s : signaturesList)
                 {
                     mCloud.downloadSignature(s, new AWS.OnDownloadListener()
                     {
@@ -168,6 +182,32 @@ public class SyncThread
             {
                 callback.onSuccess();
             }
+        }
+
+        private void startWaitingForSms(String generatedPhrase) {
+            SmsReceiver.setListener(generatedPhrase, new SmsListener() {
+                @Override
+                public void onSmsMatches(String messageText) {
+                    smsState = SmsState.Match;
+                    mParent.setLocalNumberAndName(number, firstName, lastName, new ILesswalkService.ISetLocalNumberCallback() {
+                        @Override
+                        public void onSuccess() {
+                            callback.onSuccess();
+                        }
+
+                        @Override
+                        public void onError(int errorID) {
+                            callback.onError(errorID);
+                        }
+                    });
+                }
+
+                @Override
+                public void onSmsMismatches(String messageBody) {
+                    smsState = SmsState.Mismatch;
+                    callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
+                }
+            });
         }
 
         @Override

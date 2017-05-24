@@ -33,30 +33,62 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_margin="10dp"
+            >
 
+            <EditText
+                android:id="@+id/registration_first_name_et"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:lines="1"
+                android:hint="@string/first_name"
+                />
+
+            <EditText
+                android:id="@+id/registration_last_name_et"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:lines="1"
+                android:hint="@string/last_name"
+                />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="10dp"
+            >
             <EditText
                 android:id="@+id/registration_number_et"
                 android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:layout_weight="4"
                 android:ems="10"
+                android:lines="1"
                 android:gravity="center"
                 android:inputType="phone"
+                android:hint="@string/phone_hint"
                 />
-
             <Button
                 android:id="@+id/registration_done_bt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_weight="1"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:gravity="center"
                 android:text="@string/done"/>
         </LinearLayout>
+
     </LinearLayout>
 
     <ProgressBar

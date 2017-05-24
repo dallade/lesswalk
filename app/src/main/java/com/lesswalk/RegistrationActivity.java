@@ -22,6 +22,8 @@ public class RegistrationActivity extends BaseActivity
 
     private void setViews()
     {
+        final EditText    firstNameET  = (EditText) findViewById(R.id.registration_first_name_et);
+        final EditText    lastNameET  = (EditText) findViewById(R.id.registration_last_name_et);
         final EditText    numberET  = (EditText) findViewById(R.id.registration_number_et);
         final ProgressBar waitWheel = (ProgressBar) findViewById(R.id.registration_wait_wheel);
         final Button      doneBT    = (Button) findViewById(R.id.registration_done_bt);
@@ -33,7 +35,11 @@ public class RegistrationActivity extends BaseActivity
             {
                 doneBT.setEnabled(false);
                 waitWheel.setVisibility(View.VISIBLE);
-                getService().setLocalNumber(numberET.getText().toString(), new ILesswalkService.ISetLocalNumberCallback()
+                getService().setLocalNumberAndName(
+                        numberET.getText().toString()
+                        , firstNameET.getText().toString()
+                        , lastNameET.getText().toString()
+                        , new ILesswalkService.ISetLocalNumberCallback()
                 {
                     @Override
                     public void onSuccess()
@@ -67,7 +73,24 @@ public class RegistrationActivity extends BaseActivity
                                         doneBT.setEnabled(true);
                                     }
                                 });
-                            }
+                            }break;
+                            case ILesswalkService.REGISTRATION_ERROR_SMS_STATE_NOT_READY:
+                            {
+                                RegistrationActivity.this.runOnUiThread(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        Toast.makeText(RegistrationActivity.this, "Please wait while we're verifying your phone...", Toast.LENGTH_LONG).show();
+                                        Log.d("elazarkin8", "onError: " + errorID);
+                                        waitWheel.setVisibility(View.VISIBLE);
+                                        firstNameET.setEnabled(false);
+                                        lastNameET.setEnabled(false);
+                                        numberET.setEnabled(false);
+                                        doneBT.setEnabled(false);
+                                    }
+                                });
+                            }break;
                             case ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM:
                             {
                                 RegistrationActivity.this.runOnUiThread(new Runnable()

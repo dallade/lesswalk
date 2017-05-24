@@ -18,6 +18,8 @@ public abstract class Cloud
 
     public abstract String uploadUser(String countryCode, String phone, String firstName, String lastName);
 
+    public abstract String uploadSignature(String signatureContents);
+
     public interface I_ProcessListener
     {
         void onSuccess(HashMap<String, String> result);

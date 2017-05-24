@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by elad on 09/01/17.
@@ -53,5 +55,15 @@ public class Utils
             }
         }
         return signaturesDir;
+    }
+
+
+    public static String generateSmsPhrase(int length) {
+        Random random = new Random(new Date().getTime());
+        String ret = "";
+        for (int i = 0; i < length; i++) {
+            ret += random.nextInt(9);
+        }
+        return ret;
     }
 }

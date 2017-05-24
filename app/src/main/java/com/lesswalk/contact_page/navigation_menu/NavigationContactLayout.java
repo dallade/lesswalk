@@ -346,16 +346,16 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 				}
 			}
 
-			Log.d
-			(
-				TAG, 
-				String.format("%s: %s(%s) %d/%d i=%d/%d j=%d/%d", 
-				title, 
-				original, local, 
-				contacts.size(), contacts_original.size(), 
-				i, contacts_original.size(), 
-				j, backup.size())
-			);
+//			Log.d
+//			(
+//				TAG,
+//				String.format("%s: %s(%s) %d/%d i=%d/%d j=%d/%d",
+//				title,
+//				original, local,
+//				contacts.size(), contacts_original.size(),
+//				i, contacts_original.size(),
+//				j, backup.size())
+//			);
 		}
 	}
 

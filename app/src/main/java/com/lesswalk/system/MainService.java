@@ -285,9 +285,9 @@ public class MainService extends Service implements ILesswalkService
 	}
 
 	@Override
-	public int setLocalNumber(String number, ISetLocalNumberCallback callback)
+	public int setLocalNumberAndName(String number, String firstName, String lastName, ISetLocalNumberCallback callback)
 	{
-		syncThread.addImportantTask(syncThread.new StoreLocalContactTask(number, callback));
+		syncThread.addImportantTask(syncThread.new StoreLocalContactTask(number, firstName, lastName, callback));
 		return 0;
 	}
 

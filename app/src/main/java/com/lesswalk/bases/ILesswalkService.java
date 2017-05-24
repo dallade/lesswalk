@@ -10,7 +10,7 @@ public interface ILesswalkService
 
 	boolean haveLocalNumber();
 
-	int setLocalNumber(String number, ISetLocalNumberCallback callback);
+	int setLocalNumberAndName(String number, String firstName, String lastName, ISetLocalNumberCallback callback);
 
 	String getLocalNumber();
 
@@ -23,4 +23,5 @@ public interface ILesswalkService
 	public static int REGISTRATION_ERROR_STILL_NOT_REGISTRED = -1;
 	public static int REGISTRATION_ERROR_FILE_SYSTEM         = -2;
 	public static int REGISTRATION_ERROR_DOWNLOAD_SIGNATURES = -3;
+	public static int REGISTRATION_ERROR_SMS_STATE_NOT_READY = -4;
 }
