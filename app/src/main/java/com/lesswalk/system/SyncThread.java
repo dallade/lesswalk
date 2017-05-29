@@ -103,114 +103,121 @@ public class SyncThread
                 for(String uuid:sinaturesList)
                 {
                     // FIXME TODO check if signature not exist or signature need be update
+
+                    Log.d("elazarkin12", "mCloud.getSignutareFilePathByUUID(uuid).exists()=" + mCloud.getSignutareFilePathByUUID(uuid).exists());
+
                     if(!mCloud.getSignutareFilePathByUUID(uuid).exists())
                     {
                         needBeDownloadedSignatures.add(uuid);
                     }
                 }
 
-                mCloud.downloadSignatures(sinaturesList, new AWS.OnDownloadListener()
+                if(needBeDownloadedSignatures.size() > 0)
                 {
-                    private Vector<AwsDowloadItem> items = null;
-                    private int errorCount = 0;
-
-                    @Override
-                    public void onDownloadStarted(String path)
+                    mCloud.downloadSignatures(needBeDownloadedSignatures, new AWS.OnDownloadListener()
                     {
-                        Log.d("elazarkin", "onDownloadStarted " + path);
-                    }
+                        private Vector<AwsDowloadItem> items = null;
+                        private int errorCount = 0;
 
-                    @Override
-                    public void onDownloadProgress(String path, float percentage)
-                    {
-                        Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
-                    }
-
-                    @Override
-                    public synchronized void onDownloadFinished(String path)
-                    {
-                        String fileName = new File(path).getName();
-                        String uuid     = fileName.substring(0, fileName.length() - 4);
-
-                        Log.d("elazarkin10", "onDownloadFinished " + path + " items.size()=" + items.size());
-
-                        if (items != null && items.size() > 0)
+                        @Override
+                        public void onDownloadStarted(String path)
                         {
-                            for (AwsDowloadItem item:items)
-                            {
-                                if(item.getFilePath().equals(path))
-                                {
-                                    updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, item.getMetadata());
-                                    items.removeElement(item);
+                            Log.d("elazarkin", "onDownloadStarted " + path);
+                        }
 
-                                    if(items.size() <= 0)
+                        @Override
+                        public void onDownloadProgress(String path, float percentage)
+                        {
+                            Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
+                        }
+
+                        @Override
+                        public synchronized void onDownloadFinished(String path)
+                        {
+                            String fileName = new File(path).getName();
+                            String uuid     = fileName.substring(0, fileName.length() - 4);
+
+                            Log.d("elazarkin10", "onDownloadFinished " + path + " items.size()=" + items.size());
+
+                            if (items != null && items.size() > 0)
+                            {
+                                for (AwsDowloadItem item : items)
+                                {
+                                    if (item.getFilePath().equals(path))
                                     {
-                                        if(errorCount <= 0)
+                                        updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, item.getMetadata());
+                                        items.removeElement(item);
+
+                                        if (items.size() <= 0)
                                         {
-                                            Log.d("elazarkin10", "finish all");
-                                            callback.onSuccess();
+                                            if (errorCount <= 0)
+                                            {
+                                                Log.d("elazarkin10", "finish all");
+                                                callback.onSuccess();
+                                            }
+                                            else
+                                            {
+                                                Log.d("elazarkin10", "not success 2");
+                                                callback.notSuccessFinish();
+                                            }
                                         }
                                         else
                                         {
-                                            Log.d("elazarkin10", "not success 2");
-                                            callback.notSuccessFinish();
+                                            Log.d("elazarkin10", "onProccess!");
+                                            callback.onProgress(path);
                                         }
+                                        return;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                callback.onError(ILesswalkService.CODE_ERROR_METADATA_NOT_CREATED);
+                                return;
+                            }
+
+                            callback.onError(ILesswalkService.CODE_ERROR_STRANGE_METADATA_ITEM);
+                        }
+
+                        @Override
+                        public void onDownloadError(String path, int errorId, Exception ex)
+                        {
+                            errorCount++;
+
+                            for (AwsDowloadItem item : items)
+                            {
+                                if (item.getFilePath().equals(path))
+                                {
+                                    items.removeElement(item);
+
+                                    if (items.size() <= 0)
+                                    {
+                                        callback.notSuccessFinish();
                                     }
                                     else
                                     {
-                                        Log.d("elazarkin10", "onProccess!");
-                                        callback.onProgress(path);
+                                        callback.onError(ILesswalkService.REGISTRATION_ERROR_DOWNLOAD_SIGNATURES);
                                     }
-                                    return;
                                 }
                             }
-                        }
-                        else
-                        {
-                            callback.onError(ILesswalkService.CODE_ERROR_METADATA_NOT_CREATED);
-                            return;
+                            Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
                         }
 
-                        callback.onError(ILesswalkService.CODE_ERROR_STRANGE_METADATA_ITEM);
-                    }
-
-                    @Override
-                    public void onDownloadError(String path, int errorId, Exception ex)
-                    {
-                        errorCount++;
-
-                        for (AwsDowloadItem item:items)
+                        @Override
+                        public void onMetadataReceived(AwsDowloadItem item)
                         {
-                            if(item.getFilePath().equals(path))
+                            Log.d("elazarkin10", "onMetadataReceived " + item.getFilePath());
+
+                            if (items == null)
                             {
-                                items.removeElement(item);
-
-                                if(items.size() <= 0)
-                                {
-                                    callback.notSuccessFinish();
-                                }
-                                else
-                                {
-                                    callback.onError(ILesswalkService.REGISTRATION_ERROR_DOWNLOAD_SIGNATURES);
-                                }
+                                items = new Vector<AwsDowloadItem>();
                             }
+
+                            items.add(item);
                         }
-                        Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
-                    }
-
-                    @Override
-                    public void onMetadataReceived(AwsDowloadItem item)
-                    {
-                        Log.d("elazarkin10", "onMetadataReceived " + item.getFilePath());
-
-                        if(items == null)
-                        {
-                            items = new Vector<AwsDowloadItem>();
-                        }
-
-                        items.add(item);
-                    }
-                });
+                    });
+                }
+                else callback.onSuccess();
             }
             else
             {
