@@ -19,7 +19,6 @@ import com.lesswalk.utils.PhoneUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +50,7 @@ public class SyncThread
     enum SyncThreadIDs
     {
         STORE_LOCAL_CONTACT_TASK,
+        SYNC_SOME_CONTACT_SIGNATURES_TASK,
         CHECK_CONTACT_UPDATE
     }
 
@@ -61,16 +61,17 @@ public class SyncThread
         SyncThreadIDs getID();
     }
 
-    class StoreLocalContactTask implements ISyncThreadTasks
+    class SyncSomeContactSignaturesTask implements ISyncThreadTasks
     {
         String                                   number   = null;
         ILesswalkService.ISetLocalNumberCallback callback = null;
 
-        StoreLocalContactTask(String number, ILesswalkService.ISetLocalNumberCallback callback)
+        SyncSomeContactSignaturesTask(String number, ILesswalkService.ISetLocalNumberCallback callback)
         {
             this.number = number;
             this.callback = callback;
         }
+
         @Override
         public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
         {
@@ -88,20 +89,6 @@ public class SyncThread
             {
                 callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
                 return;
-            }
-
-            try
-            {
-                // TODO improve syntax
-                OutputStream os       = new FileOutputStream(syncThread.localNumberStoreFile);
-                os.write(fixed_number.getBytes());
-                os.close();
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
             }
 
             sinaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
@@ -234,7 +221,43 @@ public class SyncThread
         @Override
         public SyncThreadIDs getID()
         {
-            return SyncThreadIDs.STORE_LOCAL_CONTACT_TASK;
+            return null;
+        }
+    }
+
+    class StoreLocalContactTask extends SyncSomeContactSignaturesTask
+    {
+        StoreLocalContactTask(String number, ILesswalkService.ISetLocalNumberCallback callback)
+        {
+            super(number, callback);
+        }
+        @Override
+        public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
+        {
+            String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
+            final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
+            //
+            try
+            {
+                // TODO improve syntax
+                OutputStream os       = new FileOutputStream(syncThread.localNumberStoreFile);
+                os.write(fixed_number.getBytes());
+                os.close();
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
+            }
+
+            super.DO(syncThread, userDB, signaturesDB);
+        }
+
+        @Override
+        public SyncThreadIDs getID()
+        {
+            return SyncThreadIDs.SYNC_SOME_CONTACT_SIGNATURES_TASK;
         }
     }
 

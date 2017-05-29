@@ -16,20 +16,24 @@ import com.lesswalk.bases.IContactManager;
 public class NavigatiomMenuSurface extends GLSurfaceView
 {
     private NavigationMenuRenderer  navigationMenuR  = null;
-//    private Vector<CarusselContact> contacts         = null;
 
     private float   lastTouchedX = 0.0f;
     private float   lastTouchedY = 0.0f;
 
+    private BaseInterRendererLayout layout = null;
+
 //    private NavigationIconLayout    navigationIconLayout    = null;
-    private NavigationContactLayout navigationContactLayout = null;
-    
+
     public NavigatiomMenuSurface(Context context)
     {
         super(context);
         
 //        navigationIconLayout    = new NavigationIconLayout(getContext());
-        navigationContactLayout = new NavigationContactLayout(getContext());
+    }
+
+    public void addLayout(BaseInterRendererLayout layout)
+    {
+        this.layout = layout;
     }
 
     private static final float MAX_MOVED_DIST_TO_CLICK = 10.0f;
@@ -90,31 +94,22 @@ public class NavigatiomMenuSurface extends GLSurfaceView
             @Override
             public void onSurfaceChanged(int w, int h)
             {
-                navigationContactLayout.setWhParams(w, h, new BaseInterRendererLayout.RendererLayoutParams(0.0f, 0.0f, 1.0f, 1.0f));
+                layout.setWhParams(w, h, new BaseInterRendererLayout.RendererLayoutParams(0.0f, 0.0f, 1.0f, 1.0f));
             }
 
             @Override
             public void onSurfaceCreated()
             {
-                navigationContactLayout.init(getContext());
-                navigationMenuR.addLayoutItem(navigationContactLayout);
+                if(layout instanceof NavigationContactLayout)
+                {
+                    ((NavigationContactLayout)layout).init(getContext());
+                }
+                navigationMenuR.addLayoutItem(layout);
             }
         }));
 
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
-
-    public void setContactManager(IContactManager manager)
-    {
-		navigationContactLayout.setContactManager(manager);
-    }
-
-	public void setContactFilter(String text)
-	{
-		navigationContactLayout.setContactFilter(text);
-	}
-
-    public String getContactFilter() {return navigationContactLayout.getContactFilter();}
 
 	public void setOn()
 	{

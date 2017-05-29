@@ -1,158 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="13"
-    android:background="@drawable/background_1_1x"
-    tools:context="com.lesswalk.MainActivity"
     >
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:src="@drawable/line_2x"
-        android:alpha="0.0"
-        />
-
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:weightSum="10"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_1_1x"
+        android:orientation="vertical"
+        android:weightSum="13"
+        tools:context="com.lesswalk.MainActivity"
         >
 
-        <com.lesswalk.views.NegativeImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/help_2x"
-            android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            android:layout_weight="3"
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:alpha="0.0"
+            android:src="@drawable/line_2x"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="2dp"
+            android:weightSum="10"
+            >
+
+            <com.lesswalk.views.NegativeImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/help_2x"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:src="@drawable/home_title_image_2x"
+                />
+
+            <com.lesswalk.views.NegativeImageButton
+                android:id="@+id/contact_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/setting_2x"
+                />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:alpha="0.1"
+            android:src="@drawable/line_2x"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="2dp"
+            android:weightSum="10"
+            >
+
+            <com.lesswalk.views.ContactsAllLastSwitcher
+                android:id="@+id/contacts_all_recent_switcher"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="2"
+                />
+
+            <SearchView
+                android:id="@+id/contact_search_filter"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="8"
+                android:background="#7f7f7f"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:alpha="0.1"
+            android:src="@drawable/line_2x"
+            />
+
+        <com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout
+            android:id="@+id/contact_act_signatures_slider"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.5"
             />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/home_title_image_2x"
-            android:layout_weight="4"
-            />
-
-        <com.lesswalk.views.NegativeImageButton
-            android:id="@+id/contact_settings"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/setting_2x"
-            android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            android:layout_weight="3"
-            />
-
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:src="@drawable/line_2x"
-        android:alpha="0.1"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:weightSum="10"
-        >
-
-        <com.lesswalk.views.ContactsAllLastSwitcher
-            android:id="@+id/contacts_all_recent_switcher"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:layout_margin="5dp"
-            />
-
-        <SearchView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:id="@+id/contact_search_filter"
-            android:layout_weight="8"
-            android:background="#7f7f7f"
-            />
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:src="@drawable/line_2x"
-        android:alpha="0.1"
-        />
-    
-    <com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout
-        android:id="@+id/contact_act_signatures_slider"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1.5"
-        />
-    
-	<ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:src="@drawable/line_2x"
-        android:alpha="0.1"
-        />
-	
-     <RelativeLayout
-        android:id="@+id/navigation_surface_screen"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="7.5"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:orientation="horizontal"
-        >
-
-        <SurfaceView
-            android:id="@+id/contact_act_preview_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-        
-        <com.google.zxing.android.ViewfinderView
-            android:id="@+id/contact_act_barcodefinder"
             android:layout_width="match_parent"
-     		android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:alpha="0.1"
+            android:src="@drawable/line_2x"
             />
-        
-		<ImageButton
-            android:id="@+id/contact_act_qrcode_bt"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/white"
-            android:contentDescription="@string/hello_world"
-            android:paddingBottom="2dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="2dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/qrcode_32924484" />
-    </RelativeLayout>
 
-</LinearLayout>
+        <RelativeLayout
+            android:id="@+id/navigation_surface_screen"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7.5"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            >
+
+            <SurfaceView
+                android:id="@+id/contact_act_preview_view"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+
+            <com.google.zxing.android.ViewfinderView
+                android:id="@+id/contact_act_barcodefinder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <ImageButton
+                android:id="@+id/contact_act_qrcode_bt"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:background="@android:color/white"
+                android:contentDescription="@string/hello_world"
+                android:paddingBottom="2dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="2dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/qrcode_32924484"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/main_activity_wait_wheel"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:visibility="invisible"/>
+
+</RelativeLayout>

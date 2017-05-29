@@ -26,17 +26,20 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 {
 	private static final String TAG = "lesswalkNavigationContactLayout";
 
-	private static final int HANDLER_ATTR_VER_POS_INDEX = 0;
+	public interface NavigationContactLayoutCallback
+	{
+		void onContactClicked(String name, String number);
+	}
+
+	private static final int HANDLER_ATTR_VER_POS_INDEX   = 0;
 	private static final int HANDLER_ATTR_TEX_COORD_INDEX = 1;
-	private static final int HANDLER_ATTR_SIZE = 2;
+	private static final int HANDLER_ATTR_SIZE            = 2;
+	private static final int HANDLER_UNIF_TEXTURE_INDEX   = 0;
+	private static final int HANDLER_UNIF_FIX_MAT_INDEX   = 1;
+	private static final int HANDLER_UNIF_SIZE            = 2;
+	private static final int ANGLE_BETWEEN_CONTACTS       = 30;
 
-	private static final int HANDLER_UNIF_TEXTURE_INDEX = 0;
-	private static final int HANDLER_UNIF_FIX_MAT_INDEX = 1;
-	private static final int HANDLER_UNIF_SIZE = 2;
-
-	private static final int ANGLE_BETWEEN_CONTACTS = 30;
-
-	private int program = -1;
+	private int program        = -1;
 	private int attrHandlers[] = null;
 	private int unifHandlers[] = null;
 
@@ -47,16 +50,15 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 	private static final float MIN_DEGREE_ANGLE = 60.0f;
 
 	private float basicTransformMatrix[] = null;
-
 	private float currentDegree = 90;
 
-	private Context context = null;
-	private IContactManager contactManager = null;
-	private Vector<NavigationContact> contacts = null;
-	private Vector<NavigationContact> work_contacts = null;
-
-	private String contactFilter = "";
-	private String last_filter   = "";
+	private Context                         context        = null;
+	private IContactManager                 contactManager = null;
+	private Vector<NavigationContact>       contacts       = null;
+	private Vector<NavigationContact>       work_contacts  = null;
+	private String                          contactFilter  = "";
+	private String                          last_filter    = "";
+	private NavigationContactLayoutCallback callback       = null;
 
 	public NavigationContactLayout(Context context, int w, int h, RendererLayoutParams params)
 	{
@@ -64,6 +66,11 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 		//
 		this.context = context;
 		//
+	}
+
+	public void setNavigationContactLayoutCallback(NavigationContactLayoutCallback callback)
+	{
+		this.callback = callback;
 	}
 	
 	public NavigationContactLayout(Context context)
@@ -419,13 +426,9 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 
 				corners = work_contacts.elementAt(i).getCorners(transformMatrix);
 
-				if (onObject(x, y, corners))
+				if (onObject(x, y, corners) && callback != null)
 				{
-					Intent intent = new Intent(context, ContactProfile.class);
-					//
-					intent.putExtra("contact_name", work_contacts.elementAt(i).getName());
-					intent.putExtra("phone_number", work_contacts.elementAt(i).getPhoneNumber());
-					context.startActivity(intent);
+					callback.onContactClicked(work_contacts.elementAt(i).getName(), work_contacts.elementAt(i).getPhoneNumber());
 					break;
 				}
 			}

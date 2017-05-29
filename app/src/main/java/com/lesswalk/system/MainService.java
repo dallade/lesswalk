@@ -292,6 +292,13 @@ public class MainService extends Service implements ILesswalkService
 	}
 
 	@Override
+	public int syncContactSignatures(String number, ISetLocalNumberCallback callback)
+	{
+		syncThread.addImportantTask(syncThread.new SyncSomeContactSignaturesTask(number, callback));
+		return 0;
+	}
+
+	@Override
 	public String getLocalNumber()
 	{
 		return syncThread.getLocalNumber();

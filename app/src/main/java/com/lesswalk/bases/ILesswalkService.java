@@ -12,6 +12,8 @@ public interface ILesswalkService
 
 	int setLocalNumber(String number, ISetLocalNumberCallback callback);
 
+	int syncContactSignatures(String number, ISetLocalNumberCallback callback);
+
 	String getLocalNumber();
 
 	interface ISetLocalNumberCallback

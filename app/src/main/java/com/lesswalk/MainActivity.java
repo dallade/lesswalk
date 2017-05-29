@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
@@ -16,8 +17,10 @@ import com.google.zxing.android.ViewfinderView;
 import com.lesswalk.bases.BaseActivity;
 import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.bases.ContactSignature.SignatureType;
+import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
 import com.lesswalk.contact_page.navigation_menu.NavigatiomMenuSurface;
+import com.lesswalk.contact_page.navigation_menu.NavigationContactLayout;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject.BarcodeDetectorCallback;
 import com.lesswalk.views.ContactsAllLastSwitcher;
@@ -30,13 +33,15 @@ public class MainActivity extends BaseActivity
 
     private enum MODE {CONTACT_CARUSSEL_MODE, QR_DETECTOR_MODE};
 
-	private NavigatiomMenuSurface       navigationMenuGL = null;
-	private ContactsAllLastSwitcher     allLastSwitcher  = null;
-	private SearchView                  searchFilter     = null;
-	private BarcodeDecoderObject        barcodeObject    = null;
-	private ContactSignatureSlideLayout signatureSlider  = null;
-	private ImageButton                 qrcodeButton     = null;
-	private ImageButton                 settingBt        = null;
+	private NavigationContactLayout     navigationContactLayout = null;
+	private NavigatiomMenuSurface       navigationMenuGL        = null;
+	private ContactsAllLastSwitcher     allLastSwitcher         = null;
+	private SearchView                  searchFilter            = null;
+	private BarcodeDecoderObject        barcodeObject           = null;
+	private ContactSignatureSlideLayout signatureSlider         = null;
+	private ImageButton                 qrcodeButton            = null;
+	private ImageButton                 settingBt               = null;
+	private ProgressBar                 waitWheel               = null;
 	private MODE                        currentMode      = MODE.CONTACT_CARUSSEL_MODE;
 
     @Override
@@ -44,6 +49,8 @@ public class MainActivity extends BaseActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+		waitWheel = (ProgressBar) findViewById(R.id.main_activity_wait_wheel);
 
 		allLastSwitcher = (ContactsAllLastSwitcher) findViewById(R.id.contacts_all_recent_switcher);
 		allLastSwitcher.setCallback(new ContactsAllLastSwitcher.IContactsAllLastSwitcherCallback()
@@ -58,6 +65,78 @@ public class MainActivity extends BaseActivity
 		navigationMenuGL        = new NavigatiomMenuSurface(this);
 		navigationMenuGL.initiation();
 		((RelativeLayout) findViewById(R.id.navigation_surface_screen)).addView(navigationMenuGL);
+
+		navigationContactLayout = new NavigationContactLayout(this);
+		navigationContactLayout.setNavigationContactLayoutCallback(new NavigationContactLayout.NavigationContactLayoutCallback()
+		{
+			@Override
+			public void onContactClicked(final String name, final String number)
+			{
+                waitWheel.setVisibility(View.VISIBLE);
+                waitWheel.bringToFront();
+
+                getService().syncContactSignatures(number, new ILesswalkService.ISetLocalNumberCallback()
+                {
+					private void startContactProfile()
+					{
+						Intent intent = new Intent(MainActivity.this, ContactProfile.class);
+						//
+						runOnUiThread(new Runnable(){@Override public void run() {waitWheel.setVisibility(View.INVISIBLE);}});
+						//
+						intent.putExtra("contact_name", name);
+						intent.putExtra("phone_number", number);
+						startActivity(intent);
+					}
+
+                    @Override
+                    public void onSuccess()
+                    {
+						startContactProfile();
+					}
+
+                    @Override
+                    public void onError(final int errorID)
+                    {
+						runOnUiThread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								waitWheel.setVisibility(View.INVISIBLE);
+
+								if(errorID == ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED)
+								{
+									startContactProfile();
+								}
+								else Toast.makeText(MainActivity.this, "onError Internet problem", Toast.LENGTH_SHORT);
+							}
+						});
+                    }
+
+                    @Override
+                    public void onProgress(String path)
+                    {
+
+                    }
+
+                    @Override
+                    public void notSuccessFinish()
+                    {
+						runOnUiThread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								waitWheel.setVisibility(View.INVISIBLE);
+								Toast.makeText(MainActivity.this, "onError Internet problem", Toast.LENGTH_SHORT);
+							}
+						});
+                    }
+                });
+			}
+		});
+
+		navigationMenuGL.addLayout(navigationContactLayout);
 
 		barcodeObject	= new BarcodeDecoderObject
 		(
@@ -117,9 +196,9 @@ public class MainActivity extends BaseActivity
 			@Override
 			public boolean onQueryTextChange(String text)
 			{
-				if(navigationMenuGL != null)
+				if(navigationContactLayout != null)
 				{
-					navigationMenuGL.setContactFilter(text);
+					navigationContactLayout.setContactFilter(text);
 				}
 				return false;
 			}
@@ -214,7 +293,7 @@ public class MainActivity extends BaseActivity
 	{
 		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
 
-		navigationMenuGL.setContactManager(getService().getContactManager());
+		navigationContactLayout.setContactManager(getService().getContactManager());
 
 		getService().getContactManager().fillSignaturesByPhoneNumber(getService().getLocalNumber(), signatures);
 
@@ -244,9 +323,9 @@ public class MainActivity extends BaseActivity
 			setMode(MODE.CONTACT_CARUSSEL_MODE);
 			return;
 		}
-		else if((filter=navigationMenuGL.getContactFilter()) != null && filter.length() > 0)
+		else if((filter=navigationContactLayout.getContactFilter()) != null && filter.length() > 0)
 		{
-			navigationMenuGL.setContactFilter("");
+			navigationContactLayout.setContactFilter("");
 			runOnUiThread(new Runnable()
 			{
 				@Override
