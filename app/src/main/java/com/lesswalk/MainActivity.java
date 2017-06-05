@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -33,6 +34,7 @@ public class MainActivity extends BaseActivity
 
     private enum MODE {CONTACT_CARUSSEL_MODE, QR_DETECTOR_MODE};
 
+	private LinearLayout                mainScreen              = null;
 	private NavigationContactLayout     navigationContactLayout = null;
 	private NavigatiomMenuSurface       navigationMenuGL        = null;
 	private ContactsAllLastSwitcher     allLastSwitcher         = null;
@@ -42,13 +44,15 @@ public class MainActivity extends BaseActivity
 	private ImageButton                 qrcodeButton            = null;
 	private ImageButton                 settingBt               = null;
 	private ProgressBar                 waitWheel               = null;
-	private MODE                        currentMode      = MODE.CONTACT_CARUSSEL_MODE;
+	private MODE                        currentMode             = MODE.CONTACT_CARUSSEL_MODE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+		mainScreen = (LinearLayout) findViewById(R.id.activity_contacts_screen);
 
 		waitWheel = (ProgressBar) findViewById(R.id.main_activity_wait_wheel);
 
@@ -73,6 +77,7 @@ public class MainActivity extends BaseActivity
 			public void onContactClicked(final String name, final String number)
 			{
                 waitWheel.setVisibility(View.VISIBLE);
+				setMainScreenEnabled(false);
                 waitWheel.bringToFront();
 
                 getService().syncContactSignatures(number, new ILesswalkService.ISetLocalNumberCallback()
@@ -81,7 +86,15 @@ public class MainActivity extends BaseActivity
 					{
 						Intent intent = new Intent(MainActivity.this, ContactProfile.class);
 						//
-						runOnUiThread(new Runnable(){@Override public void run() {waitWheel.setVisibility(View.INVISIBLE);}});
+						runOnUiThread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								waitWheel.setVisibility(View.INVISIBLE);
+								setMainScreenEnabled(true);
+							}
+						});
 						//
 						intent.putExtra("contact_name", name);
 						intent.putExtra("phone_number", number);
@@ -103,6 +116,7 @@ public class MainActivity extends BaseActivity
 							public void run()
 							{
 								waitWheel.setVisibility(View.INVISIBLE);
+								setMainScreenEnabled(true);
 
 								if(errorID == ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED)
 								{
@@ -128,6 +142,7 @@ public class MainActivity extends BaseActivity
 							public void run()
 							{
 								waitWheel.setVisibility(View.INVISIBLE);
+								setMainScreenEnabled(true);
 								Toast.makeText(MainActivity.this, "onError Internet problem", Toast.LENGTH_SHORT);
 							}
 						});
@@ -216,7 +231,12 @@ public class MainActivity extends BaseActivity
 		});
     }
 
-    private BarcodeDetectorCallback barcodeDetectorCallback = new BarcodeDetectorCallback()
+	private void setMainScreenEnabled(boolean isClickable)
+	{
+		//TODO
+	}
+
+	private BarcodeDetectorCallback barcodeDetectorCallback = new BarcodeDetectorCallback()
 	{
 		@Override
 		public void onBarcodeDetection(String text)
