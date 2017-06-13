@@ -376,7 +376,7 @@ public class AmazonCloud extends Cloud
         String         pathOnServer = SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION;
         ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
 
-        onDownloadListener.onMetadataReceived(new AwsDowloadItem(filePath, pathOnServer, fileMetadata));
+        onDownloadListener.onMetadataReceived(new AwsDownloadItem(filePath, pathOnServer, fileMetadata));
 
         AWS.download(mContext, pathOnServer, filePath, onDownloadListener);
 

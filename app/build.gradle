@@ -1,10 +1,5 @@
 apply plugin: 'com.android.application'
-dependencies {
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:support-vector-drawable:24.2.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-}
+
 android {
     compileSdkVersion 24        //should have a corresponding android platform version
     buildToolsVersion "25.0"    //should be set according to the revision of the latest -
@@ -24,6 +19,9 @@ android {
     dependencies {
         compile 'com.google.code.gson:gson:2.4'
         compile 'com.squareup.okhttp3:okhttp:3.4.2'
+        compile 'com.android.support:support-v4:24.2.1'
+        compile 'com.android.support:support-vector-drawable:24.2.1'
+        compile 'com.android.support:appcompat-v7:24.2.1'
         //
         // AWS (Amazon):
         compile 'com.amazonaws:aws-android-sdk-core:2.2.22'

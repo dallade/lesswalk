@@ -13,7 +13,7 @@ import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
-import com.lesswalk.database.AwsDowloadItem;
+import com.lesswalk.database.AwsDownloadItem;
 import com.lesswalk.database.Cloud;
 import com.lesswalk.utils.PhoneUtils;
 
@@ -136,7 +136,7 @@ public class SyncThread
                 {
                     mCloud.downloadSignatures(needBeDownloadedSignatures, new AWS.OnDownloadListener()
                     {
-                        private Vector<AwsDowloadItem> items = null;
+                        private Vector<AwsDownloadItem> items = null;
                         private int errorCount = 0;
 
                         @Override
@@ -161,7 +161,7 @@ public class SyncThread
 
                             if (items != null && items.size() > 0)
                             {
-                                for (AwsDowloadItem item : items)
+                                for (AwsDownloadItem item : items)
                                 {
                                     if (item.getFilePath().equals(path))
                                     {
@@ -204,7 +204,7 @@ public class SyncThread
                         {
                             errorCount++;
 
-                            for (AwsDowloadItem item : items)
+                            for (AwsDownloadItem item : items)
                             {
                                 if (item.getFilePath().equals(path))
                                 {
@@ -224,13 +224,13 @@ public class SyncThread
                         }
 
                         @Override
-                        public void onMetadataReceived(AwsDowloadItem item)
+                        public void onMetadataReceived(AwsDownloadItem item)
                         {
                             Log.d("elazarkin10", "onMetadataReceived " + item.getFilePath());
 
                             if (items == null)
                             {
-                                items = new Vector<AwsDowloadItem>();
+                                items = new Vector<AwsDownloadItem>();
                             }
 
                             items.add(item);
@@ -622,7 +622,7 @@ public class SyncThread
                     }
 
                     @Override
-                    public void onMetadataReceived(AwsDowloadItem item)
+                    public void onMetadataReceived(AwsDownloadItem item)
                     {
                         mFileMetadata = item.getMetadata();
                     }
