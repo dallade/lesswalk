@@ -303,7 +303,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     public void clicked(float x, float y)
     {
     	CarusselPageInterface frontPage  = null;
-        
+
         if((frontPage=getCurrentPage()) != null)
         {
 	    	if(carusselRotationProcess(frontPage)) return;

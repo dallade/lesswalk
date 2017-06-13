@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -11,7 +12,7 @@ import android.view.MotionEvent;
  */
 public class CarusselSurface extends GLSurfaceView
 {
-	private static final int MIN_MOVED_COUNTER = 5;
+	private static final int MIN_MOVED_COUNTER = 7;
 
     private CarusselGlSurfaceRenderer renderer       = null;
     private Context                   context        = null;

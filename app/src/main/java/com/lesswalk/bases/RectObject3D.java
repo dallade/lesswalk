@@ -207,15 +207,18 @@ public class RectObject3D extends BaseObject3D
 	
 	private boolean checkOnCurrentObject(float x, float y)
 	{
-//    	Log.d("elazarkin2", String.format
-//		(
-//			"%s:[(%3.2f, %3.2f)->(%3.2f, %3.2f)]       clicked(%3.2f, %3.2f)", 
-//			objectName, 
-//			x0() - width()/2, y0() - height()/2,
-//			x0() + width()/2, y0() + height()/2,
-//			x, y
-//		));
-		
+		if(objectName.contains("Parking_page"))
+		{
+			Log.d("elazarkin16", String.format
+			(
+					"%s:[(%3.2f, %3.2f)->(%3.2f, %3.2f)]       clicked(%3.2f, %3.2f)",
+					objectName,
+					x0() - width() / 2, y0() - height() / 2,
+					x0() + width() / 2, y0() + height() / 2,
+					x, y
+			));
+		}
+
     	return
 	    	(
 	    		getTextureID() >= 0

@@ -403,7 +403,7 @@ public abstract class CarusselPageInterface extends RectObject3D
     protected abstract ImageObject3D getIcon();
     protected abstract String getPageTitle();
 
-	public static void setModelView(int w, int h) 
+	public static void setModelView(int w, int h)
 	{
         float small    = 0.5f;
         float normal   = 1.0f;
@@ -416,7 +416,6 @@ public abstract class CarusselPageInterface extends RectObject3D
         WIDTH  = w;
         HEIGTH = h;
         //
-        
     	GLES20.glViewport((int)w_start, (int)h_start, (int)w_size, (int)h_size);
 	}
 	
@@ -472,12 +471,14 @@ public abstract class CarusselPageInterface extends RectObject3D
 	
 	public RectObject3D checkOnObject(float x, float y, int w, int h) 
 	{
+		Log.d("elazarkin16", String.format("%s fix_x=%3.1f fix_y=%3.1f", toString(), fix_x(x, w), fix_y(y, h)));
 		return super.isOnObject(fix_x(x, w), fix_y(y, h));
 	}
 	
 	private float fix_y(float y, int h) 
 	{
-		return -(y/h - 0.0f)*page_heigth();
+		//return -(y/h - 0.0f)*page_heigth();
+		return -(y/h - 0.0f)*FRAME_ASPECT;
 	}
 
 	private float fix_x(float x, int w) 
