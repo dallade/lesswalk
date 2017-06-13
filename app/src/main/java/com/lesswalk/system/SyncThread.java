@@ -22,6 +22,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
@@ -87,6 +90,23 @@ public class SyncThread
 
             if (userUuid == null)
             {
+                String signupNumber = String.format(Locale.getDefault(), "+%d %d", number[0], number[1]);
+                String uuid         = UUID.randomUUID().toString();
+                // TODO FIXME
+                mCloud.createUser(signupNumber, uuid, new Cloud.I_ProcessListener()
+                {
+                    @Override
+                    public void onSuccess(HashMap<String, String> result)
+                    {
+
+                    }
+
+                    @Override
+                    public void onFailure(HashMap<String, String> result)
+                    {
+
+                    }
+                });
                 callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
                 return;
             }
@@ -234,9 +254,12 @@ public class SyncThread
 
     class StoreLocalContactTask extends SyncSomeContactSignaturesTask
     {
-        StoreLocalContactTask(String number, ILesswalkService.ISetLocalNumberCallback callback)
+        private String name = null;
+
+        StoreLocalContactTask(String name, String number, ILesswalkService.ISetLocalNumberCallback callback)
         {
             super(number, callback);
+            this.name = name;
         }
         @Override
         public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)

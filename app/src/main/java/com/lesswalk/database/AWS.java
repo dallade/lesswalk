@@ -13,6 +13,8 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -36,6 +38,7 @@ public class AWS
     public static final  SimpleDateFormat DATE_FORMAT_yyyyMMdd_HHmmss = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
     private static AWS instance;
+    public static String S3_USERS_DIR = "users";
 
     private       CognitoCachingCredentialsProvider credentialsProvider;
     private       CognitoSyncManager                syncClient;
@@ -88,78 +91,82 @@ public class AWS
         return getInstance(c).transferUtility;
     }
 
-    public static void upload(Context context, final String path_to_file, final OnUploadListener onUploadListener)
+    public static String upload(Context context, String pathInS3, final String path_to_file)
     {
         File             file     = new File(path_to_file);
-        String           key      = generateKey();
-        TransferObserver observer = getInstance(context).transferUtility.upload(BUCKET, key, file);
-        observer.setTransferListener(new TransferListener()
-        {
-            boolean hasStarted = false;
-
-            @Override
-            public void onStateChanged(int id, TransferState state)
-            {
-                switch (state)
-                {
-
-                    case WAITING:
-                        break;
-                    case IN_PROGRESS:
-                        if (!hasStarted)
-                        {
-                            hasStarted = true;
-                            onUploadListener.onUploadStarted(path_to_file);
-                        }
-                        break;
-                    case PAUSED:
-                        break;
-                    case RESUMED_WAITING:
-                        break;
-                    case COMPLETED:
-                        onUploadListener.onUploadFinished(path_to_file);
-                        break;
-                    case CANCELED:
-                        break;
-                    case FAILED:
-                        break;
-                    case WAITING_FOR_NETWORK:
-                        break;
-                    case PART_COMPLETED:
-                        break;
-                    case PENDING_CANCEL:
-                        break;
-                    case PENDING_PAUSE:
-                        break;
-                    case PENDING_NETWORK_DISCONNECT:
-                        break;
-                    case UNKNOWN:
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal)
-            {
-                float percentage = 0;
-                try
-                {
-                    percentage = (bytesCurrent / bytesTotal) * 100;
-                }
-                catch (ArithmeticException e)
-                {
-                    Log.d(TAG, "onProgressChanged: bytesTotal=" + bytesTotal);
-                }
-                onUploadListener.onUploadProgress(path_to_file, percentage);
-            }
-
-            @Override
-            public void onError(int id, Exception ex)
-            {
-                onUploadListener.onUploadError(path_to_file, id, ex);
-            }
-        });
+        //String           key      = generateKey();
+        PutObjectRequest req = new PutObjectRequest(BUCKET, pathInS3, file);
+        PutObjectResult putObjectResult = getS3(context).putObject(req);
+        String eTag = putObjectResult.getETag();
+//        TransferObserver observer = getInstance(context).transferUtility.upload(BUCKET, key, file);
+//        observer.setTransferListener(new TransferListener()
+//        {
+//            boolean hasStarted = false;
+//
+//            @Override
+//            public void onStateChanged(int id, TransferState state)
+//            {
+//                switch (state)
+//                {
+//
+//                    case WAITING:
+//                        break;
+//                    case IN_PROGRESS:
+//                        if (!hasStarted)
+//                        {
+//                            hasStarted = true;
+//                            onUploadListener.onUploadStarted(path_to_file);
+//                        }
+//                        break;
+//                    case PAUSED:
+//                        break;
+//                    case RESUMED_WAITING:
+//                        break;
+//                    case COMPLETED:
+//                        onUploadListener.onUploadFinished(path_to_file);
+//                        break;
+//                    case CANCELED:
+//                        break;
+//                    case FAILED:
+//                        break;
+//                    case WAITING_FOR_NETWORK:
+//                        break;
+//                    case PART_COMPLETED:
+//                        break;
+//                    case PENDING_CANCEL:
+//                        break;
+//                    case PENDING_PAUSE:
+//                        break;
+//                    case PENDING_NETWORK_DISCONNECT:
+//                        break;
+//                    case UNKNOWN:
+//                    default:
+//                        break;
+//                }
+//            }
+//
+//            @Override
+//            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal)
+//            {
+//                float percentage = 0;
+//                try
+//                {
+//                    percentage = (bytesCurrent / bytesTotal) * 100;
+//                }
+//                catch (ArithmeticException e)
+//                {
+//                    Log.d(TAG, "onProgressChanged: bytesTotal=" + bytesTotal);
+//                }
+//                onUploadListener.onUploadProgress(path_to_file, percentage);
+//            }
+//
+//            @Override
+//            public void onError(int id, Exception ex)
+//            {
+//                onUploadListener.onUploadError(path_to_file, id, ex);
+//            }
+//        });
+        return eTag;
     }
 
 
@@ -236,7 +243,7 @@ public class AWS
         });
     }
 
-    private static String generateKey()
+    public static String generateKey()
     {
         String str = UUID.randomUUID().toString();
         //str += DATE_FORMAT_yyyyMMdd_HHmmss.format(new Date());

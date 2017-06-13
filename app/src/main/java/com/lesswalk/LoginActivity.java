@@ -212,6 +212,7 @@ public class LoginActivity extends BaseActivity
         int    countryCodeInt = Integer.parseInt(et_country_code.getText().toString());
         long   phoneLong      = Long.parseLong(et_phone.getText().toString());
         String phone          = String.format(Locale.getDefault(), "+%d %d", countryCodeInt, phoneLong);
+
         cloud.createUser(phone, uuid, new Cloud.I_ProcessListener()
         {
             @Override

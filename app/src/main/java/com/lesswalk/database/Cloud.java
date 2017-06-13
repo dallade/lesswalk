@@ -16,6 +16,12 @@ import java.util.Vector;
 public abstract class Cloud
 {
 
+    public abstract String uploadUser(String countryCode, String phone, String firstName, String lastName);
+
+    public abstract String uploadSignature(String signatureContents);
+
+    public abstract void createUser(String number, String uuid, I_ProcessListener i_processListener);
+
     public interface I_ProcessListener
     {
         void onSuccess(HashMap<String, String> result);
@@ -50,9 +56,6 @@ public abstract class Cloud
     public Cloud()
     {
     }
-
-    public abstract void createUser(String phone, String uuid, final Cloud.I_ProcessListener listener);
-
     //
     public abstract JSONObject getUserJson(String phone, String countryCode);
 
