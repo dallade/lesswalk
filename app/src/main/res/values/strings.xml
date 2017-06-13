@@ -13,7 +13,7 @@
     <string name="response_text"><font style='text-weight:bold;color:green;'>yesss</font> sir!</string>
     <string name="title_activity_editor">EditorActivity</string>
     <string name="title_activity_contact_profile">ContactProfile</string>
-    <string name="st_registration_set_number">To get Started, Please Entrer your Phone Number</string>
+    <string name="st_registration_set_number">To get started, please enter your name and phone number:</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -86,5 +86,8 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_lesswalk_settings">LesswalkSettings</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="phone_hint">Phone e.g. +972 543212345</string>
 
 </resources>

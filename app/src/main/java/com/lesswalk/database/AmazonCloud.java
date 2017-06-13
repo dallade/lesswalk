@@ -460,21 +460,20 @@ public class AmazonCloud extends Cloud
         JSONObject json         = null;
         try {
             bodyJson.put(PUT_VERSMS_field_countryCode, countryCode);
+            phone = countryCode + phone;//TODO Note: this is how it works at the cloud...
             bodyJson.put(PUT_VERSMS_field_phone, phone);
             bodyJson.put(PUT_VERSMS_field_veriCode, verificationCode);
             String     responseBody = reqHttpPut(url, bodyJson.toString());
-            JSONArray  jsonArr      = null;
-            jsonArr = new JSONArray(responseBody);
-            if (jsonArr.length() == 0) return null;
-            json = jsonArr.getJSONObject(0);
-            if (null == json) return "";
+            if (responseBody.equals("{}")){
+                return "success";
+            }
+            return "failed";
         }
         catch (Exception e)
         {
             e.printStackTrace();
             return "";
         }
-        return json.toString();
     }
 
 //    @Override

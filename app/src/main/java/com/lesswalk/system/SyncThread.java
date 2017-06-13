@@ -16,6 +16,7 @@ import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.AwsDownloadItem;
 import com.lesswalk.database.Cloud;
 import com.lesswalk.utils.PhoneUtils;
+import com.lesswalk.utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,6 +42,8 @@ public class SyncThread
 
     private static Semaphore mutex = new Semaphore(1);
 
+    enum SmsState{Uninitialized, OnGoing, TimedOut, Match, Mismatch}
+
     private MainService      mParent              = null;
     private Cloud            mCloud               = null;
     private DataBaseUpdater  dataBaseUpdater      = null;
@@ -49,6 +52,7 @@ public class SyncThread
     private String           localNumber          = null;
     private File             localNumberStoreFile = null;
     private boolean          isAlive              = false;
+    private SmsState         smsState             = SmsState.Uninitialized;
 
     enum SyncThreadIDs
     {
@@ -254,12 +258,15 @@ public class SyncThread
 
     class StoreLocalContactTask extends SyncSomeContactSignaturesTask
     {
-        private String name = null;
+        String firstName = null;
+        String lastName = null;
 
-        StoreLocalContactTask(String name, String number, ILesswalkService.ISetLocalNumberCallback callback)
+        StoreLocalContactTask(String number, String firstName, String lastName, ILesswalkService.ISetLocalNumberCallback callback)
         {
             super(number, callback);
-            this.name = name;
+
+            this.firstName = firstName;
+            this.lastName = lastName;
         }
         @Override
         public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
