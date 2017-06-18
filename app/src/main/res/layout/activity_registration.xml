@@ -29,12 +29,11 @@
             android:textSize="24sp"
             />
 
-        <!--android:text="@string/st_registration_set_number"-->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="5"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <RelativeLayout
@@ -42,27 +41,76 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_weight="4"
+                android:gravity="center"
                 android:layout_gravity="center"
                 >
 
-                <EditText
-                    android:id="@+id/registration_name_et"
+                <LinearLayout
+                    android:id="@+id/registration_number_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
                     android:gravity="center"
-                    />
+                    >
 
-                <EditText
-                    android:id="@+id/registration_number_et"
+                    <EditText
+                        android:id="@+id/registration_number_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:inputType="phone"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/registration_name_lastname_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:ems="10"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="10"
                     android:gravity="center"
-                    android:inputType="phone"
-                    android:visibility="gone"
-                    />
+                    android:visibility="invisible">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="1.5"
+                        android:textSize="12sp"
+                        android:text="Name"/>
+
+                    <EditText
+                        android:id="@+id/registration_name_et"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="3.5"
+                        />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="1.5"
+                        android:textSize="12sp"
+                        android:text="Last"/>
+
+                    <EditText
+                        android:id="@+id/registration_lastname_et"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="3.5"
+                        />
+
+                </LinearLayout>
+
 
             </RelativeLayout>
 
@@ -73,8 +121,10 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/done"/>
+                />
+
         </LinearLayout>
+
     </LinearLayout>
 
     <ProgressBar
