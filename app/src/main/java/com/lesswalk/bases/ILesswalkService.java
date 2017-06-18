@@ -13,7 +13,7 @@ public interface ILesswalkService
 	int setLocalNumber(String number, ISetLocalNumberCallback callback);
 	int setLocalNumber(String name, String number, ISetLocalNumberCallback callback);
 
-	boolean checkIfUserExisted(String number);
+	boolean checkIfUserExist(String number);
 
 	int syncContactSignatures(String number, ISetLocalNumberCallback callback);
 

@@ -65,6 +65,9 @@ public class AmazonCloud extends Cloud
     private static final   String SIGNATURES_EXTRACT_PATH          = "sig_extracted";
     private static final   String SIGNATURES_PATH                  = "signatures";
     private static final   String SIGNATURE_EXTENSION              = ".zip";
+    private static final   String ASSETS_PATH                      = "assets";
+    private static final   String ASSETS_UUID                      = "22709EF2-6304-478F-A91E-192022B1AC36";
+    private static final   String ASSETS_EXTENSION                 = ".zip";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     protected Context               mContext;
@@ -393,6 +396,26 @@ public class AmazonCloud extends Cloud
         {
             downloadSignature(uuid, onDownloadListener);
         }
+    }
+
+    @Override
+    public void downloadAssets(String dirPath, AWS.OnDownloadListener onDownloadListener) {
+        //TODO elad
+        String         pathOnServer = ASSETS_PATH + File.separator + ASSETS_UUID + ASSETS_EXTENSION;
+        ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
+
+        onDownloadListener.onMetadataReceived(new AwsDownloadItem(dirPath, pathOnServer, fileMetadata));
+        //todo check if etag has changed, if it did change then download:
+        AWS.download(mContext, pathOnServer, dirPath, onDownloadListener);
+        //TODO uncomment the following unzipping lines to unzip the zip
+//        if (!ZipManager.unzip(mContext.getApplicationContext(), zipPath, unzippedDir.getPath()))
+//        {
+//            Log.e(TAG, String.format("Unzip failed for - '%s'", zipPath));
+//        }
+//        else
+//        {
+//            Log.d(TAG, String.format("Unzip succeeded into - '%s'", unzippedDir.getPath()));
+//        }
     }
 
     @Override

@@ -298,7 +298,7 @@ public class MainService extends Service implements ILesswalkService
 	}
 
 	@Override
-	public boolean checkIfUserExisted(String number)
+	public boolean checkIfUserExist(String number)
 	{
 		return syncThread.checkIfUserExisted(number);
 	}

@@ -122,7 +122,7 @@ public class RegistrationActivity extends BaseActivity
                         public void run()
                         {
                             // TODO handle return value
-                            getService().sendVerificationSms(numberField.getNumber(), smsField.generatedSmsCode(4));
+                            getService().sendVerificationSms(numberField.getNumber(), smsField.generateSmsCode(4));
                         }
                     }.start();
 
@@ -377,7 +377,7 @@ public class RegistrationActivity extends BaseActivity
         @Override
         String getTitle()
         {
-            return "Please type the code received in the SMS (should take several minutes)";
+            return "Type the SMS verification code";
         }
 
         @Override
@@ -411,7 +411,7 @@ public class RegistrationActivity extends BaseActivity
             {
                 String number = RegistrationActivity.this.numberField.getNumber();
 
-                if (getService().checkIfUserExisted(number))
+                if (getService().checkIfUserExist(number))
                 {
                     getService().downloadUserJsonIfNeed(number);
                     callback.onFinish(NextAction.SHOW_NAME_FROM_JSON);
@@ -423,7 +423,7 @@ public class RegistrationActivity extends BaseActivity
             }
         };
 
-        public String generatedSmsCode(int length)
+        public String generateSmsCode(int length)
         {
             Random random = new Random(new Date().getTime());
 

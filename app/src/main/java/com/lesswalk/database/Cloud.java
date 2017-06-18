@@ -72,6 +72,8 @@ public abstract class Cloud
     public abstract String downloadSignature(String uuid, AWS.OnDownloadListener onDownloadListener);
 
     public abstract void downloadSignatures(Vector<String> signaturesUuid, AWS.OnDownloadListener onDownloadListener);
+
+    public abstract void downloadAssets(String dirPath, AWS.OnDownloadListener onDownloadListener);
     //public abstract String getSignatureHeader(String uuid, AWS.OnDownloadListener onDownloadListener);
 
     /**
