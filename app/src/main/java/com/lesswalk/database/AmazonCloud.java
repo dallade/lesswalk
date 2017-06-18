@@ -154,21 +154,24 @@ public class AmazonCloud extends Cloud
     public JSONObject getUserJson(String phone, String countryCode)
     {
         String url = String.format
-        (
-            Locale.getDefault(),
-                PUT_REQ_USER_BY_PHONE,
-            CLOUD_SCHEME,
-            CLOUD_HOST,
-            CLOUD_PORT,
-            CLOUD_MODULE_user,
-            CLOUD_FUNCTION_findByPhoneNumber
-        );
+                (
+                        Locale.getDefault(),
+                        PUT_REQ_USER_BY_PHONE,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_user,
+                        CLOUD_FUNCTION_findByPhoneNumber
+                );
         JSONObject jsonParams = new JSONObject();
-        try {
+        try
+        {
             jsonParams.put("phone_number", phone);
             jsonParams.put("country_code", countryCode);
-        } catch (JSONException e) {
-            Log.e(TAG, "Couldn't build the params JSON for the post request. e.msg="+e.getMessage());
+        }
+        catch (JSONException e)
+        {
+            Log.e(TAG, "Couldn't build the params JSON for the post request. e.msg=" + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -447,34 +450,37 @@ public class AmazonCloud extends Cloud
     public String sendVerificationSms(String countryCode, String phone, String verificationCode)
     {
         String url = String.format
-                (
-                        Locale.getDefault(),
-                        PUT_REQ_USER_VER_SMS,
-                        CLOUD_SCHEME,
-                        CLOUD_HOST,
-                        CLOUD_PORT,
-                        CLOUD_MODULE_user,
-                        CLOUD_FUNCTION_sendVerSms
-                );
+        (
+                Locale.getDefault(),
+                PUT_REQ_USER_VER_SMS,
+                CLOUD_SCHEME,
+                CLOUD_HOST,
+                CLOUD_PORT,
+                CLOUD_MODULE_user,
+                CLOUD_FUNCTION_sendVerSms
+        );
         JSONObject bodyJson = new JSONObject();
-        JSONObject json         = null;
-        try {
+        JSONObject json     = null;
+        try
+        {
+            String    responseBody = null;
+
             bodyJson.put(PUT_VERSMS_field_countryCode, countryCode);
-            bodyJson.put(PUT_VERSMS_field_phone, phone);
+            bodyJson.put(PUT_VERSMS_field_phone, countryCode+phone);
             bodyJson.put(PUT_VERSMS_field_veriCode, verificationCode);
-            String     responseBody = reqHttpPut(url, bodyJson.toString());
-            JSONArray  jsonArr      = null;
-            jsonArr = new JSONArray(responseBody);
-            if (jsonArr.length() == 0) return null;
-            json = jsonArr.getJSONObject(0);
-            if (null == json) return "";
+            responseBody = reqHttpPut(url, bodyJson.toString());
+
+            if(responseBody.equals("{}"))
+            {
+                return "success";
+            }
+            return "failed";
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            return "";
+            return "failed";
         }
-        return json.toString();
     }
 
 //    @Override

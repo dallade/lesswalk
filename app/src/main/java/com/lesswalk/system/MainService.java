@@ -298,6 +298,12 @@ public class MainService extends Service implements ILesswalkService
 	}
 
 	@Override
+	public boolean checkIfUserExisted(String number)
+	{
+		return syncThread.checkIfUserExisted(number);
+	}
+
+	@Override
 	public int syncContactSignatures(String number, ISetLocalNumberCallback callback)
 	{
 		syncThread.addImportantTask(syncThread.new SyncSomeContactSignaturesTask(number, callback));
@@ -309,4 +315,16 @@ public class MainService extends Service implements ILesswalkService
 	{
 		return syncThread.getLocalNumber();
 	}
+
+    @Override
+    public void downloadUserJsonIfNeed(String number)
+    {
+        syncThread.downloadUserJsonIfNeed(number);
+    }
+
+    @Override
+    public void sendVerificationSms(String number, String code)
+    {
+        syncThread.sendVerificationSms(number, code);
+    }
 }

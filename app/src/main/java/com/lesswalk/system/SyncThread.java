@@ -17,6 +17,8 @@ import com.lesswalk.database.AwsDownloadItem;
 import com.lesswalk.database.Cloud;
 import com.lesswalk.utils.PhoneUtils;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,6 +51,27 @@ public class SyncThread
     private String           localNumber          = null;
     private File             localNumberStoreFile = null;
     private boolean          isAlive              = false;
+
+    public boolean checkIfUserExisted(String _number)
+    {
+        String number[] = PhoneUtils.splitPhoneNumber(_number);
+        String userUuid = mCloud.getUserUuid(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
+
+        return userUuid != null;
+    }
+
+    public void downloadUserJsonIfNeed(String _number)
+    {
+        String     number[] = PhoneUtils.splitPhoneNumber(_number);
+        JSONObject json     = mCloud.getUserJson(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
+    }
+
+    public void sendVerificationSms(String _number, String code)
+    {
+        String number[] = PhoneUtils.splitPhoneNumber(_number);
+        // TODO
+        mCloud.sendVerificationSms(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN], code);
+    }
 
     enum SyncThreadIDs
     {

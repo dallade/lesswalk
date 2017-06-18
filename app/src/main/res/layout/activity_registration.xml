@@ -46,11 +46,33 @@
                 >
 
                 <LinearLayout
+                    android:id="@+id/registration_sms_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="invisible"
+                    >
+
+                    <EditText
+                        android:id="@+id/registration_sms_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:maxLength="4"
+                        android:inputType="numberDecimal"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/registration_number_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
                     android:gravity="center"
+                    android:visibility="invisible"
                     >
 
                     <EditText

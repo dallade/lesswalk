@@ -13,11 +13,17 @@ public interface ILesswalkService
 	int setLocalNumber(String number, ISetLocalNumberCallback callback);
 	int setLocalNumber(String name, String number, ISetLocalNumberCallback callback);
 
+	boolean checkIfUserExisted(String number);
+
 	int syncContactSignatures(String number, ISetLocalNumberCallback callback);
 
 	String getLocalNumber();
 
-	interface ISetLocalNumberCallback
+    void downloadUserJsonIfNeed(String number);
+
+    void sendVerificationSms(String number, String code);
+
+    interface ISetLocalNumberCallback
 	{
 		void onSuccess();
 		void onError(int errorID);
