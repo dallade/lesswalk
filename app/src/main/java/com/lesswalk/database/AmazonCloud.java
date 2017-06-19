@@ -86,8 +86,10 @@ public class AmazonCloud extends Cloud
     public void createUser(String phone, String uuid, final Cloud.I_ProcessListener listener)
     {
         Dataset users = syncClient.openOrCreateDataset(Table.users);
+
         users.put(Field.users.get(Field.UsersField.PHONE), phone);
         users.put(Field.users.get(Field.UsersField.UUID), uuid);
+
         users.synchronize(new Dataset.SyncCallback()
         {
             @Override
@@ -154,19 +156,21 @@ public class AmazonCloud extends Cloud
     }
 
     @Override
-    public JSONObject getUserJson(String phone, String countryCode)
+    public JSONObject getUserJson(String countryCode, String phone)
     {
+        JSONObject json = null;
         String url = String.format
-                (
-                        Locale.getDefault(),
-                        PUT_REQ_USER_BY_PHONE,
-                        CLOUD_SCHEME,
-                        CLOUD_HOST,
-                        CLOUD_PORT,
-                        CLOUD_MODULE_user,
-                        CLOUD_FUNCTION_findByPhoneNumber
-                );
+        (
+                Locale.getDefault(),
+                PUT_REQ_USER_BY_PHONE,
+                CLOUD_SCHEME,
+                CLOUD_HOST,
+                CLOUD_PORT,
+                CLOUD_MODULE_user,
+                CLOUD_FUNCTION_findByPhoneNumber
+        );
         JSONObject jsonParams = new JSONObject();
+
         try
         {
             jsonParams.put("phone_number", phone);
@@ -175,17 +179,31 @@ public class AmazonCloud extends Cloud
         catch (JSONException e)
         {
             Log.e(TAG, "Couldn't build the params JSON for the post request. e.msg=" + e.getMessage());
+            Log.e("elazarkin14", "AmazonCloud Couldn't build the params JSON for the post request. e.msg=" + e.getMessage());
             e.printStackTrace();
             return null;
         }
-        String     responseBody = reqHttpPut(url, jsonParams.toString());
-        JSONArray  jsonArr      = null;
-        JSONObject json         = null;
+
         try
         {
-            jsonArr = new JSONArray(responseBody);
+            String    responseBody = reqHttpPut(url, jsonParams.toString());
+            JSONArray jsonArr      = new JSONArray(responseBody);
+
+            Log.d("elazarkin14", "AmazonCloud responseBody: " + responseBody);
+
+            if(jsonArr != null)
+            {
+                Log.d("elazarkin14", "AmazonCloud jsonArr: " + jsonArr.toString());
+            }
+
             if (jsonArr.length() == 0) return null;
+
             json = jsonArr.getJSONObject(0);
+
+            if(json != null)
+            {
+                Log.d("elazarkin14", "AmazonCloud json: " + json.toString());
+            }
         }
         catch (Exception e)
         {
@@ -197,7 +215,7 @@ public class AmazonCloud extends Cloud
     @Override
     public String getUserUuid(String countryCode, String phone)
     {
-        JSONObject userJson = getUserJson(phone, countryCode);
+        JSONObject userJson = getUserJson(countryCode, phone);
         if (userJson == null || !userJson.has(CLOUD_JSON_owner)) return null;
         String userUuid = null;
         try
@@ -210,25 +228,6 @@ public class AmazonCloud extends Cloud
         }
         return userUuid;
     }
-
-//    /updateAllReferences
-
-
-//    public JSONArray updateAllReferences()
-//    {
-//        String url = String.format
-//        (
-//                Locale.getDefault(),
-//                "%s://%s:%d/cmd/%s/%s/%s",
-//                CLOUD_SCHEME,
-//                CLOUD_HOST,
-//                CLOUD_PORT,
-//                CLOUD_MODULE_signature,
-//                "updateAllReferences"
-//        );
-//
-//        return response(url);
-//    };
 
     @Override
     public JSONArray findSignaturesByOwner(String uuid)

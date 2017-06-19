@@ -284,18 +284,18 @@ public class MainService extends Service implements ILesswalkService
 		return getLocalNumber() != null;
 	}
 
-	@Override
-	public int setLocalNumber(String number, ISetLocalNumberCallback callback)
-	{
-		return setLocalNumber(null, number, callback);
-	}
+//	@Override
+//	public int setLocalNumber(String number, ISetLocalNumberCallback callback)
+//	{
+//		return setLocalNumber(null, number, callback);
+//	}
 
-	@Override
-	public int setLocalNumber(String name, String number, ISetLocalNumberCallback callback)
-	{
-		syncThread.addImportantTask(syncThread.new StoreLocalContactTask(name, number, callback));
-		return 0;
-	}
+//	@Override
+//	public int setLocalNumber(String name, String number, ISetLocalNumberCallback callback)
+//	{
+//		syncThread.addImportantTask(syncThread.new StoreLocalContactTask(name, number, callback));
+//		return 0;
+//	}
 
 	@Override
 	public boolean checkIfUserExist(String number)
@@ -327,4 +327,22 @@ public class MainService extends Service implements ILesswalkService
     {
         syncThread.sendVerificationSms(number, code);
     }
+
+    @Override
+    public String getUserFirstName()
+    {
+        return syncThread.getUserFirstName();
+    }
+
+    @Override
+    public String getUserLastName()
+    {
+        return syncThread.getUserLastName();
+    }
+
+	@Override
+	public void updateUserJson(String first, String last, String number)
+	{
+		syncThread.updateUserJson(first, last, number);
+	}
 }

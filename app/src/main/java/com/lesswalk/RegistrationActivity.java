@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lesswalk.bases.BaseActivity;
+import com.lesswalk.bases.ILesswalkService;
 
 import java.util.Date;
 import java.util.Random;
@@ -136,6 +137,15 @@ public class RegistrationActivity extends BaseActivity
 
                 case SHOW_NAME_FROM_JSON:
                 {
+                    String firstName = getService().getUserFirstName();
+                    String lastName = getService().getUserLastName();
+
+                    nameField.setFirstLastName(firstName, lastName);
+                    //nameField.enableEdit(false);
+                    nameField.setUserExistFlag(true);
+
+                    setCurrentField(nameField);
+
                     break;
                 }
 
@@ -275,7 +285,6 @@ public class RegistrationActivity extends BaseActivity
         public void onDonePressed()
         {
             callback.onFinish(NextAction.SEND_SMS_VERIFICATION);
-            //new Thread(checkIfUserExist).start();
         }
 
         @Override
@@ -293,14 +302,17 @@ public class RegistrationActivity extends BaseActivity
     private class NameField extends RegistrationField
     {
         View     registration_name_view = null;
-        EditText name_et                = null;
+        EditText first_name_et          = null;
         EditText last_name_et           = null;
+        String   firstName              = null;
+        String   lastName               = null;
+        boolean  userExist              = false;
 
         @Override
         void init()
         {
             registration_name_view = findViewById(R.id.registration_name_lastname_view);
-            name_et = (EditText) findViewById(R.id.registration_name_et);
+            first_name_et = (EditText) findViewById(R.id.registration_name_et);
             last_name_et = (EditText) findViewById(R.id.registration_lastname_et);
         }
 
@@ -326,19 +338,83 @@ public class RegistrationActivity extends BaseActivity
         @Override
         String getTitle()
         {
-            return "To Get Started, Please Enter your Name";
+            return !userExist ? "To get started, please enter your Name":"To get started press Done";
         }
 
         @Override
         void onDonePressed()
         {
+            if(nameChanged())
+            {
+                getService().updateUserJson
+                (
+                    ""+first_name_et.getText().toString(),
+                    "" + last_name_et.getText().toString(),
+                    RegistrationActivity.this.numberField.getNumber()
+                );
+            }
 
+            if(userExist)
+            {
+                getService().syncContactSignatures(numberField.getNumber(), new ILesswalkService.ISetLocalNumberCallback()
+                {
+                    @Override
+                    public void onSuccess()
+                    {
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(int errorID)
+                    {
+
+                    }
+
+                    @Override
+                    public void onProgress(String path)
+                    {
+
+                    }
+
+                    @Override
+                    public void notSuccessFinish()
+                    {
+
+                    }
+                });
+            }
+        }
+
+        private boolean nameChanged()
+        {
+            if(!first_name_et.getText().equals(firstName)) return true;
+
+            if(!last_name_et.getText().equals(lastName)) return true;
+
+            return false;
         }
 
         @Override
         String getDoneButtonTitle()
         {
             return "Done";
+        }
+
+        public void setFirstLastName(String firstName, String lastName)
+        {
+            first_name_et.setText((this.firstName=""+firstName));
+            last_name_et.setText((this.lastName=""+lastName));
+        }
+
+        public void enableEdit(boolean isEnabled)
+        {
+            first_name_et.setEnabled(isEnabled);
+            last_name_et.setEnabled(isEnabled);
+        }
+
+        public void setUserExistFlag(boolean userExist)
+        {
+            this.userExist = userExist;
         }
     }
 
@@ -393,7 +469,7 @@ public class RegistrationActivity extends BaseActivity
                 &&
                 currentEtCode.equals(generatedSmsCode))
             {
-                new Thread(checkIfUserExist);
+                new Thread(checkIfUserExist).start();
             }
             else callback.onFinish(NextAction.SMS_VERIFICATION_FAILED);
         }

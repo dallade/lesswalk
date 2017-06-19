@@ -10,8 +10,8 @@ public interface ILesswalkService
 
 	boolean haveLocalNumber();
 
-	int setLocalNumber(String number, ISetLocalNumberCallback callback);
-	int setLocalNumber(String name, String number, ISetLocalNumberCallback callback);
+//	int setLocalNumber(String number, ISetLocalNumberCallback callback);
+//	int setLocalNumber(String name, String number, ISetLocalNumberCallback callback);
 
 	boolean checkIfUserExist(String number);
 
@@ -23,7 +23,13 @@ public interface ILesswalkService
 
     void sendVerificationSms(String number, String code);
 
-    interface ISetLocalNumberCallback
+    String getUserFirstName();
+
+    String getUserLastName();
+
+	void updateUserJson(String first, String last, String number);
+
+	interface ISetLocalNumberCallback
 	{
 		void onSuccess();
 		void onError(int errorID);

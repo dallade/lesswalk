@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.google.gson.Gson;
 import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
@@ -22,8 +23,10 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.UUID;
@@ -43,14 +46,35 @@ public class SyncThread
 
     private static Semaphore mutex = new Semaphore(1);
 
-    private MainService      mParent              = null;
-    private Cloud            mCloud               = null;
-    private DataBaseUpdater  dataBaseUpdater      = null;
-    private LesswalkDbHelper usersDB              = null;
-    private LesswalkDbHelper signaturesDB         = null;
-    private String           localNumber          = null;
-    private File             localNumberStoreFile = null;
-    private boolean          isAlive              = false;
+    private class UserContent
+    {
+        String country_dial_code = null;
+        String first_name        = null;
+        String key               = null;
+        String last_name         = null;
+        String phone_number      = null;
+
+        public String getCountry_dial_code() {return country_dial_code;}
+        public String getFirst_name() {return first_name;}
+        public String getKey() {return key;}
+        public String getLast_name() {return last_name;}
+        public String getPhone_number() {return phone_number;}
+
+        public void setCountry_dial_code(String country_dial_code) {this.country_dial_code = country_dial_code;}
+        public void setFirst_name(String first_name) {this.first_name = first_name;}
+        public void setKey(String key) {this.key = key;}
+        public void setLast_name(String last_name) {this.last_name = last_name;}
+        public void setPhone_number(String phone_number) {this.phone_number = phone_number;}
+    }
+
+    private MainService      mParent         = null;
+    private Cloud            mCloud          = null;
+    private DataBaseUpdater  dataBaseUpdater = null;
+    private LesswalkDbHelper usersDB         = null;
+    private LesswalkDbHelper signaturesDB    = null;
+    private File             userJsonFile    = null;
+    private boolean          isAlive         = false;
+    private UserContent      userContent     = null;
 
     public boolean checkIfUserExisted(String _number)
     {
@@ -64,6 +88,82 @@ public class SyncThread
     {
         String     number[] = PhoneUtils.splitPhoneNumber(_number);
         JSONObject json     = mCloud.getUserJson(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
+
+        Log.d("elazarkin14", "downloadUserJsonIfNeed_1: " + userJsonFile.getAbsolutePath());
+
+        Log.d("elazarkin14", "userJson: " + (json == null ? "null":json.toString()));
+
+        try
+        {
+            JSONObject       content = json.getJSONObject("content");
+            FileOutputStream os      = new FileOutputStream(userJsonFile);
+
+            Log.d("elazarkin14", "userJson_content: " + content.toString());
+
+            os.write(content.toString().getBytes());
+            os.close();
+
+            Log.d("elazarkin14", "donload userJson Success!!");
+
+            reloadUserJson();
+        }
+        catch (Exception e)
+        {
+            Log.d("elazarkin14", "donload userJson unsuccess!! " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
+    private void reloadUserJson()
+    {
+        Gson gson = new Gson();
+
+        if(userJsonFile == null)
+        {
+            userJsonFile = new File(mParent.getFilesDir(), "userJson.json");
+        }
+
+        try (Reader reader = new FileReader(userJsonFile))
+        {
+
+            // Convert JSON to Java Object
+            userContent = gson.fromJson(reader, UserContent.class);
+
+            Log.d("elazarkin14", "first=" + userContent.first_name + " last=" +userContent.last_name + " num=" + userContent.phone_number);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public String getUserFirstName()
+    {
+        if(userContent != null)
+        {
+            return userContent.getFirst_name();
+        }
+        return null;
+    }
+
+    public String getUserLastName()
+    {
+        if(userContent != null)
+        {
+            return userContent.getLast_name();
+        }
+        return null;
+    }
+
+    public String getLocalNumber()
+    {
+        if(userContent != null)
+        {
+            return userContent.getPhone_number();
+        }
+
+        return null;
     }
 
     public void sendVerificationSms(String _number, String code)
@@ -275,44 +375,44 @@ public class SyncThread
         }
     }
 
-    class StoreLocalContactTask extends SyncSomeContactSignaturesTask
-    {
-        private String name = null;
-
-        StoreLocalContactTask(String name, String number, ILesswalkService.ISetLocalNumberCallback callback)
-        {
-            super(number, callback);
-            this.name = name;
-        }
-        @Override
-        public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
-        {
-            String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
-            final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
-            //
-            try
-            {
-                // TODO improve syntax
-                OutputStream os       = new FileOutputStream(syncThread.localNumberStoreFile);
-                os.write(fixed_number.getBytes());
-                os.close();
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
-            }
-
-            super.DO(syncThread, userDB, signaturesDB);
-        }
-
-        @Override
-        public SyncThreadIDs getID()
-        {
-            return SyncThreadIDs.SYNC_SOME_CONTACT_SIGNATURES_TASK;
-        }
-    }
+//    class StoreLocalContactTask extends SyncSomeContactSignaturesTask
+//    {
+//        private String name = null;
+//
+//        StoreLocalContactTask(String name, String number, ILesswalkService.ISetLocalNumberCallback callback)
+//        {
+//            super(number, callback);
+//            this.name = name;
+//        }
+//        @Override
+//        public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
+//        {
+//            String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
+//            final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
+//            //
+//            try
+//            {
+//                // TODO improve syntax
+//                OutputStream os       = new FileOutputStream(syncThread.localNumberStoreFile);
+//                os.write(fixed_number.getBytes());
+//                os.close();
+//
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//                callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
+//            }
+//
+//            super.DO(syncThread, userDB, signaturesDB);
+//        }
+//
+//        @Override
+//        public SyncThreadIDs getID()
+//        {
+//            return SyncThreadIDs.SYNC_SOME_CONTACT_SIGNATURES_TASK;
+//        }
+//    }
 
     class CheckIfContactNeedBeUpdated implements ISyncThreadTasks
     {
@@ -346,9 +446,7 @@ public class SyncThread
         mParent = parent;
         mCloud = new AmazonCloud(mParent);
 
-        localNumberStoreFile = new File(mParent.getFilesDir(), "localNumberStore.txt");
-
-        localNumber = getLocalNumber();
+        reloadUserJson();
 
         usersColums.add(new DataBaseColums(FULL_PHONE_NUMBER_ROW, DataBaseColums.TEXT_PRIMARY_KEY));
         usersColums.add(new DataBaseColums(USER_UUID_ROW, DataBaseColums.TEXT));
@@ -362,30 +460,6 @@ public class SyncThread
 
         signaturesDB = new LesswalkDbHelper(mParent, "signatures", signaturesColums);
 
-    }
-
-    public String getLocalNumber()
-    {
-        String ret = null;
-
-        if(localNumberStoreFile.exists() && localNumberStoreFile.length() > 0)
-        {
-            byte buffer[] = new byte[(int) localNumberStoreFile.length()];
-
-            try
-            {
-                InputStream is = new FileInputStream(localNumberStoreFile);
-                is.read(buffer);
-                ret = new String(buffer);
-                Log.d("elazarkin8", "localNumber="+localNumber);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        return ret;
     }
 
     private class ContactUpdateTask
@@ -966,6 +1040,22 @@ public class SyncThread
         Log.d("elazarkin8", "add addImportantTask " + task.getID());
         dataBaseUpdater.tasks.add(0, task);
         mutex.release();
+    }
+
+    public void updateUserJson(String first, String last, String number)
+    {
+        Gson gson = new Gson();
+
+        userContent.setFirst_name(first);
+        userContent.setLast_name(last);
+        userContent.setPhone_number(number);
+
+        try
+        {
+            gson.toJson(userContent, new FileWriter(userJsonFile));
+        }
+        catch (Exception e) {e.printStackTrace();}
+
     }
 }
 
