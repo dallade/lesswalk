@@ -1056,6 +1056,7 @@ public class SyncThread
         }
         catch (Exception e) {e.printStackTrace();}
 
+        // TODO finish this and update amazon cloude
     }
 }
 
