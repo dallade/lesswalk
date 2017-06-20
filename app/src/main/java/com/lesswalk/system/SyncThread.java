@@ -16,6 +16,7 @@ import com.lesswalk.database.AWS;
 import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.AwsDownloadItem;
 import com.lesswalk.database.Cloud;
+import com.lesswalk.database.ZipManager;
 import com.lesswalk.utils.PhoneUtils;
 
 import org.json.JSONObject;
@@ -460,7 +461,44 @@ public class SyncThread
 
         signaturesDB = new LesswalkDbHelper(mParent, "signatures", signaturesColums);
 
+        if(!getAssetsDir().exists() || getAssetsDir().listFiles().length <= 0)
+        {
+            new Thread()
+            {
+                @Override
+                public void run()
+                {
+                    mCloud.downloadAssets(mParent.getFilesDir().getAbsolutePath(), new AWS.OnDownloadListener()
+                    {
+                        @Override
+                        public void onDownloadStarted(String path) {}
+
+                        @Override
+                        public void onDownloadProgress(String path, float percentage) {}
+
+                        @Override
+                        public void onDownloadFinished(String path)
+                        {
+                            ZipManager.unzip(mParent, path, getAssetsDir().getAbsolutePath());
+                        }
+
+                        @Override
+                        public void onDownloadError(String path, int errorId, Exception ex) {}
+
+                        @Override
+                        public void onMetadataReceived(AwsDownloadItem dowloadItem) {}
+                    });
+                }
+            }.start();
+        }
     }
+
+    private File getAssetsDir()
+    {
+        File dir = new File(mParent.getFilesDir(), "assets");
+
+        return dir;
+    };
 
     private class ContactUpdateTask
     {

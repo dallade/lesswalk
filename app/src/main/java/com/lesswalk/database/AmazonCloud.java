@@ -398,23 +398,16 @@ public class AmazonCloud extends Cloud
     }
 
     @Override
-    public void downloadAssets(String dirPath, AWS.OnDownloadListener onDownloadListener) {
+    public void downloadAssets(String dirPath, AWS.OnDownloadListener onDownloadListener)
+    {
         //TODO elad
         String         pathOnServer = ASSETS_PATH + File.separator + ASSETS_UUID + ASSETS_EXTENSION;
         ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
 
         onDownloadListener.onMetadataReceived(new AwsDownloadItem(dirPath, pathOnServer, fileMetadata));
         //todo check if etag has changed, if it did change then download:
-        AWS.download(mContext, pathOnServer, dirPath, onDownloadListener);
+        AWS.download(mContext, pathOnServer, new File(dirPath, ASSETS_UUID + ".zip").getAbsolutePath(), onDownloadListener);
         //TODO uncomment the following unzipping lines to unzip the zip
-//        if (!ZipManager.unzip(mContext.getApplicationContext(), zipPath, unzippedDir.getPath()))
-//        {
-//            Log.e(TAG, String.format("Unzip failed for - '%s'", zipPath));
-//        }
-//        else
-//        {
-//            Log.d(TAG, String.format("Unzip succeeded into - '%s'", unzippedDir.getPath()));
-//        }
     }
 
     @Override
