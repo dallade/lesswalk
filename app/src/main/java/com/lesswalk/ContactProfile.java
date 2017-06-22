@@ -17,8 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lesswalk.bases.BaseActivity;
-import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
+import com.lesswalk.json.CarruselJson;
 import com.lesswalk.views.RoundedButtonWithText;
 
 import java.util.Vector;
@@ -126,7 +126,7 @@ public class ContactProfile extends BaseActivity
 
 	private void setUserSignatures()
 	{
-		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
+		Vector<CarruselJson> signatures = new Vector<CarruselJson>();
 
 		getService().getContactManager().fillSignaturesByPhoneNumber(getService().getLocalNumber(), signatures);
 
@@ -147,16 +147,16 @@ public class ContactProfile extends BaseActivity
 			}
 		});
 
-		for(ContactSignature c:signatures)
+		for(CarruselJson c:signatures)
 		{
 			userSignatureLayout.addContactSignature(c);
-			Log.d("elazarkin", "add signature" + c.getSignutarePath());
+			Log.d("elazarkin", "add signature" + c.getKey());
 		}
 	}
 
 	private void setContactSignatures()
 	{
-		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
+		Vector<CarruselJson> signatures = new Vector<CarruselJson>();
 
 		getService().getContactManager().fillSignaturesByPhoneNumber
 		(
@@ -180,10 +180,10 @@ public class ContactProfile extends BaseActivity
 			}
 		});
 
-		for(ContactSignature c:signatures)
+		for(CarruselJson c:signatures)
 		{
 			contactSignatureLayout.addContactSignature(c);
-			Log.d("elazarkin", "add signature" + c.getSignutarePath());
+			Log.d("elazarkin", "add signature" + c.getKey());
 		}
 	}
 

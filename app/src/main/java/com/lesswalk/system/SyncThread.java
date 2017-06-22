@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.google.gson.Gson;
-import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.AWS;
@@ -17,12 +16,14 @@ import com.lesswalk.database.AmazonCloud;
 import com.lesswalk.database.AwsDownloadItem;
 import com.lesswalk.database.Cloud;
 import com.lesswalk.database.ZipManager;
+import com.lesswalk.json.CarruselJson;
 import com.lesswalk.utils.PhoneUtils;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -858,7 +859,7 @@ public class SyncThread
         }
     }
 
-    public void fillSignaturesOfPhoneNumber(String phoneNumber, Vector<ContactSignature> container)
+    public void fillSignaturesOfPhoneNumber(String phoneNumber, Vector<CarruselJson> container)
     {
         String number[]     = PhoneUtils.splitPhoneNumber(phoneNumber);
         String fixedNumber  = PhoneUtils.splitedNumberToFullNumber(number);
@@ -874,15 +875,9 @@ public class SyncThread
             {
                 if (uuid.length() > 0)
                 {
-                    String type = getTypeOfSignature(signaturesDB, uuid);
-                    container.add(new ContactSignature
-                    (
-                            phoneNumber,
-                            ContactSignature.StringToType(type),
-                            mCloud.getSignutareFilePathByUUID(uuid).getPath()
-                    ));
+                    container.add(getUserSignatureObject(mParent, mCloud, uuid));
 
-                    Log.d("elazarkin1", "add " + uuid + " type = " + type);
+                    Log.d("elazarkin1", "add " + uuid + " type = " + container.lastElement().getType());
                 }
             }
         }
@@ -976,6 +971,30 @@ public class SyncThread
         values.put(SIGNATURES_ROW, signaturesString);
 
         db.getWritableDatabase().replace(db.table_name, null, values);
+    }
+
+    private static synchronized CarruselJson getUserSignatureObject(Context context, Cloud mCloud, String uuid)
+    {
+        Gson         gson            = new Gson();
+        File         outDir          = new File(context.getCacheDir(), "updateSignaturesDB");
+        String       contentFileName = "content.json";
+        CarruselJson ret             = null;
+
+        if (mCloud.unzipFileFromSignatureByUUID(uuid, outDir, contentFileName))
+        {
+            File contentFile = new File(outDir, contentFileName);
+
+            try
+            {
+                ret = gson.fromJson(new FileReader(contentFile), CarruselJson.class);
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return ret;
     }
 
     private static synchronized void updateSignatureDatabase(Context context, Cloud mCloud, LesswalkDbHelper db, String uuid, ObjectMetadata metadata)

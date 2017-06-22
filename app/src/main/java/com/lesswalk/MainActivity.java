@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -16,14 +15,13 @@ import android.widget.Toast;
 
 import com.google.zxing.android.ViewfinderView;
 import com.lesswalk.bases.BaseActivity;
-import com.lesswalk.bases.ContactSignature;
-import com.lesswalk.bases.ContactSignature.SignatureType;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.ContactSignatureSlideLayout;
 import com.lesswalk.contact_page.navigation_menu.NavigatiomMenuSurface;
 import com.lesswalk.contact_page.navigation_menu.NavigationContactLayout;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject;
 import com.lesswalk.contact_page.navigation_menu.barcode.BarcodeDecoderObject.BarcodeDetectorCallback;
+import com.lesswalk.json.CarruselJson;
 import com.lesswalk.views.ContactsAllLastSwitcher;
 
 import java.util.Vector;
@@ -243,12 +241,12 @@ public class MainActivity extends BaseActivity
 		{
 			if(text.startsWith("lesswalk://"))
 			{
-				int ret = signatureSlider.addContactSignature(new ContactSignature("", SignatureType.PARK, text));
-				// TODO move this to MainService
-				if(ret == -1)
-				{
-					Toast.makeText(MainActivity.this, "This signature already existed!", Toast.LENGTH_SHORT).show();
-				}
+				// TODO barcode!
+//				int ret = signatureSlider.addContactSignature(new ContactSignature("", SignatureType.PARK, text));
+//				if(ret == -1)
+//				{
+//					Toast.makeText(MainActivity.this, "This signature already existed!", Toast.LENGTH_SHORT).show();
+//				}
 			}
 			else Toast.makeText(MainActivity.this, "Not Lesswalk signature: " + text, Toast.LENGTH_SHORT).show();
 			setMode(MODE.CONTACT_CARUSSEL_MODE);
@@ -311,13 +309,13 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void mainServiceConnected() 
 	{
-		Vector<ContactSignature> signatures = new Vector<ContactSignature>();
+		Vector<CarruselJson> signatures = new Vector<CarruselJson>();
 
 		navigationContactLayout.setContactManager(getService().getContactManager());
 
 		getService().getContactManager().fillSignaturesByPhoneNumber(getService().getLocalNumber(), signatures);
 
-		for(ContactSignature cs:signatures)
+		for(CarruselJson cs:signatures)
 		{
 			signatureSlider.addContactSignature(cs);
 		}

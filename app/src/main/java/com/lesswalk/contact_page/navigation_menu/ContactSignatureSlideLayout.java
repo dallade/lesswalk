@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,10 +15,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.lesswalk.R;
-import com.lesswalk.bases.ContactSignature;
-import com.lesswalk.bases.ContactSignature.SignatureType;
+import com.google.gson.Gson;
+import com.lesswalk.json.CarruselJson;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Vector;
 
 public class ContactSignatureSlideLayout extends View 
@@ -27,6 +29,40 @@ public class ContactSignatureSlideLayout extends View
     public interface IContactSignatureSliderCallback
 	{
 		void onSignatureClicked(String path);
+	}
+
+	public class Assets
+	{
+		private String key          = null;
+		private String content_type = null;
+		private Images images[]     = null;
+
+		public void setKey(String key) {this.key = key;}
+		public void setContent_type(String content_type) {this.content_type = content_type;}
+		public void setImages(Images[] images) {this.images = images;}
+		public String getKey() {return key;}
+		public Images[] getImages() {return images;}
+		public String getContent_type() {return content_type;}
+	}
+
+	public class Images
+	{
+		private String  key    = null;
+		private String  title  = null;
+		private String  type   = null;
+		private String  name   = null;
+		private boolean hidden = false;
+
+		public String getName() {return name;}
+		public String getType() {return type;}
+		public String getTitle() {return title;}
+		public String getKey() {return key;}
+		public boolean isHidden() {return hidden;}
+		public void setHidden(boolean hidden) {this.hidden = hidden;}
+		public void setType(String type) {this.type = type;}
+		public void setTitle(String title) {this.title = title;}
+		public void setKey(String key) {this.key = key;}
+		public void setName(String name) {this.name = name;}
 	}
 
 	private class SignatureArea
@@ -40,34 +76,13 @@ public class ContactSignatureSlideLayout extends View
 	private static final long  MAX_MOVED_DIST           = 10;
 	private static final float RETURN_VELOCATION        = 3000.0f;
 
-	private static int ICONS_IDS[] =
-	{
-		R.drawable.dashed_border_2x,	//0
-		R.drawable.home_icon,			//1
-		R.drawable.workicon,			//2
-		R.drawable.familyicon,			//3
-		R.drawable.socialicon,			//4
-		R.drawable.shopingicon,			//5
-		R.drawable.medical_icon,		//6
-		R.drawable.foodicon,			//7
-		R.drawable.accommodationicon,	//8
-		R.drawable.coffeicon,			//9
-		R.drawable.cinemaicon,			//10
-		R.drawable.theatreicon,			//11
-		R.drawable.concerticon,			//12
-		R.drawable.smokingicon,			//13
-		R.drawable.parkicon,			//14
-		R.drawable.schoolicon,			//15
-		R.drawable.meetingicon,			//16
-		R.drawable.sporticon,			//17
-		R.drawable.picnicicon			//18
-	};
+	private static Assets assets  = null;
+	private static Bitmap icons[] = null;
 
-	private static Vector<Bitmap>                  ICONS_TYPES      = null;
-	private        ContactSignature                faked            = null;
+	private        CarruselJson                    faked            = null;
 	private        IContactSignatureSliderCallback callback         = null;
-	private        Vector<ContactSignature>        container        = null;
-	private        Vector<ContactSignature>        workContainer    = null;
+	private        Vector<CarruselJson>            container        = null;
+	private        Vector<CarruselJson>            workContainer    = null;
 	private        SignatureArea                   areas[]          = null;
 	private        HandlerThread                   returnAnimation  = null;
 	private        int                             icons_in_row     = 5;
@@ -87,18 +102,18 @@ public class ContactSignatureSlideLayout extends View
 	private        boolean                         animationAlive   = false;
 	private        int                             randomIndex      = 0;
 	
-	public ContactSignatureSlideLayout(Context context, AttributeSet attrs) 
+	public ContactSignatureSlideLayout(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 		
-		container     = new Vector<ContactSignature>();
-		workContainer = new Vector<ContactSignature>();
+		container     = new Vector<CarruselJson>();
+		workContainer = new Vector<CarruselJson>();
 		//areas         = new SignatureArea[icons_in_row + 2];
 		areas         = new SignatureArea[icons_in_row*2];
 		
 		for(int i = 0; i < areas.length; i++) areas[i] = new SignatureArea();
 		
-		faked         = new ContactSignature("", SignatureType.NO_TYPE, null);
+		faked         = new CarruselJson();
 		
 		for(int i = 0; i < icons_in_row; i++)
 		{
@@ -106,6 +121,27 @@ public class ContactSignatureSlideLayout extends View
 		}
 
 		randomIndex = (int) (Math.random()*65536);
+
+		if(assets == null)
+		{
+			Gson gson = new Gson();
+
+			try
+			{
+				File assetsDir = new File(getContext().getFilesDir(), "assets");
+				assets = gson.fromJson(new FileReader(new File(assetsDir,"content.json")), Assets.class);
+				icons = new Bitmap[assets.images.length];
+
+				for(int i = 0; i < assets.images.length; i++)
+				{
+					icons[i] = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.images[i].name)));
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void setCallback(IContactSignatureSliderCallback callback)
@@ -118,7 +154,7 @@ public class ContactSignatureSlideLayout extends View
 		container.removeAllElements();
 	}
 
-	public int addContactSignature(ContactSignature signature)
+	public int addContactSignature(CarruselJson signature)
 	{
 		if(alreadyContainSignature(container, signature))
 		{
@@ -146,11 +182,11 @@ public class ContactSignatureSlideLayout extends View
 		return 0;
 	}
 	
-	private boolean alreadyContainSignature(Vector<ContactSignature> container, ContactSignature signature)
+	private boolean alreadyContainSignature(Vector<CarruselJson> container, CarruselJson signature)
 	{
-		for(ContactSignature c:container)
+		for(CarruselJson c:container)
 		{
-			if(c.getSignutarePath().equals(signature.getSignutarePath()))
+			if(c.getKey().equals(signature.getKey()))
 			{
 				return true;
 			}
@@ -170,21 +206,6 @@ public class ContactSignatureSlideLayout extends View
 		
 		float fixed_offset = 0.0f;
 		float all_size     = 0.0f;
-		
-		if(ICONS_TYPES == null)
-		{
-			ICONS_TYPES = new Vector<Bitmap>();
-			for(int i = 0; i < ICONS_IDS.length; i++)
-			{
-				ICONS_TYPES.add(Bitmap.createScaledBitmap
-				(
-					BitmapFactory.decodeResource(getResources(), ICONS_IDS[i]).copy(Config.ARGB_8888, true), 
-					ICON_RESOLUTION, 
-					ICON_RESOLUTION, 
-					true
-				));
-			}
-		}
 		
 		if(screen == null || screen.getWidth() != getWidth() || screen.getHeight() != getHeight())
 		{
@@ -219,8 +240,8 @@ public class ContactSignatureSlideLayout extends View
 			if(startx < screen.getWidth())
 			{
 				//Log.d("aaaa", into_areas_counter + ": startx=" + startx + " w=" + screen.getWidth() + " allScreen = " + all_size + " offset=" + fixed_offset);
-				initArea(areas[into_areas_counter], icon_area_size, startx, icon_size, workContainer.elementAt(i).getSignutarePath());
-				drawIcon(cscreen, areas[into_areas_counter], workContainer.elementAt(i).getType());
+				initArea(areas[into_areas_counter], icon_area_size, startx, icon_size, workContainer.elementAt(i).getKey());
+				drawIcon(cscreen, areas[into_areas_counter], workContainer.elementAt(i).getIcon());
 				into_areas_counter++;
 			}
 			
@@ -228,8 +249,8 @@ public class ContactSignatureSlideLayout extends View
 			if(endx > 0 && endx < screen.getWidth() + icon_area_size)
 			{
 				//Log.d("aaaa", into_areas_counter + ": endx=" + endx + " w=" + screen.getWidth() + " allScreen = " + all_size + " offset=" + fixed_offset);
-				initArea(areas[into_areas_counter], icon_area_size, endx - icon_area_size, icon_size, workContainer.elementAt(i).getSignutarePath());
-				drawIcon(cscreen, areas[into_areas_counter], workContainer.elementAt(i).getType());
+				initArea(areas[into_areas_counter], icon_area_size, endx - icon_area_size, icon_size, workContainer.elementAt(i).getKey());
+				drawIcon(cscreen, areas[into_areas_counter], workContainer.elementAt(i).getIcon());
 				into_areas_counter++;
 			}
 		}
@@ -242,14 +263,12 @@ public class ContactSignatureSlideLayout extends View
 		canvas.drawBitmap(screen, 0, 0, null);
 	}
 
-	private void drawIcon(Canvas c, SignatureArea area, SignatureType type) 
+	private void drawIcon(Canvas c, SignatureArea area, String icon)
 	{
 		Bitmap bit   = null;
-		int    index = typeToIconType(type);
+		int    index = typeToIconType(icon);
 		
-		index = (index >= ICONS_TYPES.size()) ? 0:index;
-		
-		bit = ICONS_TYPES.elementAt(index);
+		bit = icons[index];
 		c.drawBitmap
 		(
 			bit, 
@@ -259,52 +278,14 @@ public class ContactSignatureSlideLayout extends View
 		);
 	}
 	
-	private int typeToIconType(SignatureType type) 
+	private int typeToIconType(String type)
 	{
-		switch (type) 
+		for (int i = 0; i < assets.images.length; i++)
 		{
-			case HOME:
-				return 1;
-			case WORK:
-				return 2;
-			case FAMILY:
-				return 3;
-			case SOCIAL:
-				return 4;
-			case SHOPING:
-				return 5;
-			case MEDICAL:
-				return 6;
-			case FOOD:
-				return 7;
-			case ACCOMMODATION:
-				return 8;
-			case COFFE:
-				return 9;
-			case CINEMA:
-				return 10;
-			case THEATRE:
-				return 11;
-			case CONCERTION:
-				return 12;
-			case SMOKING:
-				return 13;
-			case PARK:
-				return 14;
-			case SCHOOL:
-				return 15;
-			case MEETING:
-				return 16;
-			case SPORT:
-				return 17;
-			case PICNIC:
-				return 18;
-				
-			default:
-				break;
+			if(type.equals(assets.images[i].key)) return i;
 		}
-		
-		return 0;
+
+		return -1;
 	}
 
 	private void initArea(SignatureArea signatureArea, float icon_area_size, float startx, int icon_size, String path) 

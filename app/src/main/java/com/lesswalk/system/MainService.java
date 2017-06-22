@@ -14,11 +14,11 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.util.Log;
 
-import com.lesswalk.bases.ContactSignature;
 import com.lesswalk.bases.IContactManager;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
 import com.lesswalk.database.ZipManager;
+import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
 import java.io.InputStream;
@@ -224,7 +224,7 @@ public class MainService extends Service implements ILesswalkService
 		}
 
 		@Override
-		public void fillSignaturesByPhoneNumber(String phoneNumber, Vector<ContactSignature> signatures)
+		public void fillSignaturesByPhoneNumber(String phoneNumber, Vector<CarruselJson> signatures)
 		{
 			if (signatures == null) return;
 

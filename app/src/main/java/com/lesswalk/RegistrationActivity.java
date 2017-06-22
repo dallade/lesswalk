@@ -20,6 +20,8 @@ public class RegistrationActivity extends BaseActivity
 {
     private static final int MIN_NUMBER_LENGTH = 9;
 
+    private boolean USE_SMS = true;
+
     private enum NextAction
     {
         GET_NUMBER,
@@ -117,15 +119,18 @@ public class RegistrationActivity extends BaseActivity
                 {
                     setCurrentField(smsField);
 
-                    new HandlerThread("")
+                    if(USE_SMS)
                     {
-                        @Override
-                        public void run()
+                        new HandlerThread("")
                         {
-                            // TODO handle return value
-                            getService().sendVerificationSms(numberField.getNumber(), smsField.generateSmsCode(4));
-                        }
-                    }.start();
+                            @Override
+                            public void run()
+                            {
+                                // TODO handle return value
+                                getService().sendVerificationSms(numberField.getNumber(), smsField.generateSmsCode(4));
+                            }
+                        }.start();
+                    }
 
                     break;
                 }
@@ -463,11 +468,16 @@ public class RegistrationActivity extends BaseActivity
 
             if
             (
-                currentEtCode != null
-                &&
-                currentEtCode.length() == generatedSmsCode.length()
-                &&
-                currentEtCode.equals(generatedSmsCode))
+                !USE_SMS
+                ||
+                (
+                    currentEtCode != null
+                    &&
+                    currentEtCode.length() == generatedSmsCode.length()
+                    &&
+                    currentEtCode.equals(generatedSmsCode)
+                )
+            )
             {
                 new Thread(checkIfUserExist).start();
             }
