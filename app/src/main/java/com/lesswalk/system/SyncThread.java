@@ -21,6 +21,7 @@ import com.lesswalk.utils.PhoneUtils;
 
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -74,6 +75,7 @@ public class SyncThread
     private DataBaseUpdater  dataBaseUpdater = null;
     private LesswalkDbHelper usersDB         = null;
     private LesswalkDbHelper signaturesDB    = null;
+    private File             userContentDir  = null;
     private File             userJsonFile    = null;
     private boolean          isAlive         = false;
     private UserContent      userContent     = null;
@@ -121,9 +123,15 @@ public class SyncThread
     {
         Gson gson = new Gson();
 
+        if(userContentDir == null)
+        {
+            userContentDir = new File(mParent.getFilesDir(), "userContent");
+            userContentDir.mkdirs();userContentDir.mkdir();
+        }
+
         if(userJsonFile == null)
         {
-            userJsonFile = new File(mParent.getFilesDir(), "userJson.json");
+            userJsonFile = new File(userContentDir, "userJson.json");
         }
 
         try (Reader reader = new FileReader(userJsonFile))
@@ -215,23 +223,6 @@ public class SyncThread
 
             if (userUuid == null)
             {
-//                String signupNumber = String.format(Locale.getDefault(), "+%s %s", number[0], number[1]);
-//                String uuid         = UUID.randomUUID().toString();
-//                // TODO FIXME
-//                mCloud.createUser(signupNumber, uuid, new Cloud.I_ProcessListener()
-//                {
-//                    @Override
-//                    public void onSuccess(HashMap<String, String> result)
-//                    {
-//
-//                    }
-//
-//                    @Override
-//                    public void onFailure(HashMap<String, String> result)
-//                    {
-//
-//                    }
-//                });
                 callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
                 return;
             }
@@ -376,45 +367,6 @@ public class SyncThread
             return null;
         }
     }
-
-//    class StoreLocalContactTask extends SyncSomeContactSignaturesTask
-//    {
-//        private String name = null;
-//
-//        StoreLocalContactTask(String name, String number, ILesswalkService.ISetLocalNumberCallback callback)
-//        {
-//            super(number, callback);
-//            this.name = name;
-//        }
-//        @Override
-//        public void DO(final SyncThread syncThread, final LesswalkDbHelper userDB, final LesswalkDbHelper signaturesDB)
-//        {
-//            String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
-//            final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
-//            //
-//            try
-//            {
-//                // TODO improve syntax
-//                OutputStream os       = new FileOutputStream(syncThread.localNumberStoreFile);
-//                os.write(fixed_number.getBytes());
-//                os.close();
-//
-//            }
-//            catch (Exception e)
-//            {
-//                e.printStackTrace();
-//                callback.onError(ILesswalkService.REGISTRATION_ERROR_FILE_SYSTEM);
-//            }
-//
-//            super.DO(syncThread, userDB, signaturesDB);
-//        }
-//
-//        @Override
-//        public SyncThreadIDs getID()
-//        {
-//            return SyncThreadIDs.SYNC_SOME_CONTACT_SIGNATURES_TASK;
-//        }
-//    }
 
     class CheckIfContactNeedBeUpdated implements ISyncThreadTasks
     {
@@ -1099,21 +1051,31 @@ public class SyncThread
         mutex.release();
     }
 
-    public void updateUserJson(String first, String last, String number)
+    public void updateUserJson(String first, String last, String _number)
     {
-        Gson gson = new Gson();
+        Gson   gson         = new Gson();
+        String number[]     = PhoneUtils.splitPhoneNumber(_number);
+        String signupNumber = String.format(Locale.getDefault(), "+%s %s", number[0], number[1]);
 
+        if(userContent == null) userContent = new UserContent();
+
+        if(userContent.getKey() == null) userContent.setKey(UUID.randomUUID().toString());
         userContent.setFirst_name(first);
         userContent.setLast_name(last);
-        userContent.setPhone_number(number);
+        userContent.setCountry_dial_code(number[PhoneUtils.PHONE_INDEX_COUNTRY]);
+        userContent.setPhone_number(number[PhoneUtils.PHONE_INDEX_MAIN]);
 
         try
         {
-            gson.toJson(userContent, new FileWriter(userJsonFile));
+            String json = gson.toJson(userContent);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(userJsonFile));
+            bw.write(json);
+            bw.close();
+            Log.d("elazarkin", ""+json);
+
+            mCloud.uploadUser(userContent.getKey(), json, userContentDir);
         }
         catch (Exception e) {e.printStackTrace();}
-
-        // TODO finish this and update amazon cloude
     }
 }
 

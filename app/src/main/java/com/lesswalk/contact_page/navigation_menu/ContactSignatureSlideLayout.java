@@ -77,7 +77,6 @@ public class ContactSignatureSlideLayout extends View
 		
 		container     = new Vector<CarruselJson>();
 		workContainer = new Vector<CarruselJson>();
-		//areas         = new SignatureArea[icons_in_row + 2];
 		areas         = new SignatureArea[icons_in_row*2];
 		
 		for(int i = 0; i < areas.length; i++) areas[i] = new SignatureArea();
@@ -90,28 +89,6 @@ public class ContactSignatureSlideLayout extends View
 		}
 
 		randomIndex = (int) (Math.random()*65536);
-
-		if(assets == null)
-		{
-			try
-			{
-				File assetsDir = new File(getContext().getFilesDir(), "assets");
-
-				assets = AssetsJson.createFromFile(new File(assetsDir,"content.json"));
-				icons = new Bitmap[assets.getImages().length+1];
-
-				for(int i = 0; i < assets.getImages().length; i++)
-				{
-					icons[i] = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.getImages()[i].getName())));
-				}
-
-				icons[(NO_TYPE=icons.length-1)] = BitmapFactory.decodeResource(getResources(), R.drawable.dashed_border_2x);
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace();
-			}
-		}
 	}
 
 	public void setCallback(IContactSignatureSliderCallback callback)
@@ -176,6 +153,33 @@ public class ContactSignatureSlideLayout extends View
 		
 		float fixed_offset = 0.0f;
 		float all_size     = 0.0f;
+
+		if(assets == null)
+		{
+			try
+			{
+				File assetsDir = new File(getContext().getFilesDir(), "assets");
+
+				if(assetsDir.exists())
+				{
+					assets = AssetsJson.createFromFile(new File(assetsDir, "content.json"));
+					icons = new Bitmap[assets.getImages().length + 1];
+
+					for (int i = 0; i < assets.getImages().length; i++)
+					{
+						icons[i] = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.getImages()[i].getName())));
+					}
+
+					icons[(NO_TYPE = icons.length - 1)] = BitmapFactory.decodeResource(getResources(), R.drawable.dashed_border_2x);
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		if(icons == null) return;
 		
 		if(screen == null || screen.getWidth() != getWidth() || screen.getHeight() != getHeight())
 		{
@@ -237,7 +241,7 @@ public class ContactSignatureSlideLayout extends View
 	{
 		Bitmap bit   = null;
 		int    index = icon != null ? typeToIconType(icon):NO_TYPE;
-		
+
 		bit = icons[index];
 		c.drawBitmap
 		(
@@ -255,7 +259,7 @@ public class ContactSignatureSlideLayout extends View
 			if(type.contains(assets.getImages()[i].getKey())) return i;
 		}
 
-		return -1;
+		return NO_TYPE;
 	}
 
 	private void initArea(SignatureArea signatureArea, float icon_area_size, float startx, int icon_size, String path) 

@@ -22,6 +22,8 @@ public abstract class Cloud
 
     public abstract void createUser(String number, String uuid, I_ProcessListener i_processListener);
 
+    public abstract boolean uploadUser(String userContentKey, String key, File json);
+
     public interface I_ProcessListener
     {
         void onSuccess(HashMap<String, String> result);

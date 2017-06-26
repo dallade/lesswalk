@@ -349,14 +349,21 @@ public class RegistrationActivity extends BaseActivity
         @Override
         void onDonePressed()
         {
-            if(nameChanged())
+            if(!userExist || nameChanged())
             {
-                getService().updateUserJson
-                (
-                    ""+first_name_et.getText().toString(),
-                    "" + last_name_et.getText().toString(),
-                    RegistrationActivity.this.numberField.getNumber()
-                );
+                new Thread()
+                {
+                    @Override
+                    public void run()
+                    {
+                        getService().updateUserJson
+                        (
+                                ""+first_name_et.getText().toString(),
+                                "" + last_name_et.getText().toString(),
+                                RegistrationActivity.this.numberField.getNumber()
+                        );
+                    }
+                }.start();
             }
 
             if(userExist)

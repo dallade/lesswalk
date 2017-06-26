@@ -99,6 +99,8 @@ public class AssetsJson
 
             Log.d("elazarkin", "without tabs json: ");
             Log.d("elazarkin", "" + json);
+//            json = json.replaceAll(",}", "}");
+//            json = json.replaceAll(",]", "]");
             json = replaceAll(json, ",}", "}");
             json = replaceAll(json, ",]", "]");
             Log.d("elazarkin", "fixed: ");

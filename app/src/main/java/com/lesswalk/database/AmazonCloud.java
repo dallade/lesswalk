@@ -258,6 +258,40 @@ public class AmazonCloud extends Cloud
     }
 
     @Override
+    public boolean uploadUser(String uuid, String json, File userContentDir)
+    {
+        //TODO use etag for later sync
+        String etag = null;
+        File userZip = new File(mContext.getCacheDir(), "user.zip");
+        String url = null;
+
+        ZipManager.zip(userContentDir.listFiles(), userZip);
+        etag = AWS.upload(mContext, AWS.S3_USERS_DIR + "/" + uuid + ".zip", userZip.getAbsolutePath());
+        url = String.format
+        (
+                Locale.getDefault(),
+                PUT_REQ_USER_UPLOAD,
+                CLOUD_SCHEME,
+                CLOUD_HOST,
+                CLOUD_PORT,
+                CLOUD_MODULE_user,
+                CLOUD_FUNCTION_upload,
+                uuid
+        );
+
+        try
+        {
+            reqHttpPut(url, json);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public String uploadUser(String countryCode, String phone, String firstName, String lastName)
     {
         final String uuid            = AWS.generateKey();

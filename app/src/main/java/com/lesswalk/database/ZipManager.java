@@ -58,6 +58,37 @@ public class ZipManager
         }
     }
 
+    public static void zip(File[] files, File zipFile)
+    {
+        try
+        {
+            byte                data[] = new byte[BYTE_BUFFER_SIZE];
+            int                 numOfReadBytes;
+            BufferedInputStream bis;
+            FileOutputStream    fos    = new FileOutputStream(zipFile);
+            ZipOutputStream     zipos  = new ZipOutputStream(new BufferedOutputStream(fos));
+
+            for (int i = 0; i < files.length; i++)
+            {
+                Log.v(TAG, "zip: add file: " + files[i]);
+                FileInputStream fi = new FileInputStream(files[i]);
+                bis = new BufferedInputStream(fi, BYTE_BUFFER_SIZE);
+                ZipEntry entry = new ZipEntry(files[i].getName());
+                zipos.putNextEntry(entry);
+                while ((numOfReadBytes = bis.read(data, 0, BYTE_BUFFER_SIZE)) != -1)
+                {
+                    zipos.write(data, 0, numOfReadBytes);
+                }
+                bis.close();
+            }
+            zipos.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public static boolean unzip(Context c, String zipFileName, String unzippedDir)
     {
         boolean ret = false;
