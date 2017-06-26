@@ -1,17 +1,24 @@
 package com.lesswalk;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.lesswalk.bases.BaseActivity;
+import com.lesswalk.json.AssetsJson;
 import com.lesswalk.views.RoundedNegativeIconButtonWithText;
 import com.lesswalk.views.SelectSpotTypeAcceptDialog;
 import com.lesswalk.views.SelectSpotTypeItem;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 public class SelectSpotTypeActivity extends BaseActivity
 {
@@ -59,54 +66,97 @@ public class SelectSpotTypeActivity extends BaseActivity
 
     private void addSpotTypes()
     {
-        runOnUiThread(new Runnable()
+        final SelectSpotTypeItem list      = (SelectSpotTypeItem) findViewById(R.id.select_spot_activity_list_item);
+        final File               assetsDir = new File(this.getFilesDir(), "assets");
+
+        if(assetsDir.exists())
         {
-            @Override
-            public void run()
+            runOnUiThread(new Runnable()
             {
-                SelectSpotTypeItem list = (SelectSpotTypeItem) findViewById(R.id.select_spot_activity_list_item);
-
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Home", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Work", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Family", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Social", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Shopping", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Medical", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Food", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Accomodation", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Coffe", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Cinema", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Theatre", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Concert", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Smoking", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Park", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "School", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Meeting", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Sport", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Picnic", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Pub", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Party", Color.WHITE));
-                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Restaurant", Color.WHITE));
-
-                for(int i = 0; i < list.getSelectSpotTypeChildCount(); i++)
+                @Override
+                public void run()
                 {
-                    list.getSelectSpotTypeChildAt(i).setOnClickListener(new View.OnClickListener()
+                    AssetsJson assets = AssetsJson.createFromFile(new File(assetsDir, "content.json"));
+
+                    for (int i = 0; i < assets.getImages().length; i++)
                     {
-                        @Override
-                        public void onClick(View view)
+                        Log.d("spots", "" + assets.getImages()[i].getTitle() + " added");
+                        list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText
+                        (
+                                SelectSpotTypeActivity.this,
+                                new File(assetsDir, assets.getImages()[i].getName()),
+                                assets.getImages()[i].getTitle(),
+                                Color.WHITE
+                        ));
+                    }
+
+                    for (int i = 0; i < list.getSelectSpotTypeChildCount(); i++)
+                    {
+                        list.getSelectSpotTypeChildAt(i).setOnClickListener(new View.OnClickListener()
                         {
-                            RoundedNegativeIconButtonWithText button = (RoundedNegativeIconButtonWithText) view;
+                            @Override
+                            public void onClick(View view)
+                            {
+                                RoundedNegativeIconButtonWithText button = (RoundedNegativeIconButtonWithText) view;
 
-                            acceptDialog.setText(button.getText());
-                            acceptDialog.setIcon(button.getIcon());
-                            acceptDialog.show();
-                        }
-                    });
+                                acceptDialog.setText(button.getText());
+                                acceptDialog.setIcon(button.getIcon());
+                                acceptDialog.show();
+                            }
+                        });
+                    }
+                    list.invalidate();
                 }
-
-                list.invalidate();
-            }
-        });
+            });
+        }
+//        runOnUiThread(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                SelectSpotTypeItem list = (SelectSpotTypeItem) findViewById(R.id.select_spot_activity_list_item);
+//
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Home", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Work", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Family", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Social", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Shopping", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Medical", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Food", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Accomodation", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Coffe", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Cinema", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Theatre", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Concert", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Smoking", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Park", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "School", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Meeting", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Sport", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Picnic", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Pub", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Party", Color.WHITE));
+//                list.addRoundedNegativeIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Restaurant", Color.WHITE));
+//
+//                for(int i = 0; i < list.getSelectSpotTypeChildCount(); i++)
+//                {
+//                    list.getSelectSpotTypeChildAt(i).setOnClickListener(new View.OnClickListener()
+//                    {
+//                        @Override
+//                        public void onClick(View view)
+//                        {
+//                            RoundedNegativeIconButtonWithText button = (RoundedNegativeIconButtonWithText) view;
+//
+//                            acceptDialog.setText(button.getText());
+//                            acceptDialog.setIcon(button.getIcon());
+//                            acceptDialog.show();
+//                        }
+//                    });
+//                }
+//
+//                list.invalidate();
+//            }
+//        });
     }
 
     @Override

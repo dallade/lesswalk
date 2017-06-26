@@ -3,7 +3,9 @@ package com.lesswalk.views;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -14,6 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.lesswalk.R;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * Created by elazarkin on 5/17/17.
@@ -41,6 +47,24 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         {
             //noinspection deprecation
             this.src = getResources().getDrawable(resource);
+        }
+
+        setItem();
+    }
+
+    public RoundedNegativeIconButtonWithText(Context context, File resource, String text, int textColor)
+    {
+        super(context);
+
+        this.text = text;
+        this.textColor = textColor;
+        try
+        {
+            this.src = new BitmapDrawable(getResources(), BitmapFactory.decodeStream(new FileInputStream(resource)));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
         }
 
         setItem();
