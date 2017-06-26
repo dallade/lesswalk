@@ -345,4 +345,10 @@ public class MainService extends Service implements ILesswalkService
 	{
 		syncThread.updateUserJson(first, last, number);
 	}
+
+	@Override
+	public String uuidToPath(String uuid)
+	{
+		return syncThread.uuidToPath(uuid);
+	}
 }

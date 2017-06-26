@@ -49,6 +49,11 @@ public class SyncThread
 
     private static Semaphore mutex = new Semaphore(1);
 
+    public String uuidToPath(String uuid)
+    {
+        return mCloud.getSignutareFilePathByUUID(uuid).getAbsolutePath();
+    }
+
     private class UserContent
     {
         String country_dial_code = null;

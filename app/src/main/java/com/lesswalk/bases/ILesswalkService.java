@@ -29,7 +29,9 @@ public interface ILesswalkService
 
 	void updateUserJson(String first, String last, String number);
 
-	interface ISetLocalNumberCallback
+    String uuidToPath(String uuid);
+
+    interface ISetLocalNumberCallback
 	{
 		void onSuccess();
 		void onError(int errorID);

@@ -166,9 +166,9 @@ public class MainActivity extends BaseActivity
 		signatureSlider.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
 		{
 			@Override
-			public void onSignatureClicked(String path)
+			public void onSignatureClicked(String uuid)
 			{
-				if(path == null || path.length() <= 0 || path.equals("null"))
+				if(uuid == null || uuid.length() <= 0 || uuid.equals("null"))
 				{
 					//startActivity(new Intent(MainActivity.this, EditorActivity.class));
 					startActivity(new Intent(MainActivity.this, SelectSpotTypeActivity.class));
@@ -176,7 +176,7 @@ public class MainActivity extends BaseActivity
 				else
 				{
 					String dirPath = null;
-					if((dirPath=getService().unzip(path)) != null)
+					if((dirPath=getService().unzip(getService().uuidToPath(uuid))) != null)
 					{
 						Intent i = new Intent(MainActivity.this, PlayerActivity.class);
 						//
