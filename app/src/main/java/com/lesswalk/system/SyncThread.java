@@ -209,29 +209,29 @@ public class SyncThread
             String         userUuid      = null;
             Vector<String> sinaturesList = null;
 
-            Log.d("elazarkin8", "StoreLocalContactTask - " + fixed_number + "(" + number[0] + " ," + number[1] + ")");
+            Log.d("elazarkin8", "SyncSomeContactSignaturesTask - " + fixed_number + "(" + number[0] + " ," + number[1] + ")");
 
             userUuid = mCloud.getUserUuid(number[PhoneUtils.PHONE_INDEX_COUNTRY], number[PhoneUtils.PHONE_INDEX_MAIN]);
 
             if (userUuid == null)
             {
-                String signupNumber = String.format(Locale.getDefault(), "+%d %d", number[0], number[1]);
-                String uuid         = UUID.randomUUID().toString();
-                // TODO FIXME
-                mCloud.createUser(signupNumber, uuid, new Cloud.I_ProcessListener()
-                {
-                    @Override
-                    public void onSuccess(HashMap<String, String> result)
-                    {
-
-                    }
-
-                    @Override
-                    public void onFailure(HashMap<String, String> result)
-                    {
-
-                    }
-                });
+//                String signupNumber = String.format(Locale.getDefault(), "+%s %s", number[0], number[1]);
+//                String uuid         = UUID.randomUUID().toString();
+//                // TODO FIXME
+//                mCloud.createUser(signupNumber, uuid, new Cloud.I_ProcessListener()
+//                {
+//                    @Override
+//                    public void onSuccess(HashMap<String, String> result)
+//                    {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(HashMap<String, String> result)
+//                    {
+//
+//                    }
+//                });
                 callback.onError(ILesswalkService.REGISTRATION_ERROR_STILL_NOT_REGISTRED);
                 return;
             }

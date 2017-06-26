@@ -16,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.google.gson.Gson;
+import com.lesswalk.R;
+import com.lesswalk.json.AssetsJson;
 import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
@@ -26,43 +28,9 @@ import java.util.Vector;
 
 public class ContactSignatureSlideLayout extends View 
 {
-    public interface IContactSignatureSliderCallback
+	public interface IContactSignatureSliderCallback
 	{
 		void onSignatureClicked(String path);
-	}
-
-	public class Assets
-	{
-		private String key          = null;
-		private String content_type = null;
-		private Images images[]     = null;
-
-		public void setKey(String key) {this.key = key;}
-		public void setContent_type(String content_type) {this.content_type = content_type;}
-		public void setImages(Images[] images) {this.images = images;}
-		public String getKey() {return key;}
-		public Images[] getImages() {return images;}
-		public String getContent_type() {return content_type;}
-	}
-
-	public class Images
-	{
-		private String  key    = null;
-		private String  title  = null;
-		private String  type   = null;
-		private String  name   = null;
-		private boolean hidden = false;
-
-		public String getName() {return name;}
-		public String getType() {return type;}
-		public String getTitle() {return title;}
-		public String getKey() {return key;}
-		public boolean isHidden() {return hidden;}
-		public void setHidden(boolean hidden) {this.hidden = hidden;}
-		public void setType(String type) {this.type = type;}
-		public void setTitle(String title) {this.title = title;}
-		public void setKey(String key) {this.key = key;}
-		public void setName(String name) {this.name = name;}
 	}
 
 	private class SignatureArea
@@ -76,8 +44,9 @@ public class ContactSignatureSlideLayout extends View
 	private static final long  MAX_MOVED_DIST           = 10;
 	private static final float RETURN_VELOCATION        = 3000.0f;
 
-	private static Assets assets  = null;
-	private static Bitmap icons[] = null;
+	private static AssetsJson assets  = null;
+	private static Bitmap     icons[] = null;
+	private static int        NO_TYPE = 0;
 
 	private        CarruselJson                    faked            = null;
 	private        IContactSignatureSliderCallback callback         = null;
@@ -124,18 +93,19 @@ public class ContactSignatureSlideLayout extends View
 
 		if(assets == null)
 		{
-			Gson gson = new Gson();
-
 			try
 			{
 				File assetsDir = new File(getContext().getFilesDir(), "assets");
-				assets = gson.fromJson(new FileReader(new File(assetsDir,"content.json")), Assets.class);
-				icons = new Bitmap[assets.images.length];
 
-				for(int i = 0; i < assets.images.length; i++)
+				assets = AssetsJson.createFromFile(new File(assetsDir,"content.json"));
+				icons = new Bitmap[assets.getImages().length+1];
+
+				for(int i = 0; i < assets.getImages().length; i++)
 				{
-					icons[i] = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.images[i].name)));
+					icons[i] = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.getImages()[i].getName())));
 				}
+
+				icons[(NO_TYPE=icons.length-1)] = BitmapFactory.decodeResource(getResources(), R.drawable.dashed_border_2x);
 			}
 			catch (FileNotFoundException e)
 			{
@@ -266,7 +236,7 @@ public class ContactSignatureSlideLayout extends View
 	private void drawIcon(Canvas c, SignatureArea area, String icon)
 	{
 		Bitmap bit   = null;
-		int    index = typeToIconType(icon);
+		int    index = icon != null ? typeToIconType(icon):NO_TYPE;
 		
 		bit = icons[index];
 		c.drawBitmap
@@ -280,9 +250,9 @@ public class ContactSignatureSlideLayout extends View
 	
 	private int typeToIconType(String type)
 	{
-		for (int i = 0; i < assets.images.length; i++)
+		for (int i = 0; i < assets.getImages().length; i++)
 		{
-			if(type.equals(assets.images[i].key)) return i;
+			if(type.contains(assets.getImages()[i].getKey())) return i;
 		}
 
 		return -1;
