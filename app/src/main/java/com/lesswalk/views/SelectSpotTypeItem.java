@@ -3,6 +3,7 @@ package com.lesswalk.views;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,7 @@ public class SelectSpotTypeItem extends LinearLayout
         addView(sv, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    public void addRoundedNegativeIconButtonWithText(RoundedNegativeIconButtonWithText item)
+    public void addRoundedIconButtonWithText(RoundedNegativeIconButtonWithText item)
     {
         int i = layouts.length-1;
 
@@ -54,6 +55,8 @@ public class SelectSpotTypeItem extends LinearLayout
         {
             if(layouts[i].getChildCount() < layouts[i-1].getChildCount()) break;
         }
+
+        Log.d("elazarkin17", "added addRoundedIconButtonWithText on " + i + " index");
 
         item.setGravity(Gravity.CENTER);
         layouts[i].addView(item);

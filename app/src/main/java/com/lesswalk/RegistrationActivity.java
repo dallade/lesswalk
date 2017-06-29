@@ -412,16 +412,30 @@ public class RegistrationActivity extends BaseActivity
             return "Done";
         }
 
-        public void setFirstLastName(String firstName, String lastName)
+        public void setFirstLastName(final String firstName, final String lastName)
         {
-            first_name_et.setText((this.firstName=""+firstName));
-            last_name_et.setText((this.lastName=""+lastName));
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    first_name_et.setText((NameField.this.firstName=""+firstName));
+                    last_name_et.setText((NameField.this.lastName=""+lastName));
+                }
+            });
         }
 
-        public void enableEdit(boolean isEnabled)
+        public void enableEdit(final boolean isEnabled)
         {
-            first_name_et.setEnabled(isEnabled);
-            last_name_et.setEnabled(isEnabled);
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    first_name_et.setEnabled(isEnabled);
+                    last_name_et.setEnabled(isEnabled);
+                }
+            });
         }
 
         public void setUserExistFlag(boolean userExist)
@@ -459,7 +473,14 @@ public class RegistrationActivity extends BaseActivity
         @Override
         void bringToFront()
         {
-            registration_sms_view.bringToFront();
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    registration_sms_view.bringToFront();
+                }
+            });
         }
 
         @Override

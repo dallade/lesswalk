@@ -167,10 +167,10 @@ public class ContactProfile extends BaseActivity
 		contactSignatureLayout.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
 		{
 			@Override
-			public void onSignatureClicked(String path)
+			public void onSignatureClicked(String uuid)
 			{
 				String dirPath = null;
-				if(path != null && (dirPath=getService().unzip(path)) != null)
+				if(uuid != null && (dirPath=getService().unzip(getService().uuidToPath(uuid))) != null)
 				{
 					Intent i = new Intent(ContactProfile.this, PlayerActivity.class);
 					//
