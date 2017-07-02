@@ -77,13 +77,16 @@ public class SelectSpotTypeActivity extends BaseActivity
                     for (int i = 0; i < assets.getImages().length; i++)
                     {
                         //if(i == 2) continue;
-                        list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText
-                        (
-                                SelectSpotTypeActivity.this,
-                                new File(assetsDir, assets.getImages()[i].getName()),
-                                assets.getImages()[i].getTitle(),
-                                Color.WHITE
-                        ));
+                        if(!assets.getImages()[i].isHidden())
+                        {
+                            list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText
+                            (
+                                    SelectSpotTypeActivity.this,
+                                    new File(assetsDir, assets.getImages()[i].getName()),
+                                    assets.getImages()[i].getTitle(),
+                                    Color.WHITE
+                            ));
+                        }
                     }
 
                     for (int i = 0; i < list.getSelectSpotTypeChildCount(); i++)
