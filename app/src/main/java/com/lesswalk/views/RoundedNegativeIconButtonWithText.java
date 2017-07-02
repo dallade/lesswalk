@@ -32,6 +32,7 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
     private int             textColor = Color.WHITE;
     private Drawable        src       = null;
     private OnClickListener listener  = null;
+    private String          icon_name = null;
 
     public RoundedNegativeIconButtonWithText(Context context, int resource, String text, int textColor)
     {
@@ -52,7 +53,7 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         setItem();
     }
 
-    public RoundedNegativeIconButtonWithText(Context context, File resource, String text, int textColor)
+    public RoundedNegativeIconButtonWithText(Context context, File resource, String text, String icon_name, int textColor)
     {
         super(context);
 
@@ -130,5 +131,5 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
 
     public String getText() {return text;}
 
-    public Drawable getIcon() {return src;}
+    public String getIcon() {return icon_name;}
 }

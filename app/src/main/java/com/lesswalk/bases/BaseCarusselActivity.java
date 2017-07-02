@@ -60,7 +60,7 @@ public abstract class BaseCarusselActivity extends BaseActivity
             }
         });
 
-        callButton = (Button) findViewById(R.id.bc_call_button);
+        callButton = (Button) findViewById(R.id.bc_right_button);
         callButton.setOnClickListener(new View.OnClickListener() 
         {
             @Override

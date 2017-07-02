@@ -28,9 +28,8 @@ import com.lesswalk.R;
 public abstract class SelectSpotTypeAcceptDialog extends Dialog
 {
     private EditText editText = null;
-
-    private Context  context = null;
-    private Drawable icon    = null;
+    private Context  context  = null;
+    private String   icon     = null;
 
     public SelectSpotTypeAcceptDialog(@NonNull Context context)
     {
@@ -62,7 +61,7 @@ public abstract class SelectSpotTypeAcceptDialog extends Dialog
         });
     }
 
-    protected abstract void donePressed(Editable text, Drawable icon);
+    protected abstract void donePressed(Editable text, String icon);
 
     public void setText(final String text)
     {
@@ -77,7 +76,7 @@ public abstract class SelectSpotTypeAcceptDialog extends Dialog
         });
     }
 
-    public void setIcon(Drawable icon)
+    public void setIcon(String icon)
     {
         this.icon = icon;
     }

@@ -47,13 +47,14 @@ public class SelectSpotTypeActivity extends BaseActivity
         acceptDialog = new SelectSpotTypeAcceptDialog(this)
         {
             @Override
-            protected void donePressed(Editable text, Drawable icon)
+            protected void donePressed(Editable text, String icon_name)
             {
                 if(text != null && text.length() > 0)
                 {
                     Intent intent = new Intent(SelectSpotTypeActivity.this, EditorActivity.class);
 
                     intent.putExtra(INTENT_EXTRA_NAME_SPOT_NAME, text);
+                    intent.putExtra(INTENT_EXTRA_NAME_ICON_UUID, icon_name);
                     startActivity(intent);
                 }
             }
@@ -84,6 +85,7 @@ public class SelectSpotTypeActivity extends BaseActivity
                                     SelectSpotTypeActivity.this,
                                     new File(assetsDir, assets.getImages()[i].getName()),
                                     assets.getImages()[i].getTitle(),
+                                    assets.getImages()[i].getName(),
                                     Color.WHITE
                             ));
                         }
@@ -108,54 +110,6 @@ public class SelectSpotTypeActivity extends BaseActivity
                 }
             });
         }
-//        runOnUiThread(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                SelectSpotTypeItem list = (SelectSpotTypeItem) findViewById(R.id.select_spot_activity_list_item);
-//
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Home", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Work", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Family", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Social", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Shopping", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Medical", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Food", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Accomodation", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Coffe", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Cinema", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Theatre", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Concert", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Smoking", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Park", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "School", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Meeting", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Sport", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Picnic", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Pub", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Party", Color.WHITE));
-//                list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText(SelectSpotTypeActivity.this, R.drawable.home_icon, "Restaurant", Color.WHITE));
-//
-//                for(int i = 0; i < list.getSelectSpotTypeChildCount(); i++)
-//                {
-//                    list.getSelectSpotTypeChildAt(i).setOnClickListener(new View.OnClickListener()
-//                    {
-//                        @Override
-//                        public void onClick(View view)
-//                        {
-//                            RoundedNegativeIconButtonWithText button = (RoundedNegativeIconButtonWithText) view;
-//
-//                            acceptDialog.setText(button.getText());
-//                            acceptDialog.setIcon(button.getIcon());
-//                            acceptDialog.show();
-//                        }
-//                    });
-//                }
-//
-//                list.invalidate();
-//            }
-//        });
     }
 
     @Override

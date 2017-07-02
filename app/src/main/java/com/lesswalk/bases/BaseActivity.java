@@ -21,7 +21,8 @@ import com.lesswalk.RegistrationActivity;
 public abstract class BaseActivity extends Activity
 {
 	protected static final String INTENT_EXTRA_NAME_CONTENT_DIR = "content_dir";
-	protected static final String INTENT_EXTRA_NAME_SPOT_NAME = "spot_name";
+	protected static final String INTENT_EXTRA_NAME_SPOT_NAME   = "spot_name";
+	protected static final String INTENT_EXTRA_NAME_ICON_UUID   = "icon_uuid";
 
 	private static final String           TAG           = "lesswalkBaseActivity";
 	private static       Intent           mainActivity  = null;
