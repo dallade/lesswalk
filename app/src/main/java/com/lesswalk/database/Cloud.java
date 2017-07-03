@@ -63,6 +63,8 @@ public abstract class Cloud
     //
     public abstract JSONObject getUserJson(String phone, String countryCode);
 
+    public abstract String getUserJson(String uuid);
+
     public abstract String getUserUuid(String phone, String countryCode);
 
     public abstract JSONArray findSignaturesByOwner(String uuid);

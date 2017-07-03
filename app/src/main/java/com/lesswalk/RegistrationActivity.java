@@ -20,7 +20,7 @@ public class RegistrationActivity extends BaseActivity
 {
     private static final int MIN_NUMBER_LENGTH = 9;
 
-    private boolean USE_SMS = false;
+    private boolean USE_SMS = true;
 
     private enum NextAction
     {

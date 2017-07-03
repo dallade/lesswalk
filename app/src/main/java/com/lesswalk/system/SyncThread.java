@@ -128,6 +128,8 @@ public class SyncThread
     {
         Gson gson = new Gson();
 
+        userContent = null;
+
         if(userContentDir == null)
         {
             userContentDir = new File(mParent.getFilesDir(), "userContent");
@@ -141,7 +143,6 @@ public class SyncThread
 
         try (Reader reader = new FileReader(userJsonFile))
         {
-
             // Convert JSON to Java Object
             userContent = gson.fromJson(reader, UserContent.class);
 
@@ -391,6 +392,7 @@ public class SyncThread
             {
                 Log.d("elazarkin16", "deleteUserAccount success before remove dir");
                 Utils.removeDir(userContentDir);
+                reloadUserJson();
                 Log.d("elazarkin16", "removeDir success before send onfinish");
                 callback.onFinished();
             }
@@ -1120,8 +1122,13 @@ public class SyncThread
 
     public void deleteUserAccount(AWS.OnRequestListener onRequestListener)
     {
-
         addImportantTask(new DeleteAcountTask(onRequestListener));
+    }
+
+    public boolean checkLogin()
+    {
+        Log.d("elazarkin17", "" +(userContent != null ? userContent.getKey():"userContent=null"));
+        return userContent != null && userContent.getKey() != null;
     }
 }
 

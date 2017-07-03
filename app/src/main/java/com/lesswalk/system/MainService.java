@@ -281,9 +281,9 @@ public class MainService extends Service implements ILesswalkService
 	}
 
 	@Override
-	public boolean haveLocalNumber()
+	public boolean checkLogin()
 	{
-		return getLocalNumber() != null;
+		return syncThread.checkLogin();
 	}
 
 //	@Override

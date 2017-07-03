@@ -9,6 +9,7 @@ import com.amazonaws.mobileconnectors.cognito.Record;
 import com.amazonaws.mobileconnectors.cognito.SyncConflict;
 import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +37,7 @@ import okhttp3.Response;
 public class AmazonCloud extends Cloud
 {
 
-    protected static final String TAG                              = "AmazonCloud";
+    protected static final String TAG                              = AmazonCloud.class.getSimpleName();
     protected static final String CLOUD_SCHEME                     = "http";//"https";//http
     protected static final String CLOUD_HOST                       = "52.70.155.39";
     protected static final int    CLOUD_PORT                       = 30082;//443;//30082
@@ -49,6 +50,7 @@ public class AmazonCloud extends Cloud
     protected static final String CLOUD_FUNCTION_sendVerSms        = "request-confirmation-sms";
     protected static final String CLOUD_FUNCTION_upload            = "upload";
     protected static final String GET_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s?phone_number=%s&country_code=%s";
+    protected static final String GET_REQ_USER_BY_UUID            = "%s://%s:%d/cmd/%s/%s/%s";
     protected static final String PUT_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s";//?phone_number=%s&country_code=%s
     protected static final String PUT_REQ_USER_VER_SMS             = "%s://%s:%d/cmd/%s/%s";
     protected static final String PUT_REQ_USER_UPLOAD              = "%s://%s:%d/cmd/%s/%s/%s";
@@ -70,6 +72,7 @@ public class AmazonCloud extends Cloud
     private static final   String ASSETS_EXTENSION                 = ".zip";
     private static final   String DELETE_REQ_USER_DELETE= "%s://%s:%d/cmd/%s/%s/%s";//http://52.70.155.39:30082/cmd/user/drop/AD1038E8-887B-4939-9412-DC716DCE38FB
     private static final   String CLOUD_FUNCTION_delete            = "drop";
+    private static final   String CLOUD_FUNCTION_get               = "get";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     protected Context               mContext;
@@ -155,6 +158,25 @@ public class AmazonCloud extends Cloud
             e.printStackTrace();
         }
         return result;
+    }
+
+
+    @Override
+    public String getUserJson(String uuid)
+    {
+        JSONObject json = null;
+        String url = String.format
+                (
+                        Locale.getDefault(),
+                        GET_REQ_USER_BY_UUID,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_user,
+                        CLOUD_FUNCTION_get,
+                        uuid
+                );
+        return reqHttpGet(url);
     }
 
     @Override
@@ -308,7 +330,14 @@ public class AmazonCloud extends Cloud
                         CLOUD_FUNCTION_delete,
                         userKey
                 );
-        return reqHttpDelete(url);
+        boolean result;
+        result = reqHttpDelete(url);//TODO uncomment!
+        String response = getUserJson(userKey);
+        Log.d(TAG, "response: "+response);
+//        Gson gson = new Gson();
+//        gson.fromJson(response, );
+        result = true;
+        return result;
     }
 
     @Override
@@ -526,6 +555,7 @@ public class AmazonCloud extends Cloud
         try
         {
             response = httpClient.newCall(request).execute();
+            Log.d(TAG, String.format("response: %s", response.toString()));
             return response.isSuccessful();
         }
         catch (IOException e)

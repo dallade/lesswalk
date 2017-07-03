@@ -10,7 +10,7 @@ public interface ILesswalkService
 
 	String unzip(String path);
 
-	boolean haveLocalNumber();
+	boolean checkLogin();
 
 //	int setLocalNumber(String number, ISetLocalNumberCallback callback);
 //	int setLocalNumber(String name, String number, ISetLocalNumberCallback callback);

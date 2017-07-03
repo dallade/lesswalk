@@ -179,14 +179,14 @@ public abstract class BaseActivity extends Activity
 			mainServer = (ILesswalkService) ((MainService.LocalBinder) service).getService();
 			Log.d(TAG, "mainServer = " + mainServer + " is registration - " + (BaseActivity.this instanceof RegistrationActivity));
 
-			if(!(BaseActivity.this instanceof RegistrationActivity) && !mainServer.haveLocalNumber())
+			if(!(BaseActivity.this instanceof RegistrationActivity) && !mainServer.checkLogin())
 			{
-				Log.d("elazarkin9", "BaseActivity.this instanceof RegistrationActivity is " + (BaseActivity.this instanceof RegistrationActivity) + " mainServer.haveLocalNumber() is " + mainServer.haveLocalNumber());
+				Log.d("elazarkin9", "BaseActivity.this instanceof RegistrationActivity is " + (BaseActivity.this instanceof RegistrationActivity) + " mainServer.checkLogin() is " + mainServer.checkLogin());
 				startActivity(new Intent(BaseActivity.this, RegistrationActivity.class));
 			}
 			else
 			{
-				Log.d("elazarkin9", "BaseActivity.this instanceof RegistrationActivity is " + (BaseActivity.this instanceof RegistrationActivity) + " mainServer.haveLocalNumber() is " + mainServer.haveLocalNumber());
+				Log.d("elazarkin9", "BaseActivity.this instanceof RegistrationActivity is " + (BaseActivity.this instanceof RegistrationActivity) + " mainServer.checkLogin() is " + mainServer.checkLogin());
 				mainServiceConnected();
 			}
 		}
