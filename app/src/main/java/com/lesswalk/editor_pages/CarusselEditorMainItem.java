@@ -26,7 +26,9 @@ public class CarusselEditorMainItem extends ICarusselMainItem
 	
 	public CarusselEditorMainItem(Context c)
 	{
-		initOnStartPages(c);
+		context = c;
+
+		initOnStartPages(context);
 		// TODO check intent, maybe it edit of existed signature
 	}
 
