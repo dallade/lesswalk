@@ -4,8 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/carrusseljsondevelopment/carrusseljsondevelopment.iml" filepath="$PROJECT_DIR$/carrusseljsondevelopment/carrusseljsondevelopment.iml" />
-      <module fileurl="file://$PROJECT_DIR$/carrusseljsondevelopment/carrusseljsondevelopment.iml" filepath="$PROJECT_DIR$/carrusseljsondevelopment/carrusseljsondevelopment.iml" />
-      <module fileurl="file://$PROJECT_DIR$/carrusseljsonobjects/carrusseljsonobjects.iml" filepath="$PROJECT_DIR$/carrusseljsonobjects/carrusseljsonobjects.iml" />
       <module fileurl="file://$PROJECT_DIR$/carrusseljsonobjects/carrusseljsonobjects.iml" filepath="$PROJECT_DIR$/carrusseljsonobjects/carrusseljsonobjects.iml" />
       <module fileurl="file://$PROJECT_DIR$/lesswalk.iml" filepath="$PROJECT_DIR$/lesswalk.iml" />
     </modules>
