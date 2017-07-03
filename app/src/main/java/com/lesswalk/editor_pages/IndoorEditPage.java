@@ -8,19 +8,22 @@ import android.graphics.Color;
 import com.lesswalk.R;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
+import com.lesswalk.json.CarruselJson;
 import com.lesswalk.pagescarussel.CarusselPageInterface;
+
+import java.io.File;
 
 // TODO create IndoorBasePage!
 
-public class IndoorEditPage extends CarusselPageInterface 
+public class IndoorEditPage extends CarusselPageInterface
 {
 	private final int STATE_HELP_INIT    = 0;
 	private final int STATE_EDIT_PROCCES = 1;
 	
 	private ImageObject3D INDOOR_ICON  = null;
 	private ImageObject3D INDOOR_TITLE = null;
-	
-	public IndoorEditPage(String title, Context context) 
+
+	public IndoorEditPage(String title, Context context)
 	{
 		super(title, context);
 		// TODO Auto-generated constructor stub
@@ -71,6 +74,12 @@ public class IndoorEditPage extends CarusselPageInterface
 	protected String getYouShouldNoticeTitle()
 	{
 		return "You Should Notice";
+	}
+
+	@Override
+	public void save(File dir, CarruselJson carruselJson)
+	{
+
 	}
 
 }

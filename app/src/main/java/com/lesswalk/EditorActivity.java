@@ -32,6 +32,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 	private LinearLayout      editorTakePhotoMenu = null;
 	private LinearLayout      manualAddress       = null;
 	private Button            backButton          = null;
+	private Button            saveButton          = null;
 	private Vector<View>      additionViews       = null;
 	private Vector<View>      currentDisplayed    = null;
 
@@ -69,6 +70,22 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			public void onClick(View view)
 			{
 				onBackAction();
+			}
+		});
+
+		saveButton = (Button) findViewById(R.id.bc_right_button);
+		saveButton.setText("Save");
+		saveButton.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				String uuid = carusselMainItem.save();
+
+				if(uuid != null)
+				{
+
+				}
 			}
 		});
 	}
@@ -288,7 +305,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 	@Override
 	protected void mainServiceConnected()
 	{
-		// TODO Auto-generated method stub
+		carusselMainItem.setService(getService());
 	}
 
 	private void onBackAction()

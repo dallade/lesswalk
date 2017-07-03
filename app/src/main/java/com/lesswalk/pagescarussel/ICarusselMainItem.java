@@ -1,11 +1,13 @@
 package com.lesswalk.pagescarussel;
 
+import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.bases.RectObject3D;
 
 import java.util.Vector;
 
 public abstract class ICarusselMainItem 
 {
+
 	/*
 	 * Global Functions
 	 */
@@ -30,5 +32,14 @@ public abstract class ICarusselMainItem
 	 * Must use Functions
 	 */
 	
-	abstract public void fillContainerByItems(Vector<CarusselPageInterface> container);
+	public abstract void fillContainerByItems(Vector<CarusselPageInterface> container);
+
+
+	/**
+	 *
+	 * @return uuid
+	 */
+	public String save(){return null;}
+
+	public void setService(ILesswalkService service){}
 }

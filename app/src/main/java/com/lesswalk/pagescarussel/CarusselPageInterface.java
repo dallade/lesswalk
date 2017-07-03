@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
+import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
 
@@ -49,7 +50,7 @@ public abstract class CarusselPageInterface extends RectObject3D
 	private RectObject3D youShouldNoticeTitleObj = null;
 	private RectObject3D tipsArea                = null;
 
-	protected class ImageItem
+    protected class ImageItem
     {
         String imagePath = null;
         String direction = "0";
@@ -660,4 +661,7 @@ public abstract class CarusselPageInterface extends RectObject3D
 
 	protected RectF getTitleRect() {return titleRect;}
 	protected RectF getYouShouldNoticeRect() {return youShouldNoticeRect;}
+
+	public void save(File dir, CarruselJson jsonObject){}
+	public void save(File dir, int index, CarruselJson jsonObject){}
 }

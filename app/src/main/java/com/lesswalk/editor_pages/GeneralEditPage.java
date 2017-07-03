@@ -8,13 +8,16 @@ import android.graphics.Color;
 import com.lesswalk.R;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
+import com.lesswalk.json.CarruselJson;
+
+import java.io.File;
 
 public class GeneralEditPage extends EditParkingBasePage 
 {
 	private ImageObject3D GENERAL_ICON  = null;
 	private ImageObject3D GENERAL_TITLE = null;
-	
-	public GeneralEditPage(String title, Context context) 
+
+	public GeneralEditPage(String title, Context context)
 	{
 		super(title, context);
 	}
@@ -63,5 +66,11 @@ public class GeneralEditPage extends EditParkingBasePage
 	protected int getEmptyMapThumnailResourceId() 
 	{
 		return R.drawable.address_edit_card_icon;
+	}
+
+	@Override
+	public void save(File dir, CarruselJson carruselJson)
+	{
+
 	}
 }

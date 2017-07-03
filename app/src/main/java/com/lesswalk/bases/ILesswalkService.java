@@ -31,7 +31,9 @@ public interface ILesswalkService
 
     String uuidToPath(String uuid);
 
-    interface ISetLocalNumberCallback
+	String generateUUID();
+
+	interface ISetLocalNumberCallback
 	{
 		void onSuccess();
 		void onError(int errorID);

@@ -54,4 +54,13 @@ public class Utils
         }
         return signaturesDir;
     }
+
+    public static void removeAllInDir(File dir)
+    {
+        for(File f:dir.listFiles())
+        {
+            if(f.isDirectory()) removeAllInDir(f);
+            else f.delete();
+        }
+    }
 }

@@ -107,6 +107,11 @@ public class CarruselJson
         Log.d("CarruselJson", "video:" + video);
     }
 
+    public void setParkingsAmmount(int parkingsAmmount)
+    {
+        parkings = new Parkings[parkingsAmmount];
+    }
+
     public class Image
     {
         private String name = null;
