@@ -68,6 +68,8 @@ public class AmazonCloud extends Cloud
     private static final   String ASSETS_PATH                      = "assets";
     private static final   String ASSETS_UUID                      = "22709EF2-6304-478F-A91E-192022B1AC36";
     private static final   String ASSETS_EXTENSION                 = ".zip";
+    private static final   String DELETE_REQ_USER_DELETE= "%s://%s:%d/cmd/%s/%s/%s";//http://52.70.155.39:30082/cmd/user/drop/AD1038E8-887B-4939-9412-DC716DCE38FB
+    private static final   String CLOUD_FUNCTION_delete            = "drop";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     protected Context               mContext;
@@ -292,6 +294,24 @@ public class AmazonCloud extends Cloud
     }
 
     @Override
+    public boolean deleteUserAccount(String userKey) {
+        String pathOnServer = AWS.S3_USERS_DIR + File.separator + userKey + ".zip";
+        AWS.delete(mContext, pathOnServer);
+        String url = String.format
+                (
+                        Locale.getDefault(),
+                        DELETE_REQ_USER_DELETE,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_user,
+                        CLOUD_FUNCTION_delete,
+                        userKey
+                );
+        return reqHttpDelete(url);
+    }
+
+    @Override
     public String uploadUser(String countryCode, String phone, String firstName, String lastName)
     {
         final String uuid            = AWS.generateKey();
@@ -493,6 +513,26 @@ public class AmazonCloud extends Cloud
             e.printStackTrace();
         }
         return result;
+    }
+
+    boolean reqHttpDelete(String url)
+    {
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .build();
+
+        Response response;
+        try
+        {
+            response = httpClient.newCall(request).execute();
+            return response.isSuccessful();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override

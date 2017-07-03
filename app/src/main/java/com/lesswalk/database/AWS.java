@@ -12,6 +12,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -169,6 +170,11 @@ public class AWS
         return eTag;
     }
 
+    public static void delete(Context context, String pathInS3) {
+        DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(BUCKET, pathInS3);
+        getS3(context).deleteObject(deleteObjectRequest);
+    }
+
 
     public static void download(Context context, final String uuid, final String path_to_file, final OnDownloadListener onDownloadListener)
     {
@@ -276,6 +282,15 @@ public class AWS
         void onDownloadError(String path, int errorId, Exception ex);
 
         void onMetadataReceived(AwsDownloadItem dowloadItem);
+    }
+
+    public interface OnRequestListener
+    {
+        void onStarted();
+
+        void onFinished();
+
+        void onError(int errorId);
     }
 
 //    void other(){

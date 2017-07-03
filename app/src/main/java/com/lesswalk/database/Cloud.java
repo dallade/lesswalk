@@ -24,6 +24,8 @@ public abstract class Cloud
 
     public abstract boolean uploadUser(String userContentKey, String key, File json);
 
+    public abstract boolean deleteUserAccount(String userKey);
+
     public interface I_ProcessListener
     {
         void onSuccess(HashMap<String, String> result);

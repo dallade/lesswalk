@@ -18,6 +18,7 @@ import com.lesswalk.database.Cloud;
 import com.lesswalk.database.ZipManager;
 import com.lesswalk.json.CarruselJson;
 import com.lesswalk.utils.PhoneUtils;
+import com.lesswalk.utils.Utils;
 
 import org.json.JSONObject;
 
@@ -30,7 +31,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.Vector;
@@ -192,7 +192,8 @@ public class SyncThread
     {
         STORE_LOCAL_CONTACT_TASK,
         SYNC_SOME_CONTACT_SIGNATURES_TASK,
-        CHECK_CONTACT_UPDATE
+        CHECK_CONTACT_UPDATE,
+        DELETE_USER_ACCOUNT
     }
 
     interface ISyncThreadTasks
@@ -370,6 +371,40 @@ public class SyncThread
         public SyncThreadIDs getID()
         {
             return null;
+        }
+    }
+
+    private class DeleteAcountTask implements ISyncThreadTasks
+    {
+        private AWS.OnRequestListener callback = null;
+
+        public DeleteAcountTask(AWS.OnRequestListener onRequestListener)
+        {
+            callback = onRequestListener;
+        }
+
+        @Override
+        public void DO(SyncThread syncThread, LesswalkDbHelper userDB, LesswalkDbHelper signaturesDB)
+        {
+            callback.onStarted();
+            if (mCloud.deleteUserAccount(userContent.getKey()))
+            {
+                Log.d("elazarkin16", "deleteUserAccount success before remove dir");
+                Utils.removeDir(userContentDir);
+                Log.d("elazarkin16", "removeDir success before send onfinish");
+                callback.onFinished();
+            }
+            else
+            {
+                Log.d("elazarkin16", "SyncThread before send onError");
+                callback.onError(-1);
+            }
+        }
+
+        @Override
+        public SyncThreadIDs getID()
+        {
+            return SyncThreadIDs.DELETE_USER_ACCOUNT;
         }
     }
 
@@ -1081,6 +1116,12 @@ public class SyncThread
             mCloud.uploadUser(userContent.getKey(), json, userContentDir);
         }
         catch (Exception e) {e.printStackTrace();}
+    }
+
+    public void deleteUserAccount(AWS.OnRequestListener onRequestListener)
+    {
+
+        addImportantTask(new DeleteAcountTask(onRequestListener));
     }
 }
 

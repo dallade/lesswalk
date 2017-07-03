@@ -17,6 +17,7 @@ import android.util.Log;
 import com.lesswalk.bases.IContactManager;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.contact_page.navigation_menu.CarusselContact;
+import com.lesswalk.database.AWS;
 import com.lesswalk.database.ZipManager;
 import com.lesswalk.json.CarruselJson;
 
@@ -357,6 +358,11 @@ public class MainService extends Service implements ILesswalkService
 	public String generateUUID()
 	{
 		return UUID.randomUUID().toString();
+	}
+
+	@Override
+	public void deleteUserAccount(AWS.OnRequestListener onRequestListener) {
+		syncThread.deleteUserAccount(onRequestListener);
 	}
 
 }

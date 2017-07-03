@@ -93,7 +93,7 @@ public class CarusselEditorMainItem extends ICarusselMainItem
 
 			if(dir.exists())
 			{
-				Utils.removeAllInDir(dir);
+				Utils.removeDir(dir);
 			}
 			else
 			{
