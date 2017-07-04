@@ -164,7 +164,6 @@ public class AmazonCloud extends Cloud
     @Override
     public String getUserJson(String uuid)
     {
-        JSONObject json = null;
         String url = String.format
                 (
                         Locale.getDefault(),
@@ -331,12 +330,36 @@ public class AmazonCloud extends Cloud
                         userKey
                 );
         boolean result;
-        result = reqHttpDelete(url);//TODO uncomment!
+        result = reqHttpDelete(url);//ignores the result due to wrong result from cloud
+        // TODO fix Mark's cloud function - returns 400 ether way
         String response = getUserJson(userKey);
-        Log.d(TAG, "response: "+response);
-//        Gson gson = new Gson();
-//        gson.fromJson(response, );
-        result = true;
+        String urlGet = String.format
+                (
+                        Locale.getDefault(),
+                        GET_REQ_USER_BY_UUID,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_user,
+                        CLOUD_FUNCTION_get,
+                        userKey
+                );
+
+        Request request = new Request.Builder()
+                .url(urlGet)
+                .build();
+
+        Response responseGet;
+        result = false;
+        try
+        {
+            responseGet = httpClient.newCall(request).execute();
+            result = !responseGet.isSuccessful();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -555,7 +578,6 @@ public class AmazonCloud extends Cloud
         try
         {
             response = httpClient.newCall(request).execute();
-            Log.d(TAG, String.format("response: %s", response.toString()));
             return response.isSuccessful();
         }
         catch (IOException e)

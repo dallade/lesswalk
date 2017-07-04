@@ -23,9 +23,7 @@ public class LesswalkSettings extends BaseActivity
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                String str = "DELETE http://52.70.155.39:30082/cmd/user/drop/AD1038E8-887B-4939-9412-DC716DCE38FB";
-                //TODO delete zip from cloud
-                Toast.makeText(LesswalkSettings.this, str, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LesswalkSettings.this, "Deleting account...", Toast.LENGTH_SHORT).show();
                 view.setClickable(false);
                 getService().deleteUserAccount(new AWS.OnRequestListener()
                 {
