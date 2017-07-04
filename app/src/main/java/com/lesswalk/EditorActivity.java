@@ -93,7 +93,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 	@Override
 	public void onLoadCarusselItems() 
 	{
-		carusselMainItem = new CarusselEditorMainItem(this);
+		carusselMainItem = new CarusselEditorMainItem(this, this);
 		
         getCarusselSurface().addCarusselMainItem(carusselMainItem);
 	}

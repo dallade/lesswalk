@@ -4,6 +4,8 @@ import android.text.Editable;
 
 import com.lesswalk.database.AWS;
 
+import java.io.File;
+
 public interface ILesswalkService
 {
 	IContactManager getContactManager();
@@ -36,6 +38,8 @@ public interface ILesswalkService
 	String generateUUID();
 
     void deleteUserAccount(AWS.OnRequestListener onRequestListener);
+
+    void saveSignature(String key, File dir);
 
     interface ISetLocalNumberCallback
 	{

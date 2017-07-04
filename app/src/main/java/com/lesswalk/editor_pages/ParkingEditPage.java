@@ -8,9 +8,16 @@ import android.graphics.Color;
 import com.lesswalk.R;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
+import com.lesswalk.database.AWS;
+import com.lesswalk.editor_pages.objects3D.AddressObject3D;
+import com.lesswalk.editor_pages.objects3D.EditorImageTipObject3D;
+import com.lesswalk.editor_pages.objects3D.EditorTextTipObject3D;
+import com.lesswalk.editor_pages.objects3D.EditorVideoTipObject3D;
 import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 public class ParkingEditPage extends EditParkingBasePage
 {
@@ -70,8 +77,42 @@ public class ParkingEditPage extends EditParkingBasePage
 	}
 
 	@Override
-	public void save(File dir, CarruselJson carruselJson)
+	public void save(File dir, int index, CarruselJson carruselJson)
 	{
+		AddressObject3D        addressObject  = getAddressObject();
+		EditorTextTipObject3D  textTipObject  = getTextTipObject();
+		EditorImageTipObject3D imageTipObject = getImageTipObject();
+		//EditorVideoTipObject3D videoTipObject = getVideoTipObject();
 
+		if(addressObject != null)
+		{
+			carruselJson.getParkings()[index].setMap_address(addressObject.getMapAddress());
+		}
+
+		if(textTipObject != null)
+		{
+			carruselJson.getParkings()[index].setTips(textTipObject.getTipText());
+		}
+
+		if(imageTipObject != null && imageTipObject.getImage() != null)
+		{
+			CarruselJson.Image image = new CarruselJson.Image();
+			image.setName(AWS.generateKey() + ".png");
+			try
+			{
+				imageTipObject.getImage().compress
+				(
+						Bitmap.CompressFormat.PNG,
+						100,
+						new FileOutputStream(new File(dir, image.getName()))
+				);
+
+				carruselJson.getParkings()[index].setImage(image);
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }

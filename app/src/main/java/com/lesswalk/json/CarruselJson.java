@@ -2,6 +2,15 @@ package com.lesswalk.json;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Created by elazar on 20/06/17.
  */
@@ -110,9 +119,14 @@ public class CarruselJson
     public void setParkingsAmmount(int parkingsAmmount)
     {
         parkings = new Parkings[parkingsAmmount];
+
+        for(int i = 0; i < parkingsAmmount; i++)
+        {
+            parkings[i] = new Parkings();
+        }
     }
 
-    public class Image
+    public static class Image
     {
         private String name = null;
 
@@ -139,7 +153,7 @@ public class CarruselJson
         public void setFloor(String floor) {this.floor = floor;}
     }
 
-    public class MapAddress
+    public static class MapAddress
     {
         private String City                    = null;
         private String Country                 = null;
@@ -211,6 +225,7 @@ public class CarruselJson
         private String        map_thumbnail  = null;
         private StreetAddress street_address = null;
         private String        tips           = null;
+        private Image         image          = null;
 
         public int getEstimated_time() {return estimated_time;}
         public double getLatitude() {return latitude;}
@@ -221,6 +236,7 @@ public class CarruselJson
         public String getKey() {return key;}
         public String getMap_thumbnail() {return map_thumbnail;}
         public String getTips() {return tips;}
+        public Image getImage() {return image;}
 
         public void setDistance(int distance) {this.distance = distance;}
         public void setEstimated_time(int estimated_time) {this.estimated_time = estimated_time;}
@@ -231,6 +247,7 @@ public class CarruselJson
         public void setMap_thumbnail(String map_thumbnail) {this.map_thumbnail = map_thumbnail;}
         public void setStreet_address(StreetAddress street_address) {this.street_address = street_address;}
         public void setTips(String tips) {this.tips = tips;}
+        public void setImage(Image image) {this.image = image;}
 
         public void Print(int i)
         {
@@ -271,5 +288,21 @@ public class CarruselJson
 
         public String getName() {return name;}
         public void setName(String name) {this.name = name;}
+    }
+
+    public void save(File file)
+    {
+        try
+        {
+            String       json = new Gson().toJson(this);
+            OutputStream os   = new FileOutputStream(file);
+
+            os.write(json.getBytes());
+            os.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

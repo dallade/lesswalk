@@ -30,6 +30,7 @@ public abstract class SelectSpotTypeAcceptDialog extends Dialog
     private EditText editText = null;
     private Context  context  = null;
     private String   icon     = null;
+    private String   type     = null;
 
     public SelectSpotTypeAcceptDialog(@NonNull Context context)
     {
@@ -55,16 +56,17 @@ public abstract class SelectSpotTypeAcceptDialog extends Dialog
             @Override
             public void onClick(View view)
             {
-                donePressed(editText.getText(), icon);
+                donePressed(editText.getText(), icon, type);
                 dismiss();
             }
         });
     }
 
-    protected abstract void donePressed(Editable text, String icon);
+    protected abstract void donePressed(Editable text, String icon, String type);
 
     public void setText(final String text)
     {
+        type = text;
         ((Activity)context).runOnUiThread(new Runnable()
         {
             @Override

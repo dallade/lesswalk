@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -47,14 +48,17 @@ public class SelectSpotTypeActivity extends BaseActivity
         acceptDialog = new SelectSpotTypeAcceptDialog(this)
         {
             @Override
-            protected void donePressed(Editable text, String icon_name)
+            protected void donePressed(Editable text, String icon_name, String type)
             {
                 if(text != null && text.length() > 0)
                 {
                     Intent intent = new Intent(SelectSpotTypeActivity.this, EditorActivity.class);
 
-                    intent.putExtra(INTENT_EXTRA_NAME_SPOT_NAME, text);
+                    Log.d("elazarkin", "icon_name = " + icon_name);
+
+                    intent.putExtra(INTENT_EXTRA_NAME_SPOT_NAME, type);
                     intent.putExtra(INTENT_EXTRA_NAME_ICON_UUID, icon_name);
+                    intent.putExtra(INTENT_EXTRA_NAME_TITLE, text.toString());
                     startActivity(intent);
                 }
             }

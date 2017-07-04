@@ -85,4 +85,9 @@ public class EditorImageTipObject3D extends RectObject3D
 		image                 = photo;
 		resetImageOnDrawSelf  = true;
 	}
+
+    public Bitmap getImage()
+    {
+        return image;
+    }
 }

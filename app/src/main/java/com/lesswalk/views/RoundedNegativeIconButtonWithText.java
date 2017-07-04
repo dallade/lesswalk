@@ -59,6 +59,7 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
 
         this.text = text;
         this.textColor = textColor;
+        this.icon_name = icon_name;
         try
         {
             this.src = new BitmapDrawable(getResources(), BitmapFactory.decodeStream(new FileInputStream(resource)));

@@ -20,12 +20,13 @@ import com.lesswalk.RegistrationActivity;
 
 public abstract class BaseActivity extends Activity
 {
-	protected static final String INTENT_EXTRA_NAME_CONTENT_DIR = "content_dir";
-	protected static final String INTENT_EXTRA_NAME_SPOT_NAME   = "spot_name";
-	protected static final String INTENT_EXTRA_NAME_ICON_UUID   = "icon_uuid";
+	public static final String INTENT_EXTRA_NAME_CONTENT_DIR = "content_dir";
+	public static final String INTENT_EXTRA_NAME_SPOT_NAME   = "spot_name";
+	public static final String INTENT_EXTRA_NAME_ICON_UUID   = "icon_uuid";
+	public static final String INTENT_EXTRA_NAME_TITLE       = "title";
 
 	private static final String           TAG           = "lesswalkBaseActivity";
-	private static       Intent           mainActivity  = null;
+    private static       Intent           mainActivity  = null;
 	private              ILesswalkService mainServer    = null;
 	private              boolean          permissionsOK = false;
 
@@ -192,7 +193,7 @@ public abstract class BaseActivity extends Activity
 		}
 	};
 	
-	protected ILesswalkService getService() 
+	public ILesswalkService getService()
 	{
 		return mainServer;
 	}

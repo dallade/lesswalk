@@ -24,18 +24,37 @@ import com.lesswalk.editor_pages.objects3D.EditorVideoTipObject3D;
 
 public abstract class EditParkingBasePage extends ParkingPageParametersBase
 {
-	private RectObject3D    addressArea        = null;
-	private RectObject3D    tipsArea           = null;
-	private RectObject3D    mapThumbnail       = null;
-	private AddressObject3D addressText        = null;
-	
-	private EditorTextTipObject3D  textTip     = null;
-	private EditorImageTipObject3D imageTip    = null;
-	private EditorVideoTipObject3D videoTip    = null;
+	private RectObject3D           addressArea    = null;
+	private RectObject3D           tipsArea       = null;
+	private RectObject3D           mapThumbnail   = null;
+	private AddressObject3D        addressObject  = null;
+	private EditorTextTipObject3D  textTipObject  = null;
+	private EditorImageTipObject3D imageTipObject = null;
+	private EditorVideoTipObject3D videoTipObject = null;
 	
 	public EditParkingBasePage(String title, Context context) 
 	{
 		super(title, context);
+	}
+
+	protected AddressObject3D getAddressObject()
+	{
+		return addressObject;
+	}
+
+	protected EditorTextTipObject3D getTextTipObject()
+	{
+		return textTipObject;
+	}
+
+	protected EditorImageTipObject3D getImageTipObject()
+	{
+		return imageTipObject;
+	}
+
+	protected EditorVideoTipObject3D getVideoTipObject()
+	{
+		return videoTipObject;
 	}
 	
 	@Override
@@ -71,11 +90,11 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 			addressArea.addChild(mapThumbnail);
 		}
 		
-		if(addressText == null)
+		if(addressObject == null)
 		{
-			addressText = new AddressObject3D();
+			addressObject = new AddressObject3D();
 			
-			addressText.initObject
+			addressObject.initObject
 			(
 				addressArea, 
 				addressTextArea.centerX(), 
@@ -85,35 +104,36 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 				1.0f
 			);
 			
-			addressText.setOnClickCallback(new OnClickedAction() 
+			addressObject.setOnClickCallback(new OnClickedAction()
 			{
 				@Override
 				public void onClicked() 
 				{
+					// TODO // FIXME: 04/07/17 use MapAddress Object
 					((EditObjects2dManager) getContext()).getManualAddressText(new EditObjectAddressCallback()
 					{
 						@Override
 						public void onReturn(String contry, String city, String street, String street_num) 
 						{
-							addressText.setAddress(contry, city, street, street_num);
+							addressObject.setAddress(contry, city, street, street_num);
 						}
 						
-					}, addressText.getCountry(), addressText.getCity(), addressText.getStreet(), addressText.getStreet_num());
+					}, addressObject.getCountry(), addressObject.getCity(), addressObject.getStreet(), "0");
 				}
 			});
 			
-			addressArea.addChild(addressText);
+			addressArea.addChild(addressObject);
 		}
 		
 		tipsArea = getTipsArea(drawableArea);
 		
-		if(textTip == null)
+		if(textTipObject == null)
 		{
 			RectF textTipRect = new RectF(-0.5f, -0.5f, -0.2f, 0.1f);
 			
-			textTip = new EditorTextTipObject3D(getContext());
+			textTipObject = new EditorTextTipObject3D(getContext());
 			
-			textTip.initObject
+			textTipObject.initObject
 			(
 				tipsArea, 
 				textTipRect.centerX(), 
@@ -123,7 +143,7 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 				1.0f
 			);
 			
-			textTip.setOnClickCallback(new OnClickedAction() 
+			textTipObject.setOnClickCallback(new OnClickedAction()
 			{
 				@Override
 				public void onClicked() 
@@ -133,23 +153,23 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 						@Override
 						public void onReturn(String text) 
 						{
-							textTip.setTipText(text);
+							textTipObject.setTipText(text);
 						}
 						
-					}, textTip.getTipText());
+					}, textTipObject.getTipText());
 				}
 			});
 			
-			tipsArea.addChild(textTip);
+			tipsArea.addChild(textTipObject);
 		}
 		
-		if(imageTip == null)
+		if(imageTipObject == null)
 		{
 			RectF imageTipRect = new RectF(-0.15f, -0.5f, 0.15f, 0.1f);
 			
-			imageTip = new EditorImageTipObject3D(getContext());
+			imageTipObject = new EditorImageTipObject3D(getContext());
 			
-			imageTip.initObject
+			imageTipObject.initObject
 			(
 				tipsArea, 
 				imageTipRect.centerX(), 
@@ -159,7 +179,7 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 				1.0f
 			);
 			
-			imageTip.setOnClickCallback(new OnClickedAction() 
+			imageTipObject.setOnClickCallback(new OnClickedAction()
 			{
 				@Override
 				public void onClicked() 
@@ -169,22 +189,22 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 						@Override
 						public void onReturn(Bitmap photo) 
 						{
-							imageTip.setImageTip(photo);
+							imageTipObject.setImageTip(photo);
 						}
 					});
 				}
 			});
 			
-			tipsArea.addChild(imageTip);
+			tipsArea.addChild(imageTipObject);
 		}
 		
-		if(videoTip == null)
+		if(videoTipObject == null)
 		{
 			RectF videoTipRect = new RectF( 0.2f, -0.5f, 0.5f, 0.1f);
 			
-			videoTip = new EditorVideoTipObject3D(getContext());
+			videoTipObject = new EditorVideoTipObject3D(getContext());
 			
-			videoTip.initObject
+			videoTipObject.initObject
 			(
 				tipsArea, 
 				videoTipRect.centerX(), 
@@ -194,16 +214,16 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 				1.0f
 			);
 			
-			videoTip.setOnClickCallback(new OnClickedAction() 
+			videoTipObject.setOnClickCallback(new OnClickedAction()
 			{
 				@Override
 				public void onClicked() 
 				{
-					Toast.makeText(getContext(), "videoTip", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), "videoTipObject", Toast.LENGTH_SHORT).show();
 				}
 			});
 			
-			tipsArea.addChild(videoTip);
+			tipsArea.addChild(videoTipObject);
 		}
 	}
 	

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.lesswalk.bases.BaseActivity;
+import com.lesswalk.bases.BaseCarusselActivity;
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.json.CarruselJson;
 import com.lesswalk.pagescarussel.CarusselPageInterface;
@@ -23,10 +25,12 @@ public class CarusselEditorMainItem extends ICarusselMainItem
 	private Vector<CarusselPageInterface> pages            = null;
 	private ILesswalkService              service          = null;
 	private Context                       context          = null;
+	private BaseActivity                  parent           = null;
 	
-	public CarusselEditorMainItem(Context c)
+	public CarusselEditorMainItem(Context c, BaseActivity parent)
 	{
 		context = c;
+		this.parent = parent;
 
 		initOnStartPages(context);
 		// TODO check intent, maybe it edit of existed signature
@@ -88,25 +92,33 @@ public class CarusselEditorMainItem extends ICarusselMainItem
 
 		if(pages != null)
 		{
-			CarruselJson jsonObject = new CarruselJson();
 			File         dir        = new File(context.getCacheDir(), "signature");
 
 			if(dir.exists())
 			{
 				Utils.removeDir(dir);
 			}
-			else
-			{
-				dir.mkdirs();dir.mkdir();
-			}
 
-			generalEditPage.save(dir, jsonObject);
-			jsonObject.setParkingsAmmount(parkingEditPages.size());
+			dir.mkdirs();dir.mkdir();
+
+			carruselJson.setContent_type("signature");
+			carruselJson.setIcon("asset:22709EF2-6304-478F-A91E-192022B1AC36 :" + parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_ICON_UUID));
+			carruselJson.setTitle(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_TITLE));
+			carruselJson.setType(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_SPOT_NAME));
+
+			generalEditPage.save(dir, carruselJson);
+			carruselJson.setParkingsAmmount(parkingEditPages.size());
 			for(int i = 0; i < parkingEditPages.size(); i++)
 			{
-				parkingEditPages.elementAt(i).save(dir, i, jsonObject);
+				parkingEditPages.elementAt(i).save(dir, i, carruselJson);
 			}
-			indoorEditPage.save(dir, jsonObject);
+			indoorEditPage.save(dir, carruselJson);
+
+			carruselJson.setCreation_time(""+System.currentTimeMillis());
+
+			carruselJson.save(new File(dir, "content.json"));
+
+			parent.getService().saveSignature(carruselJson.getKey(), dir);
 		}
 
 		return carruselJson.getKey();
