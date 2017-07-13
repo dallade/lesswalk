@@ -300,6 +300,7 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 		try
 		{
 			Bitmap bit = BitmapFactory.decodeStream(contact.getPictureIS()).copy(Config.ARGB_8888, true);
+			ImageObject3D.CircleCut(bit, Color.argb(255, 255, 255, 255));
 			contacts.add(new NavigationContact(bit, contact.getName(), contact.getNumber(), 128, 40));
 			bit.recycle();
 		}
