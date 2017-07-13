@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+dependencies {
+    compile 'com.android.support.constraint:constraint-layout:+'
+}
 android {
     compileSdkVersion 24        //should have a corresponding android platform version
     buildToolsVersion "25.0"    //should be set according to the revision of the latest -

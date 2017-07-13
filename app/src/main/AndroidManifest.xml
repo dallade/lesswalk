@@ -3,8 +3,11 @@
           package="com.lesswalk"
           android:versionCode="8"
           android:versionName="1.6">
-    <!--<uses-permission android:name="android.permission.RECEIVE_SMS" android:protectionLevel="signature" />-->
-    <uses-permission android:name="android.permission.READ_SMS" android:protectionLevel="signature"/>
+
+    <!-- <uses-permission android:name="android.permission.RECEIVE_SMS" android:protectionLevel="signature" /> -->
+    <uses-permission
+        android:name="android.permission.READ_SMS"
+        android:protectionLevel="signature"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -35,11 +38,6 @@
             android:label="@string/title_activity_main"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".EditorActivity"
@@ -57,7 +55,6 @@
             android:name=".ContactProfile"
             android:label="@string/title_activity_contact_profile"
             android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
@@ -68,11 +65,11 @@
             android:name=".RegistrationActivity"
             android:screenOrientation="portrait">
         </activity>
-        <!--<receiver android:name=".receivers.SmsReceiver" >-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.provider.Telephony.SMS_RECEIVED"/>-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+        <!-- <receiver android:name=".receivers.SmsReceiver" > -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED"/> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -83,8 +80,16 @@
             android:label="@string/title_activity_lesswalk_settings"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".SelectSpotTypeActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".SelectSpotTypeActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".SplashActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
     </application>
 

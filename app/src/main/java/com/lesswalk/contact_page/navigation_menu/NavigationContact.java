@@ -22,6 +22,8 @@ import java.nio.FloatBuffer;
  */
 public class NavigationContact
 {
+    private static int PADDING = 20;
+    //
     private static final float[] baseFrameObject =
     {
             -1.0f, -1.0f, //0.0f,  // top left
@@ -56,20 +58,20 @@ public class NavigationContact
         paint.setTextSize(textSize);
         paint.getTextBounds("*" + name + "*", 0, name.length() + 2, bounds);
 
-        pictureWithText = Bitmap.createBitmap(picSize + bounds.width(), picSize, Bitmap.Config.ARGB_8888);
+        pictureWithText = Bitmap.createBitmap(picSize + bounds.width() + PADDING, picSize, Bitmap.Config.ARGB_8888);
 
         createContactFrame(pictureWithText.getWidth(), pictureWithText.getHeight(), 6);
         //
         drawContactWithText(pictureWithText, pic, name, textSize, picSize);
 
-        try
-        {
-            pictureWithText.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(Environment.getExternalStorageDirectory(), "test.png")));
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+//        try
+//        {
+//            pictureWithText.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(Environment.getExternalStorageDirectory(), "test.png")));
+//        }
+//        catch (FileNotFoundException e)
+//        {
+//            e.printStackTrace();
+//        }
 
         GLES20.glGenTextures(1, temp, 0);
 
@@ -117,7 +119,7 @@ public class NavigationContact
         paint.setColor(Color.WHITE);
         paint.setFakeBoldText(true);
         paint.getTextBounds(name, 0, name.length(), bounds);
-        canvas.drawText(name, picSize, picSize/2 + textSize/2, paint);
+        canvas.drawText(name, picSize + PADDING, picSize/2 + textSize/2, paint);
     }
 
     private void createContactFrame(float w, float h, int amount_in_colums)

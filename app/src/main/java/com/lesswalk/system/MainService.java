@@ -361,8 +361,14 @@ public class MainService extends Service implements ILesswalkService
 	}
 
 	@Override
-	public void deleteUserAccount(AWS.OnRequestListener onRequestListener) {
+	public void deleteUserAccount(AWS.OnRequestListener onRequestListener)
+	{
 		syncThread.deleteUserAccount(onRequestListener);
 	}
 
+	@Override
+	public void saveSignature(String key, CarruselJson carruselJson, File dir)
+	{
+
+	}
 }

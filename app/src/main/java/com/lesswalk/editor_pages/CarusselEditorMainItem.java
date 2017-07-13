@@ -118,7 +118,7 @@ public class CarusselEditorMainItem extends ICarusselMainItem
 
 			carruselJson.save(new File(dir, "content.json"));
 
-			parent.getService().saveSignature(carruselJson.getKey(), dir);
+			parent.getService().saveSignature(carruselJson.getKey(), carruselJson, dir);
 		}
 
 		return carruselJson.getKey();

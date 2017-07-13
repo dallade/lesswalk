@@ -3,6 +3,7 @@ package com.lesswalk.bases;
 import android.text.Editable;
 
 import com.lesswalk.database.AWS;
+import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
 
@@ -39,7 +40,7 @@ public interface ILesswalkService
 
     void deleteUserAccount(AWS.OnRequestListener onRequestListener);
 
-    void saveSignature(String key, File dir);
+    void saveSignature(String key, CarruselJson carruselJson, File dir);
 
     interface ISetLocalNumberCallback
 	{

@@ -86,6 +86,7 @@ public class ImageObject3D extends RectObject3D
 		
 		p.setStrokeWidth(strokeW);
 		p.setStyle(Style.STROKE);
+		p.setStrokeWidth(5.0f);
 		c.drawCircle(bit.getWidth()/2, bit.getHeight()/2, radius-strokeW/2, p);
 	}
 	
@@ -200,4 +201,21 @@ public class ImageObject3D extends RectObject3D
 	{
 		return Bitmap.createBitmap((int)(FRAME_PIXEL_W), (int) (FRAME_PIXEL_W*aspect), Config.ARGB_8888);
 	}
+
+    public static void fillVoidSpace(Bitmap bit, int color)
+    {
+		int [] allpixels = new int [bit.getHeight()*bit.getWidth()];
+
+		bit.getPixels(allpixels, 0, bit.getWidth(), 0, 0, bit.getWidth(), bit.getHeight());
+
+		for(int i = 0; i < allpixels.length; i++)
+		{
+			if(allpixels[i] == Color.TRANSPARENT)
+			{
+				allpixels[i] = color;
+			}
+		}
+
+		bit.setPixels(allpixels, 0, bit.getWidth(), 0, 0, bit.getWidth(), bit.getHeight());
+    }
 }
