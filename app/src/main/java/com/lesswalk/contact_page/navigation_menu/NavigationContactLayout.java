@@ -26,6 +26,13 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 {
 	private static final String TAG = "lesswalkNavigationContactLayout";
 
+	private static final int avatar_resources[] =
+	{
+			R.drawable.avatar_0_1x,
+			R.drawable.avatar_1_1x,
+			R.drawable.avatar_2_1x
+	};
+
 	public interface NavigationContactLayoutCallback
 	{
 		void onContactClicked(String name, String number);
@@ -60,12 +67,23 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 	private String                          last_filter    = "";
 	private NavigationContactLayoutCallback callback       = null;
 
+	private static Bitmap avatars[] = null;
+
 	public NavigationContactLayout(Context context, int w, int h, RendererLayoutParams params)
 	{
 		super(w, h, params);
 		//
 		this.context = context;
-		//
+
+		if(avatars == null)
+		{
+			avatars = new Bitmap[avatar_resources.length];
+			for(int i = 0; i < avatars.length; i++)
+			{
+				avatars[i] = BitmapFactory.decodeResource(context.getResources(), avatar_resources[i]).copy(Config.ARGB_8888, true);
+				ImageObject3D.CircleCut(avatars[i], Color.argb(255, 255, 255, 255));
+			}
+		}
 	}
 
 	public void setNavigationContactLayoutCallback(NavigationContactLayoutCallback callback)
@@ -279,30 +297,16 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 
 	private void addContact(CarusselContact contact, Vector<NavigationContact> container)
 	{
-		Bitmap bit = null;
-
-		int resources[] =
-		{
-			R.drawable.avatar_0_1x,
-			R.drawable.avatar_1_1x,
-			R.drawable.avatar_2_1x
-		};
-
 		try
 		{
-			// TODO // FIXME: 23/4/17 Beknisa hashnia leaplikacia hatmuna neelemet!
-			bit = BitmapFactory.decodeStream(contact.getPictureIS()).copy(Config.ARGB_8888, true);
+			Bitmap bit = BitmapFactory.decodeStream(contact.getPictureIS()).copy(Config.ARGB_8888, true);
+			contacts.add(new NavigationContact(bit, contact.getName(), contact.getNumber(), 128, 40));
+			bit.recycle();
 		}
 		catch (Exception e)
 		{
-			bit = BitmapFactory.decodeResource(context.getResources(), resources[contacts.size()%resources.length]).copy(Config.ARGB_8888, true);
+			contacts.add(new NavigationContact(avatars[contacts.size()%avatars.length], contact.getName(), contact.getNumber(), 128, 40));
 		}
-
-		ImageObject3D.CircleCut(bit, Color.argb(255, 255, 255, 255));
-
-		contacts.add(new NavigationContact(bit, contact.getName(), contact.getNumber(), 128, 40));
-
-		bit.recycle();
 	}
 
 	private void mergeContacts
