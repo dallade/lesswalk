@@ -194,7 +194,8 @@ public class SyncThread
         STORE_LOCAL_CONTACT_TASK,
         SYNC_SOME_CONTACT_SIGNATURES_TASK,
         CHECK_CONTACT_UPDATE,
-        DELETE_USER_ACCOUNT
+        DELETE_USER_ACCOUNT,
+        SAVE_SIGNATURE
     }
 
     interface ISyncThreadTasks
@@ -375,11 +376,11 @@ public class SyncThread
         }
     }
 
-    private class DeleteAcountTask implements ISyncThreadTasks
+    private class DeleteAccountTask implements ISyncThreadTasks
     {
         private AWS.OnRequestListener callback = null;
 
-        public DeleteAcountTask(AWS.OnRequestListener onRequestListener)
+        public DeleteAccountTask(AWS.OnRequestListener onRequestListener)
         {
             callback = onRequestListener;
         }
@@ -660,7 +661,7 @@ public class SyncThread
             }
             else if (cursor.getCount() != 1)
             {
-                Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
+                Log.e(TAG, "some problem with primary signatureKey in " + db.table_name + " database");
             }
             else
             {
@@ -898,7 +899,7 @@ public class SyncThread
         }
         else if (cursor.getCount() != 1)
         {
-            Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
+            Log.e(TAG, "some problem with primary signatureKey in " + db.table_name + " database");
         }
         else
         {
@@ -935,8 +936,8 @@ public class SyncThread
         }
         else if (cursor.getCount() != 1)
         {
-            Log.e(TAG, "some problem with primary key in " + db.table_name + " database");
-            Log.d("elazarkin1", "some problem with primary key in " + db.table_name + " database");
+            Log.e(TAG, "some problem with primary signatureKey in " + db.table_name + " database");
+            Log.d("elazarkin1", "some problem with primary signatureKey in " + db.table_name + " database");
         }
         else
         {
@@ -1122,13 +1123,79 @@ public class SyncThread
 
     public void deleteUserAccount(AWS.OnRequestListener onRequestListener)
     {
-        addImportantTask(new DeleteAcountTask(onRequestListener));
+        addImportantTask(new DeleteAccountTask(onRequestListener));
     }
 
     public boolean checkLogin()
     {
         Log.d("elazarkin17", "" +(userContent != null ? userContent.getKey():"userContent=null"));
         return userContent != null && userContent.getKey() != null;
+    }
+
+    public void saveSignature(String key, File dir, AWS.OnRequestListener onRequestListener) {
+        addImportantTask(new SaveSignatureTask(key, dir, onRequestListener));
+    }
+
+
+    private class SaveSignatureTask implements ISyncThreadTasks
+    {
+        private AWS.OnRequestListener callback = null;
+        private final String signatureKey;
+        private final File dir;
+
+        public SaveSignatureTask(String signatureKey, File dir, AWS.OnRequestListener onRequestListener)
+        {
+            callback = onRequestListener;
+            this.signatureKey = signatureKey;
+            this.dir = dir;
+        }
+
+        @Override
+        public void DO(SyncThread syncThread, LesswalkDbHelper userDB, LesswalkDbHelper signaturesDB)
+        {
+            callback.onStarted();
+            //TODO saveSignature syncThread implementation
+
+            //
+            // zip signature:
+            //
+            File zipFile;
+            boolean hasCreated;
+            try {
+                File internalStorageDir = mParent.getApplicationContext().getFilesDir();
+                File signaturesZipsDir = new File(internalStorageDir, "sig_zips");
+                if (!signaturesZipsDir.exists() && !signaturesZipsDir.mkdirs()) throw new Exception("The path '"+signaturesZipsDir.getAbsolutePath()+"' failed to get created");
+                zipFile = new File(signaturesZipsDir, signatureKey +".zip");
+                hasCreated = zipFile.createNewFile();
+                if (!hasCreated || !zipFile.exists()) throw new Exception("Zip couldn't get created");
+                ZipManager.zip(dir.listFiles(), zipFile);
+                if (zipFile.length() < 2) throw new Exception("Zip size doesn't make any sense");
+            } catch (Exception e) {
+                e.printStackTrace();
+                callback.onError(-1);
+                return;
+            }
+            //
+            // upload signature:
+            //
+            String jsonPath = new File(dir, "content.json").getAbsolutePath();
+            String eTag = mCloud.uploadSignature(signatureKey, userContent.getKey(), jsonPath, zipFile.getAbsolutePath());
+            if (eTag == null){
+                callback.onError(-1);
+                return;
+            }
+            Log.d(TAG, "uploaded signature. etag: "+eTag);
+            //TODO save to internal signatures DB for syncing
+            // TODO check if to call: reloadUserJson();
+            reloadUserJson();
+            callback.onFinished();
+        }
+
+        @Override
+        public SyncThreadIDs getID()
+        {
+            return SyncThreadIDs.SAVE_SIGNATURE;
+        }
     }
 }
 

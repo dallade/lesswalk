@@ -39,7 +39,7 @@ public interface ILesswalkService
 
     void deleteUserAccount(AWS.OnRequestListener onRequestListener);
 
-    void saveSignature(String key, File dir);
+    void saveSignature(String key, File dir, AWS.OnRequestListener onRequestListener);
 
     interface ISetLocalNumberCallback
 	{

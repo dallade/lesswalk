@@ -18,7 +18,7 @@ public abstract class Cloud
 
     public abstract String uploadUser(String countryCode, String phone, String firstName, String lastName);
 
-    public abstract String uploadSignature(String signatureContents);
+    public abstract String uploadSignature(String signatureKey, String ownerKey, String jsonPath, String signatureZipPath);
 
     public abstract void createUser(String number, String uuid, I_ProcessListener i_processListener);
 

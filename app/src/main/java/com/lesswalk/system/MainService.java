@@ -365,4 +365,9 @@ public class MainService extends Service implements ILesswalkService
 		syncThread.deleteUserAccount(onRequestListener);
 	}
 
+	@Override
+	public void saveSignature(String key, File dir, AWS.OnRequestListener onRequestListener) {
+		syncThread.saveSignature(key, dir, onRequestListener);
+	}
+
 }

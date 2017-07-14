@@ -40,6 +40,7 @@ public class AWS
 
     private static AWS instance;
     public static String S3_USERS_DIR = "users";
+    public static String S3_SIGNATURES_DIR = "signatures";
 
     private       CognitoCachingCredentialsProvider credentialsProvider;
     private       CognitoSyncManager                syncClient;
