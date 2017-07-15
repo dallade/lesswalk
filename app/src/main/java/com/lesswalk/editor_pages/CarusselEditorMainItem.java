@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.lesswalk.bases.BaseActivity;
 import com.lesswalk.bases.BaseCarusselActivity;
 import com.lesswalk.bases.ILesswalkService;
+import com.lesswalk.database.AWS;
 import com.lesswalk.json.CarruselJson;
 import com.lesswalk.pagescarussel.CarusselPageInterface;
 import com.lesswalk.pagescarussel.ICarusselMainItem;
@@ -18,6 +19,7 @@ import java.util.Vector;
 
 public class CarusselEditorMainItem extends ICarusselMainItem
 {
+	private static final String TAG = CarusselEditorMainItem.class.getSimpleName();
 	private CarruselJson                  carruselJson     = null;
 	private GeneralEditPage               generalEditPage  = null;
 	private Vector<ParkingEditPage>       parkingEditPages = null;
@@ -118,7 +120,24 @@ public class CarusselEditorMainItem extends ICarusselMainItem
 
 			carruselJson.save(new File(dir, "content.json"));
 
-			parent.getService().saveSignature(carruselJson.getKey(), carruselJson, dir);
+			AWS.OnRequestListener onRequestListener = new AWS.OnRequestListener() {
+				@Override
+				public void onStarted() {
+					Log.d(TAG, "onStarted");
+				}
+
+				@Override
+				public void onFinished() {
+					Log.d(TAG, "onFinished");
+				}
+
+				@Override
+				public void onError(int errorId) {
+					Log.d(TAG, "onError: "+errorId);
+				}
+			};
+
+			parent.getService().saveSignature(carruselJson.getKey(), dir, onRequestListener);
 		}
 
 		return carruselJson.getKey();

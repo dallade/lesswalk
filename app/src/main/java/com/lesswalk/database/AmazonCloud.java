@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -54,6 +55,7 @@ public class AmazonCloud extends Cloud
     protected static final String PUT_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s";//?phone_number=%s&country_code=%s
     protected static final String PUT_REQ_USER_VER_SMS             = "%s://%s:%d/cmd/%s/%s";
     protected static final String PUT_REQ_USER_UPLOAD              = "%s://%s:%d/cmd/%s/%s/%s";
+    protected static final String PUT_REQ_SIGNATURE_UPLOAD         = "%s://%s:%d/cmd/%s/%s/%s";
     protected static final String PUT_VERSMS_field_countryCode     = "country-code";
     protected static final String PUT_VERSMS_field_phone           = "phone-number";
     protected static final String PUT_VERSMS_field_veriCode        = "confirmation-code";
@@ -431,8 +433,42 @@ public class AmazonCloud extends Cloud
     }
 
     @Override
-    public String uploadSignature(String signatureContents) {
-        return null;//TODO elad continue here
+    public String uploadSignature(String signatureKey, String ownerKey, String jsonPath, String signatureZipPath) {
+
+        //TODO use eTag for later sync
+        String eTag = AWS.upload(mContext, AWS.S3_SIGNATURES_DIR + "/" + signatureKey + ".zip", signatureZipPath);
+        String url = String.format
+                (
+                        Locale.getDefault(),
+                        PUT_REQ_SIGNATURE_UPLOAD,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_signature,
+                        CLOUD_FUNCTION_upload,
+                        ownerKey
+                );
+
+        try
+        {
+            if (eTag == null) throw new Exception(String.format("Couldn't upload signature to cloud. signatureKey: %s, ownerKey: %s", signatureKey, ownerKey));
+            File jsonFile = new File(jsonPath);
+            FileReader reader = new FileReader(jsonFile);
+            int fileSize = (int)jsonFile.length();
+
+            char cBuff[] = new char[fileSize];
+            for (int readSum = 0;  (readSum+=reader.read(cBuff, readSum, fileSize-readSum)) < fileSize ; );
+            String content = new String(cBuff);
+            //JSONObject jsonObject = new JSONObject(content);
+            //reqHttpPut(url, jsonObject.toString());
+            reqHttpPut(url, content);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        return eTag;
     }
 
     @Override

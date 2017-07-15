@@ -367,8 +367,8 @@ public class MainService extends Service implements ILesswalkService
 	}
 
 	@Override
-	public void saveSignature(String key, CarruselJson carruselJson, File dir)
+	public void saveSignature(String key, File dir, AWS.OnRequestListener onRequestListener)
 	{
-
+		syncThread.saveSignature(key, dir, onRequestListener);
 	}
 }

@@ -1,7 +1,6 @@
 package com.lesswalk.contact_page.navigation_menu;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -9,10 +8,8 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
 
-import com.lesswalk.ContactProfile;
 import com.lesswalk.R;
 import com.lesswalk.bases.BaseInterRendererLayout;
-import com.lesswalk.bases.BaseObject3D;
 import com.lesswalk.bases.IContactManager;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
@@ -24,7 +21,8 @@ import java.util.Vector;
  */
 public class NavigationContactLayout extends BaseInterRendererLayout
 {
-	private static final String TAG = "lesswalkNavigationContactLayout";
+	private static final String TAG = NavigationContactLayout.class.getSimpleName();
+	private static final boolean DEBUG_CONTACTS = false;
 
 	private static final int avatar_resources[] =
 	{
@@ -263,7 +261,7 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 				GLES20.glUniformMatrix3fv
 				(
 					unifHandlers[HANDLER_UNIF_FIX_MAT_INDEX], 1, false,
-					getTranformationMatrix(degree), 0
+					getTransformationMatrix(degree), 0
 				);
 				work_contacts.elementAt(i).drawSomeSelf
 				(
@@ -277,7 +275,7 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 		// GLES20.glDisableVertexAttribArray(mPositionHandle);
 	}
 
-	private float[] getTranformationMatrix(int degree)
+	private float[] getTransformationMatrix(int degree)
 	{
 		float angle_rad = 0.0f;
 		float transformationMatrix[] = new float[basicTransformMatrix.length];
@@ -312,7 +310,7 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 
 	private void mergeContacts
 	(
-		Vector<CarusselContact> contacts_original, 
+		Vector<CarusselContact> contacts_original,
 		Vector<NavigationContact> contacts,
 		int MAX_IN_ONE_TIME
 	)
@@ -329,7 +327,7 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 
 		while (i < contacts_original.size() - 1 || j < backup.size())
 		{
-			int compire;
+			int compare;
 			String title = "";
 
 			if (j >= backup.size())
@@ -350,8 +348,8 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 
 				original = contacts_original.elementAt(i).getName();
 				local = backup.elementAt(j).getName();
-				compire = original.compareTo(local);
-				if (compire < 0)
+				compare = original.compareTo(local);
+				if (compare < 0)
 				{
 					title = "add new contact:";
 					addContact(contacts_original.elementAt(i), contacts);
@@ -362,11 +360,11 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 					title = "add existed contact:";
 					contacts.add(backup.elementAt(j));
 					if (j < backup.size()) j++;
-					if (compire == 0 && i < contacts_original.size() - 1) i++;
+					if (compare == 0 && i < contacts_original.size() - 1) i++;
 				}
 			}
 
-			Log.d
+			if (DEBUG_CONTACTS)Log.d
 			(
 				TAG, 
 				String.format("%s: %s(%s) %d/%d i=%d/%d j=%d/%d", 
@@ -388,15 +386,15 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 	@Override
 	public void movedAction(float lastX, float lastY, float x, float y)
 	{
-		float ystep = 0.0f;
+		float y_step = 0.0f;
 		float angle_rad = 0.0f;
 		float angle_deg = 0.0f;
 
 		if (work_contacts == null || work_contacts.size() <= 0) return;
 
-		ystep = yStepToRendererYStep(y - lastY);
+		y_step = yStepToRendererYStep(y - lastY);
 
-		angle_rad = (float) Math.atan2(ystep, RADIUS);
+		angle_rad = (float) Math.atan2(y_step, RADIUS);
 		angle_deg = (float) Math.toDegrees(angle_rad);
 
 		currentDegree -= 2 * angle_deg;
@@ -435,7 +433,7 @@ public class NavigationContactLayout extends BaseInterRendererLayout
 			degree = indexToAngle(i);
 			if (degree > currentDegree - 90 && degree < currentDegree + 90)
 			{
-				transformMatrix = getTranformationMatrix(degree);
+				transformMatrix = getTransformationMatrix(degree);
 
 				corners = work_contacts.elementAt(i).getCorners(transformMatrix);
 
