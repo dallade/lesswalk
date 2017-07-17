@@ -72,9 +72,11 @@ public abstract class Cloud
     public abstract Vector<String> findSignaturesUuidsByOwnerUuid(String uuid);
 
     //public abstract List<String> findSignaturesUuidsByOwnerPhone(String phone, String countryCode);
-    public abstract File getSignutareFilePathByUUID(String uuid);
+    public abstract File getLocalSignatureFile(String uuid);
 
     //
+    public abstract String getSignatureEtag(final String uuid);
+
     public abstract String downloadSignature(String uuid, AWS.OnDownloadListener onDownloadListener);
 
     public abstract void downloadSignatures(Vector<String> signaturesUuid, AWS.OnDownloadListener onDownloadListener);

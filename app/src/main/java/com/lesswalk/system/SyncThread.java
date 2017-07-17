@@ -24,12 +24,10 @@ import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStream;
 import java.io.Reader;
 import java.util.Locale;
 import java.util.UUID;
@@ -45,13 +43,13 @@ public class SyncThread
     private static final String SIGNATURES_ROW        = "signatures_uuids";
     private static final String SIGNATURE_UUID_ROW    = "uuid";
     private static final String TYPE_ROW              = "type";
-    private static final String LAST_UPDATE_ROW       = "last_update";// milliseconds as string
+    private static final String SIGNATURE_ETAG_ROW    = "etag";// milliseconds as string
 
     private static Semaphore mutex = new Semaphore(1);
 
     public String uuidToPath(String uuid)
     {
-        return mCloud.getSignutareFilePathByUUID(uuid).getAbsolutePath();
+        return mCloud.getLocalSignatureFile(uuid).getAbsolutePath();
     }
 
     private class UserContent
@@ -207,13 +205,21 @@ public class SyncThread
 
     class SyncSomeContactSignaturesTask implements ISyncThreadTasks
     {
+        ILesswalkService.ISetLocalNumberCallback voidCallback = new ILesswalkService.ISetLocalNumberCallback()
+        {
+            @Override public void onSuccess() {}
+            @Override public void onError(int errorID) {}
+            @Override public void onProgress(String path) {}
+            @Override public void notSuccessFinish() {}
+        };
         String                                   number   = null;
         ILesswalkService.ISetLocalNumberCallback callback = null;
 
         SyncSomeContactSignaturesTask(String number, ILesswalkService.ISetLocalNumberCallback callback)
         {
+            Log.d("syncSignature", "SyncSomeContactSignaturesTask " + number);
             this.number = number;
-            this.callback = callback;
+            this.callback = callback != null ? callback:voidCallback;
         }
 
         @Override
@@ -223,7 +229,7 @@ public class SyncThread
             String         number[]      = PhoneUtils.splitPhoneNumber(this.number);
             final String   fixed_number  = PhoneUtils.splitedNumberToFullNumber(number);
             String         userUuid      = null;
-            Vector<String> sinaturesList = null;
+            Vector<String> signatureList = null;
 
             Log.d("elazarkin8", "SyncSomeContactSignaturesTask - " + fixed_number + "(" + number[0] + " ," + number[1] + ")");
 
@@ -235,30 +241,53 @@ public class SyncThread
                 return;
             }
 
-            sinaturesList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
+            signatureList = mCloud.findSignaturesUuidsByOwnerUuid(userUuid);
 
-            if(sinaturesList.size() > 0)
+            if(signatureList.size() > 0)
             {
-                String         signaturesString           = SignatureListToString(sinaturesList);
-                Vector<String> needBeDownloadedSignatures = new Vector<>();
+                String         signaturesString           = SignatureListToString(signatureList);
+                Vector<String> signaturesToDownload = new Vector<>();
 
                 updateUserDataBase(userDB, number, userUuid, signaturesString);
 
-                for(String uuid:sinaturesList)
+                for(String uuid:signatureList)
                 {
-                    // FIXME TODO check if signature not exist or signature need be update
-
-                    Log.d("elazarkin12", "mCloud.getSignutareFilePathByUUID(uuid).exists()=" + mCloud.getSignutareFilePathByUUID(uuid).exists());
-
-                    if(!mCloud.getSignutareFilePathByUUID(uuid).exists())
+                    boolean shouldDownload = false;
+                    if (mCloud.getLocalSignatureFile(uuid).exists()) {
+                        String sql = "select " + SIGNATURE_ETAG_ROW + " from " + signaturesDB.table_name + " where " + SIGNATURE_UUID_ROW + "=?";
+                        String selections[] = {uuid};
+                        Cursor cursor = signaturesDB.getReadableDatabase().rawQuery(sql, selections);
+                        if (cursor.getCount() <= 0) {
+                            shouldDownload = true;
+                            Log.e("syncSignature", "OK, nothing to do");
+                        } else if (cursor.moveToFirst() && cursor.isLast()) {
+                            String localEtag = cursor.getString(cursor.getColumnIndex(SIGNATURE_ETAG_ROW));
+                            String cloudEtag = mCloud.getSignatureEtag(uuid);
+                            shouldDownload = !cloudEtag.equals(localEtag);
+                            Log.e("syncSignature", String.format(
+                                    "userUuid: %s, uuid: %s, localEtag: %s, cloudEtag: %s, shouldDownload: %s"
+                                    , userUuid
+                                    , uuid
+                                    , localEtag
+                                    , cloudEtag
+                                    , shouldDownload?"true":"false"
+                            ));
+                        } else {
+                            Log.e("syncSignature", "more than one etags for signature");
+                        }
+                        cursor.close();
+                    }else{
+                        shouldDownload = true;
+                    }
+                    if(shouldDownload)
                     {
-                        needBeDownloadedSignatures.add(uuid);
+                        signaturesToDownload.add(uuid);
                     }
                 }
 
-                if(needBeDownloadedSignatures.size() > 0)
+                if(signaturesToDownload.size() > 0)
                 {
-                    mCloud.downloadSignatures(needBeDownloadedSignatures, new AWS.OnDownloadListener()
+                    mCloud.downloadSignatures(signaturesToDownload, new AWS.OnDownloadListener()
                     {
                         private Vector<AwsDownloadItem> items = null;
                         private int errorCount = 0;
@@ -372,7 +401,7 @@ public class SyncThread
         @Override
         public SyncThreadIDs getID()
         {
-            return null;
+            return SyncThreadIDs.SYNC_SOME_CONTACT_SIGNATURES_TASK;
         }
     }
 
@@ -453,7 +482,7 @@ public class SyncThread
 
         signaturesColums.add(new DataBaseColums(SIGNATURE_UUID_ROW, DataBaseColums.TEXT_PRIMARY_KEY));
         signaturesColums.add(new DataBaseColums(TYPE_ROW, DataBaseColums.TEXT));
-        signaturesColums.add(new DataBaseColums(LAST_UPDATE_ROW, DataBaseColums.TEXT));
+        signaturesColums.add(new DataBaseColums(SIGNATURE_ETAG_ROW, DataBaseColums.TEXT));
 
         signaturesDB = new LesswalkDbHelper(mParent, "signatures", signaturesColums);
 
@@ -691,7 +720,7 @@ public class SyncThread
                 {
                     if (uuid.length() > 0)
                     {
-                        File zip = mCloud.getSignutareFilePathByUUID(uuid);
+                        File zip = mCloud.getLocalSignatureFile(uuid);
 
                         if (!zip.exists())
                         {
@@ -715,7 +744,7 @@ public class SyncThread
 
         private boolean downloadZipIfNeed(String s)
         {
-            File zip = mCloud.getSignutareFilePathByUUID(s);
+            File zip = mCloud.getLocalSignatureFile(s);
 
             if (!zip.exists())
             {
@@ -994,69 +1023,21 @@ public class SyncThread
 
     private static synchronized void updateSignatureDatabase(Context context, Cloud mCloud, LesswalkDbHelper db, String uuid, ObjectMetadata metadata)
     {
-        // TODO move type to function values (and logic of getType up) and remove context value!
         File          outDir          = new File(context.getCacheDir(), "updateSignaturesDB");
-        File          zip             = mCloud.getSignutareFilePathByUUID(uuid);
         ContentValues values          = new ContentValues();
-        InputStream   fis             = null;
         String        contentFileName = "content.json";
-        File          contentFile     = null;
-        byte          buffer[]        = null;
-        String        json            = null;
-
-        //
-        //mCloud.unzipSignatureByUUID(uuid, outDir);
 
         if (mCloud.unzipFileFromSignatureByUUID(uuid, outDir, contentFileName))
         {
-
             try
             {
-                String type       = "";
-                String searchKey  = "\"type\"";
-                int    MAX        = 0;
-                int    readedSize = 0;
-
-                contentFile = new File(outDir, contentFileName);
-                fis = new FileInputStream(contentFile);
-                buffer = new byte[(int) contentFile.length()];
-                //
-                while (readedSize < buffer.length)
-                {
-                    readedSize += fis.read(buffer, readedSize, buffer.length - readedSize);
-                }
-                fis.close();
-
-                json = new String(buffer);
-
-                //Log.d("elazarkin", "" + json);
-
-                for (int i = 0; i < json.length() - searchKey.length(); i++)
-                {
-                    if (json.substring(i, i + searchKey.length()).equals(searchKey))
-                    {
-                        i += searchKey.length();
-                        while (i < json.length() && json.charAt(i) != '"')
-                        {
-                            i++;
-                        }
-                        i++;
-                        while (i < json.length() && json.charAt(i) != '"')
-                        {
-                            type += json.charAt(i++);
-                        }
-                        i = json.length();
-                        break;
-                    }
-                }
-
-                Log.d("elazarkin", "updateSignatureDatabase type = " + type);
+                CarruselJson currusel = new Gson().fromJson(new FileReader(new File(outDir, contentFileName)), CarruselJson.class);
 
                 values.put(SIGNATURE_UUID_ROW, uuid);
-                values.put(TYPE_ROW, type);
+                values.put(TYPE_ROW, currusel.getType());
                 if (metadata != null)
                 {
-                    values.put(LAST_UPDATE_ROW, "" + metadata.getLastModified().getTime());
+                    values.put(SIGNATURE_ETAG_ROW, "" + metadata.getETag());
                 }
 
                 db.getWritableDatabase().replace(db.table_name, null, values);
@@ -1185,10 +1166,18 @@ public class SyncThread
                 return;
             }
             Log.d(TAG, "uploaded signature. etag: "+eTag);
-            //TODO save to internal signatures DB for syncing
-            // TODO check if to call: reloadUserJson();
-            reloadUserJson();
-            callback.onFinished();
+            addImportantTask(new SyncSomeContactSignaturesTask(getLocalNumber(), new ILesswalkService.ISetLocalNumberCallback() {
+                @Override
+                public void onSuccess()
+                {
+                    callback.onFinished();
+                }
+
+                @Override public void onError(int errorID) {callback.onError(0);}
+                @Override public void onProgress(String path) {}
+                @Override public void notSuccessFinish() {callback.onError(0);}
+            }));
+
         }
 
         @Override

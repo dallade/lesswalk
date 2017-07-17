@@ -1,1 +1,1 @@
-include ':app', ':carrusseljsondevelopment', ':carrusseljsonobjects'
+include ':app'

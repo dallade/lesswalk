@@ -60,6 +60,7 @@ public class SelectSpotTypeActivity extends BaseActivity
                     intent.putExtra(INTENT_EXTRA_NAME_ICON_UUID, icon_name);
                     intent.putExtra(INTENT_EXTRA_NAME_TITLE, text.toString());
                     startActivity(intent);
+                    finish();
                 }
             }
         };

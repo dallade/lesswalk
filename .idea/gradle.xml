@@ -10,8 +10,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/carrusseljsondevelopment" />
-            <option value="$PROJECT_DIR$/carrusseljsonobjects" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

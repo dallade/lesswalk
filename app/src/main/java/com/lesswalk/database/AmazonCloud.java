@@ -9,7 +9,6 @@ import com.amazonaws.mobileconnectors.cognito.Record;
 import com.amazonaws.mobileconnectors.cognito.SyncConflict;
 import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -474,12 +473,10 @@ public class AmazonCloud extends Cloud
     @Override
     public Vector<String> findSignaturesUuidsByOwnerUuid(String uuid)
     {
-        Vector<String> list              = null;
-        JSONArray      signaturesJsonArr = null;
+        Vector<String> vec = new Vector<>();
+        JSONArray signaturesJsonArr = null;
 
         if (null == uuid) return null;
-
-        list = new Vector<String>();
 
         signaturesJsonArr = findSignaturesByOwner(uuid);
 
@@ -495,7 +492,7 @@ public class AmazonCloud extends Cloud
                     Log.e(TAG, "findSignaturesUuidsByOwnerUuid - i=" + i + ": " + ((signatureJson == null) ? "signatureJson==null" : "signatureJson.has(CLOUD_JSON_key)==false"));
                     return null;
                 }
-                list.add(signatureJson.getString(CLOUD_JSON_key));
+                vec.add(signatureJson.getString(CLOUD_JSON_key));
             }
         }
         catch (JSONException e)
@@ -503,11 +500,11 @@ public class AmazonCloud extends Cloud
             e.printStackTrace();
             return null;
         }
-        return list;
+        return vec;
     }
 
     @Override
-    public File getSignutareFilePathByUUID(String uuid)
+    public File getLocalSignatureFile(String uuid)
     {
         File dir = new File(mContext.getFilesDir(), SIGNATURES_PATH);
 
@@ -519,7 +516,7 @@ public class AmazonCloud extends Cloud
     @Override
     public String downloadSignature(final String uuid, final AWS.OnDownloadListener onDownloadListener)
     {
-        String         filePath     = getSignutareFilePathByUUID(uuid).getPath();
+        String         filePath     = getLocalSignatureFile(uuid).getPath();
         String         pathOnServer = SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION;
         ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
 
@@ -528,6 +525,14 @@ public class AmazonCloud extends Cloud
         AWS.download(mContext, pathOnServer, filePath, onDownloadListener);
 
         return filePath;
+    }
+
+    @Override
+    public String getSignatureEtag(final String uuid)
+    {
+        String         pathOnServer = SIGNATURES_PATH + File.separator + uuid + SIGNATURE_EXTENSION;
+        ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
+        return fileMetadata.getETag();
     }
 
     @Override
@@ -555,7 +560,7 @@ public class AmazonCloud extends Cloud
     @Override
     public String unzipSignatureByUUID(String uuid, File unzippedDir)
     {
-        String zipPath = getSignutareFilePathByUUID(uuid).getPath();
+        String zipPath = getLocalSignatureFile(uuid).getPath();
 
         unzippedDir.mkdir();unzippedDir.mkdirs();
 
@@ -573,7 +578,7 @@ public class AmazonCloud extends Cloud
     @Override
     public boolean unzipFileFromSignatureByUUID(String uuid, File unzippedDir, String file)
     {
-        String zipPath = getSignutareFilePathByUUID(uuid).getPath();
+        String zipPath = getLocalSignatureFile(uuid).getPath();
 
         unzippedDir.mkdir();unzippedDir.mkdirs();
 
