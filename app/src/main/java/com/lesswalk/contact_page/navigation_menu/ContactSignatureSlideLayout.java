@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.os.HandlerThread;
@@ -15,7 +16,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.google.gson.Gson;
 import com.lesswalk.R;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.json.AssetsJson;
@@ -24,7 +24,6 @@ import com.lesswalk.json.CarruselJson;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Vector;
 
 public class ContactSignatureSlideLayout extends View 
@@ -129,7 +128,12 @@ public class ContactSignatureSlideLayout extends View
 		
 		return 0;
 	}
-	
+
+	public void setEditable(boolean isEditable)
+	{
+		this.editable = isEditable;
+	}
+
 	private boolean alreadyContainSignature(Vector<CarruselJson> container, CarruselJson signature)
 	{
 		for(CarruselJson c:container)
@@ -233,7 +237,13 @@ public class ContactSignatureSlideLayout extends View
 			{
 				//Log.d("aaaa", into_areas_counter + ": startx=" + startx + " w=" + screen.getWidth() + " allScreen = " + all_size + " offset=" + fixed_offset);
 				initArea(areas[into_areas_counter], icon_area_size, startx, icon_size, workContainer.elementAt(i).getKey());
-				drawIcon(cscreen, areas[into_areas_counter], workContainer.elementAt(i).getIcon());
+				drawIcon
+				(
+					cscreen,
+					areas[into_areas_counter],
+					workContainer.elementAt(i).getIcon(),
+					workContainer.elementAt(i).getTitle()
+				);
 				into_areas_counter++;
 			}
 			
@@ -242,7 +252,12 @@ public class ContactSignatureSlideLayout extends View
 			{
 				//Log.d("aaaa", into_areas_counter + ": endx=" + endx + " w=" + screen.getWidth() + " allScreen = " + all_size + " offset=" + fixed_offset);
 				initArea(areas[into_areas_counter], icon_area_size, endx - icon_area_size, icon_size, workContainer.elementAt(i).getKey());
-				drawIcon(cscreen, areas[into_areas_counter], workContainer.elementAt(i).getIcon());
+				drawIcon
+				(
+					cscreen, areas[into_areas_counter],
+					workContainer.elementAt(i).getIcon(),
+					workContainer.elementAt(i).getTitle()
+				);
 				into_areas_counter++;
 			}
 		}
@@ -255,10 +270,14 @@ public class ContactSignatureSlideLayout extends View
 		canvas.drawBitmap(screen, 0, 0, null);
 	}
 
-	private void drawIcon(Canvas c, SignatureArea area, String icon)
+	private void drawIcon(Canvas c, SignatureArea area, String icon, String title)
 	{
-		Bitmap bit   = null;
-		int    index = icon != null ? typeToIconType(icon):NO_TYPE;
+		Bitmap bit        = null;
+		int    index      = icon != null ? typeToIconType(icon) : NO_TYPE;
+		Rect   bound      = new Rect();
+		Paint  p          = new Paint();
+		float  textAreaY0 = (area.y1 - area.y0);
+		float  textAreaH  = c.getHeight()-textAreaY0;
 
 		bit = icons[index];
 		c.drawBitmap
@@ -268,6 +287,16 @@ public class ContactSignatureSlideLayout extends View
 			new Rect((int)area.x0, (int)area.y0, (int)area.x1, (int)area.y1), 
 			null
 		);
+
+		if(title != null && textAreaH > 0.0f)
+		{
+			p.setTextSize(textAreaH * 0.3f);
+			p.setFakeBoldText(true);
+			p.setColor(Color.WHITE);
+			p.getTextBounds(title, 0, title.length(), bound);
+
+			c.drawText(title, (area.x0 + area.x1) / 2.0f - bound.width() / 2, textAreaY0 + textAreaH/2.0f + bound.height() / 2, p);
+		}
 	}
 	
 	private int typeToIconType(String type)

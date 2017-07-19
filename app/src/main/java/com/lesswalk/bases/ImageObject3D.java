@@ -30,7 +30,7 @@ public class ImageObject3D extends RectObject3D
 		//
 		for (int i = 0; i < iconPixs.length; i++)
 		{
-			if (((iconPixs[i]>>24)&0xff) > 128)
+			if (((iconPixs[i]>>24)&0xff) > 0)
 			{
 				iconPixs[i] = argb;
 			}

@@ -162,6 +162,7 @@ public class MainActivity extends BaseActivity
         
         searchFilter    = (SearchView) findViewById(R.id.contact_search_filter);
         signatureSlider = (ContactSignatureSlideLayout) findViewById(R.id.contact_act_signatures_slider);
+		signatureSlider.setEditable(true);
 
 		signatureSlider.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
 		{
