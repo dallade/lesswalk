@@ -67,7 +67,8 @@ public class MainService extends Service implements ILesswalkService
 
 		syncThread.start();
 
-		if (syncThread.getLocalNumber() != null) {
+		if (syncThread.getLocalNumber() != null)
+		{
 			syncThread.addImportantTask(syncThread.new SyncSomeContactSignaturesTask(syncThread.getLocalNumber(), null));
 		}
 	}

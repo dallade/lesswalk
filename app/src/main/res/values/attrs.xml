@@ -30,7 +30,7 @@
         <attr name="android:textColor"/>
     </declare-styleable>
 
-    <declare-styleable name="RoundedNegativeIconButtonWithText">
+    <declare-styleable name="RoundedIconButtonWithText">
         <attr name="android:text"/>
         <attr name="android:textColor"/>
         <attr name="android:src"/>

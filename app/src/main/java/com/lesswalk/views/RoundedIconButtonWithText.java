@@ -1,7 +1,6 @@
 package com.lesswalk.views;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,7 +24,7 @@ import java.io.FileNotFoundException;
  * Created by elazarkin on 5/17/17.
  */
 
-public class RoundedNegativeIconButtonWithText extends LinearLayout
+public class RoundedIconButtonWithText extends LinearLayout
 {
     private String          text      = null;
     private int             textSize  = 16;
@@ -34,7 +33,7 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
     private OnClickListener listener  = null;
     private String          icon_name = null;
 
-    public RoundedNegativeIconButtonWithText(Context context, int resource, String text, int textColor)
+    public RoundedIconButtonWithText(Context context, int resource, String text, int textColor)
     {
         super(context);
 
@@ -53,7 +52,7 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         setItem();
     }
 
-    public RoundedNegativeIconButtonWithText(Context context, File resource, String text, String icon_name, int textColor)
+    public RoundedIconButtonWithText(Context context, File resource, String text, String icon_name, int textColor)
     {
         super(context);
 
@@ -72,18 +71,18 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         setItem();
     }
 
-    public RoundedNegativeIconButtonWithText(Context context, @Nullable AttributeSet attrs)
+    public RoundedIconButtonWithText(Context context, @Nullable AttributeSet attrs)
     {
         super(context, attrs);
         if(attrs != null)
         {
-            TypedArray a =getContext().obtainStyledAttributes(attrs, R.styleable.RoundedNegativeIconButtonWithText);
+            TypedArray a =getContext().obtainStyledAttributes(attrs, R.styleable.RoundedIconButtonWithText);
 
-            text = a.getString(R.styleable.RoundedNegativeIconButtonWithText_android_text);
-            //textSize = a.getFloat(R.styleable.RoundedNegativeIconButtonWithText_android_textSize, 16.0f);
-            textSize = a.getDimensionPixelSize(R.styleable.RoundedNegativeIconButtonWithText_android_textSize, 16);
-            textColor = a.getColor(R.styleable.RoundedNegativeIconButtonWithText_android_textColor, Color.WHITE);
-            src = a.getDrawable(R.styleable.RoundedNegativeIconButtonWithText_android_src);
+            text = a.getString(R.styleable.RoundedIconButtonWithText_android_text);
+            //textSize = a.getFloat(R.styleable.RoundedIconButtonWithText_android_textSize, 16.0f);
+            textSize = a.getDimensionPixelSize(R.styleable.RoundedIconButtonWithText_android_textSize, 16);
+            textColor = a.getColor(R.styleable.RoundedIconButtonWithText_android_textColor, Color.WHITE);
+            src = a.getDrawable(R.styleable.RoundedIconButtonWithText_android_src);
 
             a.recycle();
         }
@@ -93,9 +92,9 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
 
     private void setItem()
     {
-        LinearLayout             item = (LinearLayout) ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.rounded_negative_icon_with_text, null);
-        RoundedNegativeImageView icon = (RoundedNegativeImageView) item.findViewById(R.id.rounded_negative_icon_with_text_icon);
-        TextView                 tv   = (TextView) item.findViewById(R.id.rounded_negative_icon_with_text_text);
+        LinearLayout     item = (LinearLayout) ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.rounded_negative_icon_with_text, null);
+        RoundedImageView icon = (RoundedImageView) item.findViewById(R.id.rounded_icon_with_text_icon);
+        TextView         tv   = (TextView) item.findViewById(R.id.rounded_negative_icon_with_text_text);
 
         if (src != null)
         {
@@ -120,7 +119,7 @@ public class RoundedNegativeIconButtonWithText extends LinearLayout
         @Override
         public void onClick(View view)
         {
-            if(listener != null) listener.onClick(RoundedNegativeIconButtonWithText.this);
+            if(listener != null) listener.onClick(RoundedIconButtonWithText.this);
         }
     };
 

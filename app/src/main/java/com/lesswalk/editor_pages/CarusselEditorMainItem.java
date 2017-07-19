@@ -120,20 +120,24 @@ public class CarusselEditorMainItem extends ICarusselMainItem
 
 			carruselJson.save(new File(dir, "content.json"));
 
-			AWS.OnRequestListener onRequestListener = new AWS.OnRequestListener() {
+			AWS.OnRequestListener onRequestListener = new AWS.OnRequestListener()
+			{
 				@Override
-				public void onStarted() {
+				public void onStarted()
+				{
 					Log.d(TAG, "onStarted");
 				}
 
 				@Override
-				public void onFinished() {
+				public void onFinished()
+				{
 					Log.d(TAG, "onFinished");
 				}
 
 				@Override
-				public void onError(int errorId) {
-					Log.d(TAG, "onError: "+errorId);
+				public void onError(int errorId)
+				{
+					Log.d(TAG, "onError: " + errorId);
 				}
 			};
 

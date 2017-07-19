@@ -2,7 +2,6 @@ package com.lesswalk;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -11,7 +10,7 @@ import android.widget.Button;
 
 import com.lesswalk.bases.BaseActivity;
 import com.lesswalk.json.AssetsJson;
-import com.lesswalk.views.RoundedNegativeIconButtonWithText;
+import com.lesswalk.views.RoundedIconButtonWithText;
 import com.lesswalk.views.SelectSpotTypeAcceptDialog;
 import com.lesswalk.views.SelectSpotTypeItem;
 
@@ -85,7 +84,7 @@ public class SelectSpotTypeActivity extends BaseActivity
                         //if(i == 2) continue;
                         if(!assets.getImages()[i].isHidden())
                         {
-                            list.addRoundedIconButtonWithText(new RoundedNegativeIconButtonWithText
+                            list.addRoundedIconButtonWithText(new RoundedIconButtonWithText
                             (
                                     SelectSpotTypeActivity.this,
                                     new File(assetsDir, assets.getImages()[i].getName()),
@@ -103,7 +102,7 @@ public class SelectSpotTypeActivity extends BaseActivity
                             @Override
                             public void onClick(View view)
                             {
-                                RoundedNegativeIconButtonWithText button = (RoundedNegativeIconButtonWithText) view;
+                                RoundedIconButtonWithText button = (RoundedIconButtonWithText) view;
 
                                 acceptDialog.setText(button.getText());
                                 acceptDialog.setIcon(button.getIcon());

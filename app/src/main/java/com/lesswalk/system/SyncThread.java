@@ -899,9 +899,13 @@ public class SyncThread
             {
                 if (uuid.length() > 0)
                 {
-                    container.add(getUserSignatureObject(mParent, mCloud, uuid));
+                    CarruselJson item = getUserSignatureObject(mParent, mCloud, uuid);
 
-                    Log.d("elazarkin1", "add " + uuid + " type = " + container.lastElement().getType());
+                    if(item != null)
+                    {
+                        container.add(item);
+                        Log.d("elazarkin1", "add " + uuid + " type = " + container.lastElement().getType());
+                    }
                 }
             }
         }

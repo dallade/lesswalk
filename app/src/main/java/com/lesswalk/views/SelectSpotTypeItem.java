@@ -8,7 +8,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -47,7 +46,7 @@ public class SelectSpotTypeItem extends LinearLayout
         addView(sv, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    public void addRoundedIconButtonWithText(RoundedNegativeIconButtonWithText item)
+    public void addRoundedIconButtonWithText(RoundedIconButtonWithText item)
     {
         int i = layouts.length-1;
 
