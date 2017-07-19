@@ -20,6 +20,8 @@ import com.lesswalk.RegistrationActivity;
 
 public abstract class BaseActivity extends Activity
 {
+	protected static final String PROP_NAVIGATION_APP_PACKAGE = "navigation_app_package";
+
 	public static final String INTENT_EXTRA_NAME_CONTENT_DIR = "content_dir";
 	public static final String INTENT_EXTRA_NAME_SPOT_NAME   = "spot_name";
 	public static final String INTENT_EXTRA_NAME_ICON_UUID   = "icon_uuid";

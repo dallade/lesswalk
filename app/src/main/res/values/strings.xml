@@ -15,6 +15,11 @@
     <string name="title_activity_contact_profile">ContactProfile</string>
     <string name="st_registration_set_number">To get Started, Please Entrer your Phone Number</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="waze_package_name">com.waze</string>
+    <string name="googlemap_package_name">com.google.android.gms.maps</string>
+    <string name="igo_package_name">com.my.m3tech.igo.nextgen</string>
+    <string name="tomtom_package_name">com.tomtom.gplay.navapp</string>
+    <string name="navigo_package_name">com.navigon.android</string>
 
     <!-- Strings related to Settings -->
 

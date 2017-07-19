@@ -7,7 +7,7 @@
     >
 
     <RadioButton
-        android:id="@+id/radioButton"
+        android:id="@+id/settings_navigation_item_radiobutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/radioButton"
+        android:layout_toEndOf="@+id/settings_navigation_item_radiobutton"
         android:text="Navigation App"/>
 
     <TextView

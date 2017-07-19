@@ -82,33 +82,43 @@
                 </RelativeLayout>
 
                 <com.lesswalk.views.SettingsNavigationItem
+                    android:id="@+id/settings_item_waze"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Waze"
+                    android:description="@string/waze_package_name"
                     />
 
                 <com.lesswalk.views.SettingsNavigationItem
+                    android:id="@+id/settings_item_google_map"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Google Map"
+                    android:description="@string/googlemap_package_name"
                     />
 
                 <com.lesswalk.views.SettingsNavigationItem
+                    android:id="@+id/settings_item_igo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="iGo"
+                    android:description="@string/igo_package_name"
                     />
 
                 <com.lesswalk.views.SettingsNavigationItem
+                    android:id="@+id/settings_item_tomtom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="TomTom"
+                    android:description="@string/tomtom_package_name"
                     />
 
                 <com.lesswalk.views.SettingsNavigationItem
+                    android:id="@+id/settings_item_navigon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Navigon"
+                    android:description="@string/navigo_package_name"
                     />
 
                 <RelativeLayout

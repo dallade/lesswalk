@@ -6,6 +6,7 @@ import com.lesswalk.database.AWS;
 import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
+import java.util.Properties;
 
 public interface ILesswalkService
 {
@@ -42,7 +43,11 @@ public interface ILesswalkService
 
     void saveSignature(String key, File dir, AWS.OnRequestListener onRequestListener);
 
-    interface ISetLocalNumberCallback
+    Properties getSettingsProps();
+
+	void saveSettingsProps();
+
+	interface ISetLocalNumberCallback
 	{
 		void onSuccess();
 		void onError(int errorID);

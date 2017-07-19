@@ -22,23 +22,29 @@ import com.lesswalk.database.ZipManager;
 import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
 public class MainService extends Service implements ILesswalkService
 {
-	private static final String         TAG            = "lesswalk_MainService";
-	private static       Semaphore      mutex          = new Semaphore(1);
-	private              IBinder        mBinder        = new LocalBinder();
-	private              ContactManager contactManager = null;
-	private              SyncThread     syncThread     = null;
-
-    @Override
+	private static final String         TAG               = "lesswalk_MainService";
+	private static       Semaphore      mutex             = new Semaphore(1);
+	private              IBinder        mBinder           = new LocalBinder();
+	private              ContactManager contactManager    = null;
+	private              SyncThread     syncThread        = null;
+	private              Properties     settingsProps     = null;
+	private              File           settingsPropsFile = null;
+	@Override
 	public IBinder onBind(Intent intent) 
 	{
 		return mBinder;
@@ -56,6 +62,22 @@ public class MainService extends Service implements ILesswalkService
 	public void onCreate() 
 	{
 		super.onCreate();
+
+		settingsPropsFile = new File(getFilesDir(), "settings.xml");
+
+		settingsProps = new Properties();
+
+		if(settingsPropsFile.exists())
+		{
+			try
+			{
+				settingsProps.load(new FileInputStream(settingsPropsFile));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 
 		Log.d(TAG, "MainService onStartCommand!");
 
@@ -375,5 +397,24 @@ public class MainService extends Service implements ILesswalkService
 	public void saveSignature(String key, File dir, AWS.OnRequestListener onRequestListener)
 	{
 		syncThread.saveSignature(key, dir, onRequestListener);
+	}
+
+	@Override
+	public Properties getSettingsProps()
+	{
+		return settingsProps;
+	}
+
+	@Override
+	public void saveSettingsProps()
+	{
+		try
+		{
+			settingsProps.store(new FileOutputStream(settingsPropsFile), "" + new Date().toString());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
