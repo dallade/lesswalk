@@ -17,6 +17,7 @@ import android.view.View;
 
 import com.google.gson.Gson;
 import com.lesswalk.R;
+import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.json.AssetsJson;
 import com.lesswalk.json.CarruselJson;
 
@@ -159,6 +160,7 @@ public class ContactSignatureSlideLayout extends View
 			try
 			{
 				File assetsDir = new File(getContext().getFilesDir(), "assets");
+				Bitmap dashed = BitmapFactory.decodeResource(getResources(), R.drawable.dashed_border_2x);
 
 				if(assetsDir.exists())
 				{
@@ -167,11 +169,27 @@ public class ContactSignatureSlideLayout extends View
 
 					for (int i = 0; i < assets.getImages().length; i++)
 					{
-						icons[i] = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.getImages()[i].getName())));
+						Bitmap work  = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.getImages()[i].getName()))).copy(Bitmap.Config.ARGB_8888, true);
+						Canvas cwork = new Canvas(work);
+
+						cwork.drawBitmap
+						(
+							dashed,
+							new Rect(0, 0, dashed.getWidth(), dashed.getHeight()),
+							new Rect(0, 0, cwork.getWidth(), cwork.getHeight()),
+							null
+						);
+
+						ImageObject3D.ConverAllNonTransperentColors(work, Color.WHITE);
+
+						icons[i] = work.copy(Bitmap.Config.ARGB_8888, true);
+						work.recycle();
 					}
 
 					icons[(NO_TYPE = icons.length - 1)] = BitmapFactory.decodeResource(getResources(), R.drawable.dashed_with_plus);
 				}
+
+				dashed.recycle();
 			}
 			catch (FileNotFoundException e)
 			{

@@ -21,7 +21,25 @@ public class ImageObject3D extends RectObject3D
 	{
 		super(name);
 	}
-	
+
+	public static void ConverAllNonTransperentColors(Bitmap icon, int argb)
+	{
+		int iconPixs[] = new int[icon.getWidth() * icon.getHeight()];
+		//
+		icon.getPixels(iconPixs, 0, icon.getWidth(), 0, 0, icon.getWidth(), icon.getHeight());
+		//
+		for (int i = 0; i < iconPixs.length; i++)
+		{
+			if (((iconPixs[i]>>24)&0xff) > 128)
+			{
+				iconPixs[i] = argb;
+			}
+			else {iconPixs[i] = Color.argb(0, 0, 0, 0);}
+		}
+
+		icon.setPixels(iconPixs, 0,icon.getWidth(), 0, 0, icon.getWidth(), icon.getHeight());
+	}
+
 	public static void fixIconByColor(Bitmap icon, int argb) 
     {
         int iconPixs[] = new int[icon.getWidth() * icon.getHeight()];
