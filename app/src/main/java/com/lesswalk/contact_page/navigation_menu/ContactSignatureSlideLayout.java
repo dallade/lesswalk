@@ -170,7 +170,7 @@ public class ContactSignatureSlideLayout extends View
 						icons[i] = BitmapFactory.decodeStream(new FileInputStream(new File(assetsDir, assets.getImages()[i].getName())));
 					}
 
-					icons[(NO_TYPE = icons.length - 1)] = BitmapFactory.decodeResource(getResources(), R.drawable.dashed_border_2x);
+					icons[(NO_TYPE = icons.length - 1)] = BitmapFactory.decodeResource(getResources(), R.drawable.dashed_with_plus);
 				}
 			}
 			catch (FileNotFoundException e)
