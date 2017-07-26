@@ -16,13 +16,12 @@ public class AddressObject3D extends EditTextImageObject
 	
 	public AddressObject3D() 
 	{
-		super("");
+		super("AddressObject3D");
+		mapAddress = new CarruselJson.MapAddress();
 	}
 
 	public void setAddress(String contry, String city, String street, String street_num)
 	{
-		if(mapAddress == null) mapAddress = new CarruselJson.MapAddress();
-
 		mapAddress.setCountry(contry);
 		mapAddress.setCity(city);
 		if(street != null && street_num != null)

@@ -19,137 +19,113 @@ import java.util.Vector;
 
 public class CarusselEditorMainItem extends ICarusselMainItem
 {
-	private static final String TAG = CarusselEditorMainItem.class.getSimpleName();
-	private CarruselJson                  carruselJson     = null;
-	private GeneralEditPage               generalEditPage  = null;
-	private Vector<ParkingEditPage>       parkingEditPages = null;
-	private IndoorEditPage                indoorEditPage   = null;
-	private Vector<CarusselPageInterface> pages            = null;
-	private ILesswalkService              service          = null;
-	private Context                       context          = null;
-	private BaseActivity                  parent           = null;
-	
-	public CarusselEditorMainItem(Context c, BaseActivity parent)
-	{
-		context = c;
-		this.parent = parent;
+    private static final String                        TAG              = CarusselEditorMainItem.class.getSimpleName();
+    private              CarruselJson                  carruselJson     = null;
+    private              GeneralEditPage               generalEditPage  = null;
+    private              Vector<ParkingEditPage>       parkingEditPages = null;
+    private              IndoorEditPage                indoorEditPage   = null;
+    private              Vector<CarusselPageInterface> pages            = null;
+    private              ILesswalkService              service          = null;
+    private              Context                       context          = null;
+    private              BaseActivity                  parent           = null;
 
-		initOnStartPages(context);
-		// TODO check intent, maybe it edit of existed signature
-	}
+    public CarusselEditorMainItem(Context c, BaseActivity parent)
+    {
+        context = c;
+        this.parent = parent;
 
-	private void initOnStartPages(Context c)
-	{
-		if(pages == null) pages = new Vector<CarusselPageInterface>();
-		
-		pages.add((generalEditPage=new GeneralEditPage("generalEditPage", c)));
-		addParkingEditPage(pages, new ParkingEditPage("parkingEditPage", c));
-		pages.add((indoorEditPage=new IndoorEditPage("indoorEditPage", c)));
-		
-		for(int i = 0; i < pages.size(); i++)
-		{
-			pages.elementAt(i).setIndex(i);
-		}
-	}
+        initOnStartPages(context);
+        // TODO check intent, maybe it edit of existed signature
+    }
 
-	private void addParkingEditPage(Vector<CarusselPageInterface> pages, ParkingEditPage parkingEditPage)
-	{
-		if(parkingEditPages==null) parkingEditPages = new Vector<ParkingEditPage>();
-		parkingEditPages.add(parkingEditPage);
-		pages.add(parkingEditPages.lastElement());
-	}
+    private void initOnStartPages(Context c)
+    {
+        if (pages == null) pages = new Vector<CarusselPageInterface>();
 
-	@Override
-	public void fillContainerByItems(Vector<CarusselPageInterface> container) 
-	{
-		Log.d("elazarkin", "CarusselEditorMainItem - fillContainerByItems");
-		//
-		if(pages != null && pages.size() > 0)
-		{
-			for(CarusselPageInterface p:pages)
-			{
-				Log.d("elazarkin", "CarusselEditorMainItem - fillContainerByItems add " + p.toString());
-				container.add(p);
-			}
-		}
-	}
+        pages.add((generalEditPage = new GeneralEditPage("generalEditPage", c)));
+        addParkingEditPage(pages, new ParkingEditPage("parkingEditPage", c));
+        pages.add((indoorEditPage = new IndoorEditPage("indoorEditPage", c)));
 
-	@Override
-	public String save()
-	{
-		if(service == null)
-		{
-			((Activity)context).runOnUiThread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					Toast.makeText(context, "Fail save, please try again later!", Toast.LENGTH_LONG).show();
-				}
-			});
-		}
+        for (int i = 0; i < pages.size(); i++)
+        {
+            pages.elementAt(i).setIndex(i);
+        }
+    }
 
-		if(carruselJson == null) carruselJson = new CarruselJson();
-		if(carruselJson.getKey() == null) carruselJson.setKey(service.generateUUID());
+    private void addParkingEditPage(Vector<CarusselPageInterface> pages, ParkingEditPage parkingEditPage)
+    {
+        if (parkingEditPages == null) parkingEditPages = new Vector<ParkingEditPage>();
+        parkingEditPages.add(parkingEditPage);
+        pages.add(parkingEditPages.lastElement());
+    }
 
-		if(pages != null)
-		{
-			File         dir        = new File(context.getCacheDir(), "signature");
+    @Override
+    public void fillContainerByItems(Vector<CarusselPageInterface> container)
+    {
+        Log.d("elazarkin", "CarusselEditorMainItem - fillContainerByItems");
+        //
+        if (pages != null && pages.size() > 0)
+        {
+            for (CarusselPageInterface p : pages)
+            {
+                Log.d("elazarkin", "CarusselEditorMainItem - fillContainerByItems add " + p.toString());
+                container.add(p);
+            }
+        }
+    }
 
-			if(dir.exists())
-			{
-				Utils.removeDir(dir);
-			}
+    @Override
+    public String save(File dir, String filename)
+    {
+        if (service == null)
+        {
+            ((Activity) context).runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Toast.makeText(context, "Fail save, please try again later!", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
 
-			dir.mkdirs();dir.mkdir();
+        if (carruselJson == null) carruselJson = new CarruselJson();
+        if (carruselJson.getKey() == null) carruselJson.setKey(service.generateUUID());
 
-			carruselJson.setContent_type("signature");
-			carruselJson.setIcon("asset:22709EF2-6304-478F-A91E-192022B1AC36 :" + parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_ICON_UUID));
-			carruselJson.setTitle(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_TITLE));
-			carruselJson.setType(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_SPOT_NAME));
+        if (pages != null)
+        {
+            if (dir.exists())
+            {
+                Utils.removeDir(dir);
+            }
 
-			generalEditPage.save(dir, carruselJson);
-			carruselJson.setParkingsAmmount(parkingEditPages.size());
-			for(int i = 0; i < parkingEditPages.size(); i++)
-			{
-				parkingEditPages.elementAt(i).save(dir, i, carruselJson);
-			}
-			indoorEditPage.save(dir, carruselJson);
+            dir.mkdirs();
+            dir.mkdir();
 
-			carruselJson.setCreation_time(""+System.currentTimeMillis());
+            carruselJson.setContent_type("signature");
+            carruselJson.setIcon("asset:22709EF2-6304-478F-A91E-192022B1AC36 :" + parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_ICON_UUID));
+            carruselJson.setTitle(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_TITLE));
+            carruselJson.setType(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_SPOT_NAME));
 
-			carruselJson.save(new File(dir, "content.json"));
+            generalEditPage.save(dir, carruselJson);
+            carruselJson.setParkingsAmmount(parkingEditPages.size());
+            for (int i = 0; i < parkingEditPages.size(); i++)
+            {
+                parkingEditPages.elementAt(i).save(dir, i, carruselJson);
+            }
+            indoorEditPage.save(dir, carruselJson);
 
-			AWS.OnRequestListener onRequestListener = new AWS.OnRequestListener()
-			{
-				@Override
-				public void onStarted()
-				{
-					Log.d(TAG, "onStarted");
-				}
+            carruselJson.setCreation_time("" + System.currentTimeMillis());
 
-				@Override
-				public void onFinished()
-				{
-					Log.d(TAG, "onFinished");
-				}
+            carruselJson.save(new File(dir, filename));
+        }
 
-				@Override
-				public void onError(int errorId)
-				{
-					Log.d(TAG, "onError: " + errorId);
-				}
-			};
+        return carruselJson.getKey();
+    }
 
-			parent.getService().saveSignature(carruselJson.getKey(), dir, onRequestListener);
-		}
-
-		return carruselJson.getKey();
-	}
-
-	@Override
-	public void setService(ILesswalkService service)
-	{
-		this.service = service;
-	}
+    @Override
+    public void setService(ILesswalkService service)
+    {
+        this.service = service;
+    }
 }

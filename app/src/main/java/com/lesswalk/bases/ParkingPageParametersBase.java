@@ -39,6 +39,8 @@ public abstract class ParkingPageParametersBase extends CarusselPageInterface
 	@Override
 	protected void addChilds(RectObject3D drawableArea)
 	{
+		drawableArea.addChild(getAddressRectArea(drawableArea));
+
 		drawableArea.addChild(getTitleObj(drawableArea));
 
 		drawableArea.addChild(getYouShouldNoticeTitleObj(drawableArea));

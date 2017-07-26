@@ -64,67 +64,67 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 		
 		RectF  mapThumbnailArea = new RectF(-0.5f, 0.1f, 0.5f, 0.4f);
 		RectF  addressTextArea  = new RectF(-0.5f, -0.5f, 0.5f, 0.0f);
-		
+//
 		addressArea = getAddressRectArea(drawableArea);
-		
+
 		if(mapThumbnail == null)
 		{
 			mapThumbnail = createAdressMapThumnail(addressArea.aspect()*mapThumbnailArea.height()/mapThumbnailArea.width());
 			mapThumbnail.initObject
 			(
-				addressArea, 
-				mapThumbnailArea.centerX(), 
-				mapThumbnailArea.centerY(), 
-				mapThumbnailArea.width(), 
-				addressArea.aspect()*mapThumbnailArea.height()/mapThumbnailArea.width(), 
+				addressArea,
+				mapThumbnailArea.centerX(),
+				mapThumbnailArea.centerY(),
+				mapThumbnailArea.width(),
+				addressArea.aspect()*mapThumbnailArea.height()/mapThumbnailArea.width(),
 				1.0f
 			);
-			mapThumbnail.setOnClickCallback(new OnClickedAction() 
+			mapThumbnail.setOnClickCallback(new OnClickedAction()
 			{
 				@Override
-				public void onClicked() 
+				public void onClicked()
 				{
 					Toast.makeText(getContext(), "TODO will open googlemap!", Toast.LENGTH_SHORT).show();
 				}
 			});
 			addressArea.addChild(mapThumbnail);
 		}
-		
+//
 		if(addressObject == null)
 		{
 			addressObject = new AddressObject3D();
-			
+
 			addressObject.initObject
 			(
-				addressArea, 
-				addressTextArea.centerX(), 
-				addressTextArea.centerY(), 
-				addressTextArea.width(), 
-				addressArea.aspect()*addressTextArea.height()/addressTextArea.width(), 
+				addressArea,
+				addressTextArea.centerX(),
+				addressTextArea.centerY(),
+				addressTextArea.width(),
+				addressArea.aspect()*addressTextArea.height()/addressTextArea.width(),
 				1.0f
 			);
-			
+
 			addressObject.setOnClickCallback(new OnClickedAction()
 			{
 				@Override
-				public void onClicked() 
+				public void onClicked()
 				{
 					// TODO // FIXME: 04/07/17 use MapAddress Object
 					((EditObjects2dManager) getContext()).getManualAddressText(new EditObjectAddressCallback()
 					{
 						@Override
-						public void onReturn(String contry, String city, String street, String street_num) 
+						public void onReturn(String contry, String city, String street, String street_num)
 						{
 							addressObject.setAddress(contry, city, street, street_num);
 						}
-						
+
 					}, addressObject.getCountry(), addressObject.getCity(), addressObject.getStreet(), "0");
 				}
 			});
-			
+
 			addressArea.addChild(addressObject);
 		}
-		
+
 		tipsArea = getTipsArea(drawableArea);
 		
 		if(textTipObject == null)

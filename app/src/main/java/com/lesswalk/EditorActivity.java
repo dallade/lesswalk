@@ -2,6 +2,7 @@ package com.lesswalk;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,8 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lesswalk.bases.BaseCarusselActivity;
+import com.lesswalk.database.AWS;
 import com.lesswalk.editor_pages.CarusselEditorMainItem;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectAddressCallback;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCallback;
@@ -22,6 +25,7 @@ import com.lesswalk.editor_pages.bases.ImageView;
 import com.lesswalk.pagescarussel.ICarusselMainItem;
 import com.lesswalk.views.MyCameraView;
 
+import java.io.File;
 import java.util.Vector;
 
 public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager
@@ -80,11 +84,37 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			@Override
 			public void onClick(View view)
 			{
-				String uuid = carusselMainItem.save();
+				File dir = new File(getCacheDir(), "signature");
+				String filename = "content.json";
+				String uuid = carusselMainItem.save(dir, filename);
 
 				if(uuid != null)
 				{
+					AWS.OnRequestListener onRequestListener = new AWS.OnRequestListener()
+					{
+						@Override
+						public void onStarted()
+						{
+							Log.d("elazarkin19", "onStarted");
+						}
 
+						@Override
+						public void onFinished()
+						{
+							Log.d("elazarkin19", "onFinished");
+							Toast.makeText(EditorActivity.this, "save success!", Toast.LENGTH_SHORT).show();
+							finish();
+						}
+
+						@Override
+						public void onError(int errorId)
+						{
+							Toast.makeText(EditorActivity.this, "save unsuccess - please check error!", Toast.LENGTH_SHORT).show();
+							Log.d("elazarkin19", "onError: " + errorId);
+						}
+					};
+
+					getService().saveSignature(uuid, dir, onRequestListener);
 				}
 			}
 		});

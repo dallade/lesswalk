@@ -15,9 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -452,15 +454,25 @@ public class AmazonCloud extends Cloud
         {
             if (eTag == null) throw new Exception(String.format("Couldn't upload signature to cloud. signatureKey: %s, ownerKey: %s", signatureKey, ownerKey));
             File jsonFile = new File(jsonPath);
-            FileReader reader = new FileReader(jsonFile);
-            int fileSize = (int)jsonFile.length();
+            if(jsonFile.exists() && jsonFile.length() > 0)
+            {
+                InputStream is = new FileInputStream(jsonFile);
+                byte buffer[] = new byte[(int) jsonFile.length()];
 
-            char cBuff[] = new char[fileSize];
-            for (int readSum = 0;  (readSum+=reader.read(cBuff, readSum, fileSize-readSum)) < fileSize ; );
-            String content = new String(cBuff);
+                is.read(buffer, 0, buffer.length);
+                is.close();
+                reqHttpPut(url, new String(buffer));
+            }
+            else Log.d("elazarkin19", "jsonFile not existed");
+//            FileReader reader = new FileReader(jsonFile);
+//            int fileSize = (int)jsonFile.length();
+//
+//            char cBuff[] = new char[fileSize];
+//            for (int readSum = 0;  (readSum+=reader.read(cBuff, readSum, fileSize-readSum)) < fileSize ; );
+//            String content = new String(cBuff);
             //JSONObject jsonObject = new JSONObject(content);
             //reqHttpPut(url, jsonObject.toString());
-            reqHttpPut(url, content);
+
         }
         catch (Exception e)
         {
