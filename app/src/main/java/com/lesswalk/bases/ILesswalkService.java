@@ -41,6 +41,8 @@ public interface ILesswalkService
 
     void deleteUserAccount(AWS.OnRequestListener onRequestListener);
 
+    void deleteSignature(String key, AWS.OnRequestListener onRequestListener);
+
     void saveSignature(String key, File dir, AWS.OnRequestListener onRequestListener);
 
     Properties getSettingsProps();

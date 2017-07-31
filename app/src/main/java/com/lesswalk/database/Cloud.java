@@ -26,6 +26,8 @@ public abstract class Cloud
 
     public abstract boolean deleteUserAccount(String userKey);
 
+    public abstract boolean deleteSignature(String userKey, String signatureKey);
+
     public interface I_ProcessListener
     {
         void onSuccess(HashMap<String, String> result);

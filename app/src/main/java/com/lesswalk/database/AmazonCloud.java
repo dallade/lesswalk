@@ -52,7 +52,8 @@ public class AmazonCloud extends Cloud
     protected static final String CLOUD_FUNCTION_sendVerSms        = "request-confirmation-sms";
     protected static final String CLOUD_FUNCTION_upload            = "upload";
     protected static final String GET_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s?phone_number=%s&country_code=%s";
-    protected static final String GET_REQ_USER_BY_UUID            = "%s://%s:%d/cmd/%s/%s/%s";
+    protected static final String GET_REQ_USER_BY_UUID             = "%s://%s:%d/cmd/%s/%s/%s";
+    protected static final String GET_REQ_SIGNATURE_BY_UUID        = "%s://%s:%d/cmd/%s/%s/%s";
     protected static final String PUT_REQ_USER_BY_PHONE            = "%s://%s:%d/cmd/%s/%s";//?phone_number=%s&country_code=%s
     protected static final String PUT_REQ_USER_VER_SMS             = "%s://%s:%d/cmd/%s/%s";
     protected static final String PUT_REQ_USER_UPLOAD              = "%s://%s:%d/cmd/%s/%s/%s";
@@ -73,7 +74,8 @@ public class AmazonCloud extends Cloud
     private static final   String ASSETS_PATH                      = "assets";
     private static final   String ASSETS_UUID                      = "22709EF2-6304-478F-A91E-192022B1AC36";
     private static final   String ASSETS_EXTENSION                 = ".zip";
-    private static final   String DELETE_REQ_USER_DELETE= "%s://%s:%d/cmd/%s/%s/%s";//http://52.70.155.39:30082/cmd/user/drop/AD1038E8-887B-4939-9412-DC716DCE38FB
+    private static final   String DELETE_REQ_USER_DELETE           = "%s://%s:%d/cmd/%s/%s/%s";//http://52.70.155.39:30082/cmd/user/drop/AD1038E8-887B-4939-9412-DC716DCE38FB
+    private static final   String DELETE_REQ_SIGNATURE_DELETE      = "%s://%s:%d/cmd/%s/%s/%s";//http://52.70.155.39:30082/cmd/user/drop/AD1038E8-887B-4939-9412-DC716DCE38FB
     private static final   String CLOUD_FUNCTION_delete            = "drop";
     private static final   String CLOUD_FUNCTION_get               = "get";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -319,6 +321,7 @@ public class AmazonCloud extends Cloud
 
     @Override
     public boolean deleteUserAccount(String userKey) {
+        //TODO take care of deleting permissions (is it the real owner?)
         String pathOnServer = AWS.S3_USERS_DIR + File.separator + userKey + ".zip";
         AWS.delete(mContext, pathOnServer);
         String url = String.format
@@ -346,6 +349,55 @@ public class AmazonCloud extends Cloud
                         CLOUD_MODULE_user,
                         CLOUD_FUNCTION_get,
                         userKey
+                );
+
+        Request request = new Request.Builder()
+                .url(urlGet)
+                .build();
+
+        Response responseGet;
+        result = false;
+        try
+        {
+            responseGet = httpClient.newCall(request).execute();
+            result = !responseGet.isSuccessful();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public boolean deleteSignature(String userKey, String signatureKey) {
+        //TODO take care of deleting permissions (is it the real owner?)
+        String pathOnServer = AWS.S3_SIGNATURES_DIR + File.separator + signatureKey + ".zip";
+        AWS.delete(mContext, pathOnServer);
+        String url = String.format
+                (
+                        Locale.getDefault(),
+                        DELETE_REQ_SIGNATURE_DELETE,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_signature,
+                        CLOUD_FUNCTION_delete,
+                        signatureKey
+                );
+        boolean result;
+        result = reqHttpDelete(url);
+        if (!result) return false;
+        String urlGet = String.format
+                (
+                        Locale.getDefault(),
+                        GET_REQ_SIGNATURE_BY_UUID,
+                        CLOUD_SCHEME,
+                        CLOUD_HOST,
+                        CLOUD_PORT,
+                        CLOUD_MODULE_signature,
+                        CLOUD_FUNCTION_get,
+                        signatureKey
                 );
 
         Request request = new Request.Builder()

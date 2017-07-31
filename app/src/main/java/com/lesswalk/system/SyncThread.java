@@ -193,7 +193,8 @@ public class SyncThread
         SYNC_SOME_CONTACT_SIGNATURES_TASK,
         CHECK_CONTACT_UPDATE,
         DELETE_USER_ACCOUNT,
-        SAVE_SIGNATURE
+        SAVE_SIGNATURE,
+        DELETE_SIGNATURE
     }
 
     interface ISyncThreadTasks
@@ -437,6 +438,67 @@ public class SyncThread
         public SyncThreadIDs getID()
         {
             return SyncThreadIDs.DELETE_USER_ACCOUNT;
+        }
+    }
+
+    private class DeleteSignatureTask implements ISyncThreadTasks
+    {
+        private final String signatureKey;
+        private AWS.OnRequestListener callback = null;
+
+        public DeleteSignatureTask(String key, AWS.OnRequestListener onRequestListener)
+        {
+            signatureKey = key;
+            callback = onRequestListener;
+        }
+
+        @Override
+        public void DO(SyncThread syncThread, LesswalkDbHelper userDB, LesswalkDbHelper signaturesDB)
+        {
+            callback.onStarted();
+            try {
+                Vector<String> signatureList = mCloud.findSignaturesUuidsByOwnerUuid(userContent.getKey());
+                boolean wasFound = false;
+                for (String uuid : signatureList) {
+                    if (uuid.equals(signatureKey)) {
+                        wasFound = true;
+                        break;
+                    }
+                }
+                if (!wasFound) throw new Exception("No signature was found on the current user list of signatures");
+                File localSignatureFile;
+                localSignatureFile = mCloud.getLocalSignatureFile(signatureKey);
+                if (!localSignatureFile.exists() || !localSignatureFile.isFile()) throw new Exception("Signature file not found");
+                if (!localSignatureFile.delete()) throw new Exception("Signature file could not get deleted");
+                // TODO LOCAL_DB_LINES BEGIN: start using the class 'DBController' and move these following lines as a method there:
+                String sql = "select " + SIGNATURE_UUID_ROW + " from " + signaturesDB.table_name + " where " + SIGNATURE_UUID_ROW + "=?";
+                String selections[] = {signatureKey};
+                Cursor cursor = signaturesDB.getReadableDatabase().rawQuery(sql, selections);
+                if (cursor.getCount() <= 0 || !cursor.moveToFirst() && !cursor.isLast()){
+                    cursor.close();
+                    throw new Exception("Signature search within the local DB came up short");
+                }
+                String localSigUuid = cursor.getString(cursor.getColumnIndex(SIGNATURE_UUID_ROW));
+                cursor.close();
+                if (!signatureKey.equals(""+localSigUuid)) throw new Exception("Failed to find the signature ("+signatureKey+") within the local DB ("+localSigUuid+")");
+                int numOfDeletedRows = signaturesDB.getWritableDatabase().delete(signaturesDB.table_name, SIGNATURE_UUID_ROW + "=?", selections);
+                if (numOfDeletedRows != 1) throw new Exception("Failed to delete just that one signature from the local DB ("+numOfDeletedRows+" rows were deleted)");
+                // TODO LOCAL_DB_LINES END
+                if (!mCloud.deleteSignature(userContent.getKey(), signatureKey)) throw new Exception("Cloud failed to delete signature");
+                Log.d(TAG, "deleteSignature succeeded to delete "+signatureKey);
+                reloadUserJson();//TODO should we call this or it's equivalent here?
+                callback.onFinished();
+            }catch (Exception e) {
+                Log.d(TAG, "DeleteSignatureTask failed - key: "+signatureKey+", e: "+e.getMessage());
+                e.printStackTrace();
+                callback.onError(-1);
+            }
+        }
+
+        @Override
+        public SyncThreadIDs getID()
+        {
+            return SyncThreadIDs.DELETE_SIGNATURE;
         }
     }
 
@@ -1109,6 +1171,11 @@ public class SyncThread
     public void deleteUserAccount(AWS.OnRequestListener onRequestListener)
     {
         addImportantTask(new DeleteAccountTask(onRequestListener));
+    }
+
+    public void deleteSignature(String key, AWS.OnRequestListener onRequestListener)
+    {
+        addImportantTask(new DeleteSignatureTask(key, onRequestListener));
     }
 
     public boolean checkLogin()
