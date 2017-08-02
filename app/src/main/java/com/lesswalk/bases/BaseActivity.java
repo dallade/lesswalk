@@ -22,10 +22,11 @@ public abstract class BaseActivity extends Activity
 {
 	protected static final String PROP_NAVIGATION_APP_PACKAGE = "navigation_app_package";
 
-	public static final String INTENT_EXTRA_NAME_CONTENT_DIR = "content_dir";
-	public static final String INTENT_EXTRA_NAME_SPOT_NAME   = "spot_name";
-	public static final String INTENT_EXTRA_NAME_ICON_UUID   = "icon_uuid";
-	public static final String INTENT_EXTRA_NAME_TITLE       = "title";
+	public static final String INTENT_EXTRA_NAME_CONTENT_DIR    = "content_dir";
+	public static final String INTENT_EXTRA_NAME_SIGNATURE_UUID = "signature_uuid";
+	public static final String INTENT_EXTRA_NAME_SPOT_NAME      = "spot_name";
+	public static final String INTENT_EXTRA_NAME_ICON_UUID      = "icon_uuid";
+	public static final String INTENT_EXTRA_NAME_TITLE          = "title";
 
 	private static final String           TAG           = "lesswalkBaseActivity";
     private static       Intent           mainActivity  = null;

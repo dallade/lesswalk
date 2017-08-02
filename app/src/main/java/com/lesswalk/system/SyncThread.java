@@ -263,7 +263,15 @@ public class SyncThread
                             Log.e("syncSignature", "OK, nothing to do");
                         } else if (cursor.moveToFirst() && cursor.isLast()) {
                             String localEtag = cursor.getString(cursor.getColumnIndex(SIGNATURE_ETAG_ROW));
-                            String cloudEtag = mCloud.getSignatureEtag(uuid);
+                            String cloudEtag = "";
+                            try {
+                                cloudEtag = mCloud.getSignatureEtag(uuid);
+                            }catch (Exception e){
+                                Log.e(TAG, e.getMessage());
+                                e.printStackTrace();
+                                callback.onError(ILesswalkService.CODE_ERROR_CLOUD_CONNECTION_FAILED);
+                                return;
+                            }
                             shouldDownload = !cloudEtag.equals(localEtag);
                             Log.e("syncSignature", String.format(
                                     "userUuid: %s, uuid: %s, localEtag: %s, cloudEtag: %s, shouldDownload: %s"
@@ -288,108 +296,91 @@ public class SyncThread
 
                 if(signaturesToDownload.size() > 0)
                 {
-                    mCloud.downloadSignatures(signaturesToDownload, new AWS.OnDownloadListener()
-                    {
-                        private Vector<AwsDownloadItem> items = null;
-                        private int errorCount = 0;
+                    try {
+                        mCloud.downloadSignatures(signaturesToDownload, new AWS.OnDownloadListener() {
+                            private Vector<AwsDownloadItem> items = null;
+                            private int errorCount = 0;
 
-                        @Override
-                        public void onDownloadStarted(String path)
-                        {
-                            Log.d("elazarkin", "onDownloadStarted " + path);
-                        }
+                            @Override
+                            public void onDownloadStarted(String path) {
+                                Log.d("elazarkin", "onDownloadStarted " + path);
+                            }
 
-                        @Override
-                        public void onDownloadProgress(String path, float percentage)
-                        {
-                            Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
-                        }
+                            @Override
+                            public void onDownloadProgress(String path, float percentage) {
+                                Log.d("elazarkin", "onDownloadProgress " + path + "(" + percentage + "%)");
+                            }
 
-                        @Override
-                        public synchronized void onDownloadFinished(String path)
-                        {
-                            String fileName = new File(path).getName();
-                            String uuid     = fileName.substring(0, fileName.length() - 4);
+                            @Override
+                            public synchronized void onDownloadFinished(String path) {
+                                String fileName = new File(path).getName();
+                                String uuid = fileName.substring(0, fileName.length() - 4);
 
-                            Log.d("elazarkin10", "onDownloadFinished " + path + " items.size()=" + items.size());
+                                Log.d("elazarkin10", "onDownloadFinished " + path + " items.size()=" + items.size());
 
-                            if (items != null && items.size() > 0)
-                            {
-                                for (AwsDownloadItem item : items)
-                                {
-                                    if (item.getFilePath().equals(path))
-                                    {
-                                        updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, item.getMetadata());
+                                if (items != null && items.size() > 0) {
+                                    for (AwsDownloadItem item : items) {
+                                        if (item.getFilePath().equals(path)) {
+                                            updateSignatureDatabase(syncThread.mParent, syncThread.mCloud, signaturesDB, uuid, item.getMetadata());
+                                            items.removeElement(item);
+
+                                            if (items.size() <= 0) {
+                                                if (errorCount <= 0) {
+                                                    Log.d("elazarkin10", "finish all");
+                                                    callback.onSuccess();
+                                                } else {
+                                                    Log.d("elazarkin10", "not success 2");
+                                                    callback.notSuccessFinish();
+                                                }
+                                            } else {
+                                                Log.d("elazarkin10", "onProccess!");
+                                                callback.onProgress(path);
+                                            }
+                                            return;
+                                        }
+                                    }
+                                } else {
+                                    callback.onError(ILesswalkService.CODE_ERROR_METADATA_NOT_CREATED);
+                                    return;
+                                }
+
+                                callback.onError(ILesswalkService.CODE_ERROR_STRANGE_METADATA_ITEM);
+                            }
+
+                            @Override
+                            public void onDownloadError(String path, int errorId, Exception ex) {
+                                errorCount++;
+
+                                for (AwsDownloadItem item : items) {
+                                    if (item.getFilePath().equals(path)) {
                                         items.removeElement(item);
 
-                                        if (items.size() <= 0)
-                                        {
-                                            if (errorCount <= 0)
-                                            {
-                                                Log.d("elazarkin10", "finish all");
-                                                callback.onSuccess();
-                                            }
-                                            else
-                                            {
-                                                Log.d("elazarkin10", "not success 2");
-                                                callback.notSuccessFinish();
-                                            }
+                                        if (items.size() <= 0) {
+                                            callback.notSuccessFinish();
+                                        } else {
+                                            callback.onError(ILesswalkService.REGISTRATION_ERROR_DOWNLOAD_SIGNATURES);
                                         }
-                                        else
-                                        {
-                                            Log.d("elazarkin10", "onProccess!");
-                                            callback.onProgress(path);
-                                        }
-                                        return;
                                     }
                                 }
-                            }
-                            else
-                            {
-                                callback.onError(ILesswalkService.CODE_ERROR_METADATA_NOT_CREATED);
-                                return;
+                                Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
                             }
 
-                            callback.onError(ILesswalkService.CODE_ERROR_STRANGE_METADATA_ITEM);
-                        }
+                            @Override
+                            public void onMetadataReceived(AwsDownloadItem item) {
+                                Log.d("elazarkin10", "onMetadataReceived " + item.getFilePath());
 
-                        @Override
-                        public void onDownloadError(String path, int errorId, Exception ex)
-                        {
-                            errorCount++;
-
-                            for (AwsDownloadItem item : items)
-                            {
-                                if (item.getFilePath().equals(path))
-                                {
-                                    items.removeElement(item);
-
-                                    if (items.size() <= 0)
-                                    {
-                                        callback.notSuccessFinish();
-                                    }
-                                    else
-                                    {
-                                        callback.onError(ILesswalkService.REGISTRATION_ERROR_DOWNLOAD_SIGNATURES);
-                                    }
+                                if (items == null) {
+                                    items = new Vector<AwsDownloadItem>();
                                 }
+
+                                items.add(item);
                             }
-                            Log.d("elazarkin", "onDownloadError" + path + " errorID=" + errorId + " " + ex.getMessage());
-                        }
-
-                        @Override
-                        public void onMetadataReceived(AwsDownloadItem item)
-                        {
-                            Log.d("elazarkin10", "onMetadataReceived " + item.getFilePath());
-
-                            if (items == null)
-                            {
-                                items = new Vector<AwsDownloadItem>();
-                            }
-
-                            items.add(item);
-                        }
-                    });
+                        });
+                    }catch (Exception e){
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                        callback.onError(ILesswalkService.CODE_ERROR_CLOUD_CONNECTION_FAILED);
+                    }
                 }
                 else callback.onSuccess();
             }

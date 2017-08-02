@@ -62,4 +62,5 @@ public interface ILesswalkService
 	public static int REGISTRATION_ERROR_DOWNLOAD_SIGNATURES = -3;
 	public static int CODE_ERROR_METADATA_NOT_CREATED        = -4;
 	public static int CODE_ERROR_STRANGE_METADATA_ITEM       = -5;
+	public static int CODE_ERROR_CLOUD_CONNECTION_FAILED     = -6;
 }

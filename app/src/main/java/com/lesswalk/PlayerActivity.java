@@ -15,6 +15,7 @@ public class PlayerActivity extends BaseCarusselActivity
 {
     private static final String TAG            = PlayerActivity.class.getSimpleName();
     private ICarusselMainItem carusselMainItem = null;
+    private String signatureKey = "";
 
     private void loadCarusselItems(String dir)
     {
@@ -29,7 +30,7 @@ public class PlayerActivity extends BaseCarusselActivity
         deleteButton.setText("Delete");
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         ((LinearLayout)findViewById(R.id.player_layout)).addView(deleteButton, 0, lp);
-        final String signatureKey = "777e7a1c-5e6e-40bb-9e27-2bb6644d2ad1";//TODO elazar - get the right signature key instead of this hardcoded one
+        Log.d(TAG, "signatureKey: "+signatureKey);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,10 +90,11 @@ public class PlayerActivity extends BaseCarusselActivity
     @Override
     public void onLoadCarusselItems()
     {
-        String contect_dir = getIntent().getExtras().getString(INTENT_EXTRA_NAME_CONTENT_DIR);
-        if(contect_dir != null && contect_dir.length() > 0)
+        signatureKey = getIntent().getExtras().getString(INTENT_EXTRA_NAME_SIGNATURE_UUID);
+        String content_dir = getIntent().getExtras().getString(INTENT_EXTRA_NAME_CONTENT_DIR);
+        if(content_dir != null && content_dir.length() > 0)
         {
-            loadCarusselItems(contect_dir);
+            loadCarusselItems(content_dir);
         }
     }
 
