@@ -288,7 +288,7 @@ public class AmazonCloud extends Cloud
     @Override
     public boolean uploadUser(String uuid, String json, File userContentDir)
     {
-        //TODO use etag for later sync
+        //TODO use eTag for later sync
         String etag = null;
         File userZip = new File(mContext.getCacheDir(), "user.zip");
         String url = null;
@@ -457,7 +457,7 @@ public class AmazonCloud extends Cloud
         File userZip = new File(filesDirAbsPath, "user.zip");
         ZipManager.zip(new String[]{file.getAbsolutePath()}, userZip.getAbsolutePath());
         String etag = AWS.upload(mContext, AWS.S3_USERS_DIR + "/" + uuid + ".zip", userZip.getAbsolutePath());
-        //TODO use etag for later sync
+        //TODO use eTag for later sync
         String url = String.format
         (
                 Locale.getDefault(),
@@ -616,7 +616,7 @@ public class AmazonCloud extends Cloud
         ObjectMetadata fileMetadata = AWS.getFileMetadata(mContext, pathOnServer);
 
         onDownloadListener.onMetadataReceived(new AwsDownloadItem(dirPath, pathOnServer, fileMetadata));
-        //todo check if etag has changed, if it did change then download:
+        //todo check if eTag has changed, if it did change then download:
         AWS.download(mContext, pathOnServer, new File(dirPath, ASSETS_UUID + ".zip").getAbsolutePath(), onDownloadListener);
         //TODO uncomment the following unzipping lines to unzip the zip
     }
