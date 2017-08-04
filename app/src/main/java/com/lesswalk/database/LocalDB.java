@@ -15,11 +15,11 @@ import java.util.HashMap;
 /**
  * Created by elad on 21/10/16.
  */
-public class DBController extends SQLiteOpenHelper {
-    private static final String TAG = DBController.class.getSimpleName();
+public class LocalDB extends SQLiteOpenHelper {
+    private static final String TAG = LocalDB.class.getSimpleName();
     private String currentUser   = null;
 
-    public DBController(Context context) {
+    public LocalDB(Context context) {
         super(context, "androidsqlite.db", null, 1);
     }
 
