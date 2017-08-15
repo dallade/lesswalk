@@ -1,13 +1,17 @@
 apply plugin: 'com.android.application'
 
+dependencies {
+    compile 'com.google.android.gms:play-services-maps:+'
+    compile 'com.android.support:appcompat-v7:25.+'
+}
 android {
-    compileSdkVersion 24        //should have a corresponding android platform version
-    buildToolsVersion "25.0"    //should be set according to the revision of the latest -
+    compileSdkVersion 26        //should have a corresponding android platform version
+    buildToolsVersion "26.0.0"    //should be set according to the revision of the latest -
     //      build tools: "<build_tools_ver>.<revision>" (i.e. "25.0")
     defaultConfig {
         applicationId "com.lesswalk"
         minSdkVersion 19
-        targetSdkVersion 24//shouldn't be higher than compileSdkVersion
+        targetSdkVersion 26//shouldn't be higher than compileSdkVersion
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -17,11 +21,12 @@ android {
         }
     }
     dependencies {
-        compile 'com.google.code.gson:gson:2.4'
+        compile 'com.google.code.gson:gson:2.7'
         compile 'com.squareup.okhttp3:okhttp:3.4.2'
-        compile 'com.android.support:support-v4:24.2.1'
-        compile 'com.android.support:support-vector-drawable:24.2.1'
-        compile 'com.android.support:appcompat-v7:24.2.1'
+        compile 'com.android.support:support-v4:26.+'
+        compile 'com.android.support:support-vector-drawable:26.+'
+        compile 'com.android.support:appcompat-v7:26.+'
+        compile 'com.github.jd-alexander:library:1.1.0'// 3rd party for google maps routing
         //
         // AWS (Amazon):
         compile 'com.amazonaws:aws-android-sdk-core:2.2.22'

@@ -1,0 +1,128 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.lesswalk.MapActivity"
+    >
+
+    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/map"
+              android:name="com.google.android.gms.maps.SupportMapFragment"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+        />
+
+    <RelativeLayout
+        android:id="@+id/map_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="#aa007b55"
+        >
+
+        <LinearLayout
+            android:id="@+id/map_row_0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:layout_toStartOf="@+id/map_col_right"
+            >
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="From:"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                />
+            <EditText
+                android:id="@+id/map_from"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Indiana, USA"
+                android:text="Indiana, USA"
+                android:textSize="18sp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/map_row_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:layout_toStartOf="@+id/map_col_right"
+            android:layout_below="@id/map_row_0"
+            >
+            <!--android:layout_marginBottom="-10dp"-->
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="To:"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                />
+            <EditText
+                android:id="@+id/map_to"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Oklahoma City, USA"
+                android:text="Oklahoma City, USA"
+                android:textSize="18sp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@id/map_col_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/map_row_1"
+            android:orientation="vertical"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            >
+            <Button
+                android:id="@+id/map_go"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:padding="15dp"
+                android:textStyle="bold"
+                android:text="Go"
+                />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/map_x"
+            android:layout_width="30dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:text="x"
+            />
+
+    </RelativeLayout>
+
+    <!--<Button-->
+        <!--android:id="@+id/map_v"-->
+        <!--android:layout_width="90dp"-->
+        <!--android:layout_height="35dp"-->
+        <!--android:background="#aa007b55"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_below="@id/map_menu"-->
+        <!--android:layout_marginTop="0dp"-->
+        <!--android:text="V"-->
+        <!--android:textScaleX="3"-->
+        <!--/>-->
+
+</RelativeLayout>

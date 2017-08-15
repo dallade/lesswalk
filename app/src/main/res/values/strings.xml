@@ -91,5 +91,6 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_lesswalk_settings">LesswalkSettings</string>
+    <string name="title_activity_map">Map</string>
 
 </resources>
