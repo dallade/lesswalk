@@ -101,7 +101,7 @@ public class SyncThread {
     private MainService      mParent         = null;
     private Cloud            mCloud          = null;
     private DataBaseUpdater  dataBaseUpdater = null;
-    private LesswalkDbHelper usersDB         = null;
+    private LesswalkDbHelper usersDB         = null;// PATH: /data/user/0/com.lesswalk/databases/users.db
     private LesswalkDbHelper signaturesDB    = null;
     private File             userContentDir  = null;
     private File             userJsonFile    = null;
