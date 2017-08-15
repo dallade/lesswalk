@@ -20,9 +20,9 @@ public class AddressObject3D extends EditTextImageObject
 		mapAddress = new CarruselJson.MapAddress();
 	}
 
-	public void setAddress(String contry, String city, String street, String street_num)
+	public void setAddress(String country, String city, String street, String street_num)
 	{
-		mapAddress.setCountry(contry);
+		mapAddress.setCountry(country);
 		mapAddress.setCity(city);
 		if(street != null && street_num != null)
 		{

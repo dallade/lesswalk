@@ -85,6 +85,7 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 				public void onClicked()
 				{
 					Toast.makeText(getContext(), "TODO will open googlemap!", Toast.LENGTH_SHORT).show();
+					//TODO elad
 				}
 			});
 			addressArea.addChild(mapThumbnail);
@@ -113,9 +114,9 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 					((EditObjects2dManager) getContext()).getManualAddressText(new EditObjectAddressCallback()
 					{
 						@Override
-						public void onReturn(String contry, String city, String street, String street_num)
+						public void onReturn(String country, String city, String street, String street_num)
 						{
-							addressObject.setAddress(contry, city, street, street_num);
+							addressObject.setAddress(country, city, street, street_num);
 						}
 
 					}, addressObject.getCountry(), addressObject.getCity(), addressObject.getStreet(), "0");
