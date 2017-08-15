@@ -54,7 +54,7 @@ public class RectObject3D extends BaseObject3D
         0.0f, 0.0f,
         1.0f, 0.0f,
     };
-    
+
 	public interface OnClickedAction
 	{
 		void onClicked();
@@ -490,10 +490,13 @@ public class RectObject3D extends BaseObject3D
 		return unifHandlers[HANDLER_UNIF_PER_MAT_INDEX];
 	}
 
+	public static void useProgram()
+	{
+		GLES20.glUseProgram(program);
+	}
+
 	public static void clear() 
 	{
-        GLES20.glUseProgram(program);
-
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 //        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);

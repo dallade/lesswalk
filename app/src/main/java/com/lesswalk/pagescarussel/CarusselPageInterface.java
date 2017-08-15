@@ -556,7 +556,7 @@ public abstract class CarusselPageInterface extends RectObject3D
 		GLES20.glUniform1f(getUnifHandler(HANDLER_UNIF_COLOR_SCALE), color_scale);
 	}
 
-	public void setModelView(float[] modelView) 
+	public void setModelView(float[] modelView)
 	{
 		GLES20.glUniformMatrix4fv(getUnifHandler(HANDLER_UNIF_MV_MAT_INDEX), 1, false, modelView, 0);
 	}

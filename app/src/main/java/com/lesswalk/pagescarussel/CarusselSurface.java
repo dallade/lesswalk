@@ -29,7 +29,7 @@ public class CarusselSurface extends GLSurfaceView
     public void initiation()
     {
 //    	setZOrderMediaOverlay(true);
-        setZOrderOnTop(true);
+//        setZOrderOnTop(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         getHolder().setFormat(PixelFormat.RGBA_8888);
         setEGLContextClientVersion(2);
