@@ -17,8 +17,8 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="elad" parent="@style/Platform.V25.AppCompat"
-        android:style="android:Theme.Material.NoActionBar"
+    <style name="MyMaterialNoActionBar" parent="@style/Platform.V25.AppCompat"
+           android:style="android:Theme.Material.NoActionBar"
         >
     </style>
 
