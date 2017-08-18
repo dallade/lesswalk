@@ -61,4 +61,7 @@ public class AddressObject3D extends EditTextImageObject
     {
         return mapAddress;
     }
+    @Override public String toString(){
+		return mapAddress.toString();
+    }
 }

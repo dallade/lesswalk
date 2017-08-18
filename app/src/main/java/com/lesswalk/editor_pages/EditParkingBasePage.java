@@ -7,12 +7,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.ParkingPageParametersBase;
 import com.lesswalk.bases.RectObject3D;
 import com.lesswalk.editor_pages.bases.EditAddressMapThumnail;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectAddressCallback;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCallback;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectTextTipCallback;
@@ -21,18 +23,22 @@ import com.lesswalk.editor_pages.objects3D.AddressObject3D;
 import com.lesswalk.editor_pages.objects3D.EditorImageTipObject3D;
 import com.lesswalk.editor_pages.objects3D.EditorTextTipObject3D;
 import com.lesswalk.editor_pages.objects3D.EditorVideoTipObject3D;
+import com.lesswalk.maps.MapData;
 
 public abstract class EditParkingBasePage extends ParkingPageParametersBase
 {
-	private RectObject3D           addressArea    = null;
-	private RectObject3D           tipsArea       = null;
-	private RectObject3D           mapThumbnail   = null;
-	private AddressObject3D        addressObject  = null;
-	private EditorTextTipObject3D  textTipObject  = null;
-	private EditorImageTipObject3D imageTipObject = null;
-	private EditorVideoTipObject3D videoTipObject = null;
-	
-	public EditParkingBasePage(String title, Context context) 
+    private static final String                 TAG            = EditParkingBasePage.class.getSimpleName();
+    private              RectObject3D           addressArea    = null;
+    private              RectObject3D           tipsArea       = null;
+    private              RectObject3D           mapThumbnail   = null;
+    private              AddressObject3D        addressObject  = null;
+    private              EditorTextTipObject3D  textTipObject  = null;
+    private              EditorImageTipObject3D imageTipObject = null;
+    private              EditorVideoTipObject3D videoTipObject = null;
+    private MapData                          mMapData;
+    private EditManagerCallbacks.MapListener mMapListener;
+
+    public EditParkingBasePage(String title, Context context)
 	{
 		super(title, context);
 	}
@@ -86,7 +92,27 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 				{
 					Toast.makeText(getContext(), "TODO will open googlemap!", Toast.LENGTH_SHORT).show();
 					//TODO elad
-				}
+                    mMapData = new MapData();
+					if (addressObject!=null && addressObject.toString().length()>4){
+						mMapData.inAddress = addressObject.toString();
+					}
+                    mMapListener = new EditManagerCallbacks.MapListener(){
+
+                        @Override
+                        public void onResult(MapData mapData) {
+                            mMapData = mapData;
+                            final String text = String.format("pos: %s", mMapData.latLng.toString());
+                            Log.d(TAG, text);
+                            Toast.makeText(getContext().getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public MapData getMapData() {
+                            return mMapData;
+                        }
+                    };
+                    ((EditObjects2dManager) getContext()).openMapForResult(mMapListener);
+                }
 			});
 			addressArea.addChild(mapThumbnail);
 		}

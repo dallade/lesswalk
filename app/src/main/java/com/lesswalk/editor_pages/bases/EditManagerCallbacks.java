@@ -24,5 +24,7 @@ public class EditManagerCallbacks
 	public interface MapListener
 	{
 		void onResult(MapData mapData);
+
+		MapData getMapData();
 	}
 }

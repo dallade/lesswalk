@@ -212,6 +212,9 @@ public class CarruselJson
         public void setSubLocality(String subLocality) {SubLocality = subLocality;}
         public void setSubThoroughfare(String subThoroughfare) {SubThoroughfare = subThoroughfare;}
         public void setThoroughfare(String thoroughfare) {Thoroughfare = thoroughfare;}
+        @Override public String toString() {
+            return String.format("%s, %s, %s", Street, City, Country);
+        }
     }
 
     public class Parkings

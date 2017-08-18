@@ -7,5 +7,6 @@ import com.google.android.gms.maps.model.LatLng;
  */
 
 public class MapData {
-    LatLng latLng;
+    public LatLng latLng;
+    public String inAddress;
 }
