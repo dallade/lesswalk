@@ -244,14 +244,6 @@ public class RectObject3D extends BaseObject3D
     	}
 	}
     
-    protected FloatBuffer loadFloatBuffer(float buff[])
-    {
-        FloatBuffer ret = ByteBuffer.allocateDirect(buff.length * Float.SIZE / 8).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        ret.put(buff);
-        ret.position(0);
-        return ret;
-    }
-    
     public float x0() {return params == null ? 0.0f:params.x0();}
     //
     public float y0() {return params == null ? 0.0f:params.y0();}

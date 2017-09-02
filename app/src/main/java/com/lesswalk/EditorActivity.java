@@ -57,24 +57,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager, OnMapReadyCallback {
-	private static final String            TAG                  = EditorActivity.class.getSimpleName();
-	private static final int               MAX_ADDRESS_RESULTS  = 10;
-	private static final float             MIN_DIST_SAME_MARKER = 5.5f;
-	private static final int BOUNDS_PADDING                     = 5;
-    private static final float MIN_BOUNDS_R2                    = 80f;
-    private              ICarusselMainItem carusselMainItem     = null;
-	private              RelativeLayout    addFamilyView        = null;
-	private              LinearLayout      editorTextTipView    = null;
-	private              LinearLayout      editorTakePhotoMenu  = null;
-	private              LinearLayout      manualAddress        = null;
-	private              Button            backButton           = null;
-	private              Button            saveButton           = null;
-	private              Vector<View>      additionViews        = null;
-	private              Vector<View>      currentDisplayed     = null;
-	private              GoogleMap         mMap                 = null;
-	private              RelativeLayout    map_menu             = null;
-	private SupportMapFragment mapFragment;
+public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager, OnMapReadyCallback
+{
+	private static final String             TAG                  = EditorActivity.class.getSimpleName();
+	private static final int                MAX_ADDRESS_RESULTS  = 10;
+	private static final float              MIN_DIST_SAME_MARKER = 5.5f;
+	private static final int                BOUNDS_PADDING       = 5;
+	private static final float              MIN_BOUNDS_R2        = 80f;
+	private              ICarusselMainItem  carusselMainItem     = null;
+	private              RelativeLayout     addFamilyView        = null;
+	private              LinearLayout       editorTextTipView    = null;
+	private              LinearLayout       editorTakePhotoMenu  = null;
+	private              LinearLayout       manualAddress        = null;
+	private              Button             backButton           = null;
+	private              Button             saveButton           = null;
+	private              Vector<View>       additionViews        = null;
+	private              Vector<View>       currentDisplayed     = null;
+	private              GoogleMap          mMap                 = null;
+	private              RelativeLayout     map_menu             = null;
+	private              SupportMapFragment mapFragment          = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -30,65 +30,61 @@ public class ContactSignatureSlideLayout extends View
 {
 	public interface IContactSignatureSliderCallback
 	{
-		void onSignatureClicked(String path);
+		void onSignatureClicked(String path, int index);
 	}
 
 	private class SignatureArea
 	{
 		String path      = "";
 		float x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+		int index;
 	}
 
 	private static final int   ICON_RESOLUTION          = 256;
 	private static final long  MAX_TOUCHED_TIME_PRESSED = 200;
 	private static final long  MAX_MOVED_DIST           = 10;
 	private static final float RETURN_VELOCATION        = 3000.0f;
+	private static final int   MAX_CONTAINER_SIZE       = 25;
 
 	private static AssetsJson assets  = null;
 	private static Bitmap     icons[] = null;
 	private static int        NO_TYPE = 0;
 
-	private        CarruselJson                    faked            = null;
-	private        IContactSignatureSliderCallback callback         = null;
-	private        Vector<CarruselJson>            container        = null;
-	private        Vector<CarruselJson>            workContainer    = null;
-	private        SignatureArea                   areas[]          = null;
-	private        HandlerThread                   returnAnimation  = null;
-	private        int                             icons_in_row     = 5;
-	private        boolean                         editable         = false;
-	private        Bitmap                          screen           = null;
-	private        Canvas                          cscreen          = null;
-	private        float                           offset           = 0.0f;
-	private        float                           last_touched_x   = 0.0f;
-	private        float                           last_touched_y   = 0.0f;
-	private        float                           moved_dist       = 0.0f;
-	private        float                           last_speed       = 0.0f;
-	private        long                            last_time        = 0L;
-	private        long                            touched_time     = 0L;
-	private        boolean                         touched          = false;
-	private        int                             animation_target = 0;
-	private        boolean                         needRedraw       = false;
-	private        boolean                         animationAlive   = false;
-	private        int                             randomIndex      = 0;
-	
+	private CarruselJson                    faked            = null;
+	private IContactSignatureSliderCallback callback         = null;
+	private CarruselJson                    container[]      = null;
+	private CarruselJson                    workContainer[]  = null;
+	private SignatureArea                   areas[]          = null;
+	private HandlerThread                   returnAnimation  = null;
+	private int                             icons_in_row     = 5;
+	private boolean                         editable         = false;
+	private Bitmap                          screen           = null;
+	private Canvas                          cscreen          = null;
+	private float                           offset           = 0.0f;
+	private float                           last_touched_x   = 0.0f;
+	private float                           last_touched_y   = 0.0f;
+	private float                           moved_dist       = 0.0f;
+	private float                           last_speed       = 0.0f;
+	private long                            last_time        = 0L;
+	private long                            touched_time     = 0L;
+	private boolean                         touched          = false;
+	private int                             animation_target = 0;
+	private boolean                         needRedraw       = false;
+	private boolean                         animationAlive   = false;
+
 	public ContactSignatureSlideLayout(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 		
-		container     = new Vector<CarruselJson>();
-		workContainer = new Vector<CarruselJson>();
+		container     = new CarruselJson[MAX_CONTAINER_SIZE];
+		workContainer = new CarruselJson[MAX_CONTAINER_SIZE];
 		areas         = new SignatureArea[icons_in_row*2];
 		
 		for(int i = 0; i < areas.length; i++) areas[i] = new SignatureArea();
 		
 		faked         = new CarruselJson();
 		
-		for(int i = 0; i < icons_in_row; i++)
-		{
-			workContainer.add(faked);
-		}
-
-		randomIndex = (int) (Math.random()*65536);
+		removeAllChilds();
 	}
 
 	public void setCallback(IContactSignatureSliderCallback callback)
@@ -98,32 +94,20 @@ public class ContactSignatureSlideLayout extends View
 
 	public void removeAllChilds()
 	{
-		container.removeAllElements();
+		for(int i = 0; i < workContainer.length; i++)
+		{
+			workContainer[i] = faked;
+		}
 	}
 
 	public int addContactSignature(CarruselJson signature)
 	{
-		if(alreadyContainSignature(container, signature))
+		if(signature.getIndex() < 0 || signature.getIndex() >= workContainer.length)
 		{
 			return -1;
 		}
 		
-		workContainer.removeAllElements();
-		
-		container.add(signature);
-		
-		workContainer.addAll(container);
-		
-		if(editable && workContainer.size()%icons_in_row == 0)
-		{
-			workContainer.add(faked);
-		}
-		
-		while(workContainer.size()%icons_in_row != 0)
-		{
-			workContainer.add(faked);
-		}
-		
+		workContainer[signature.getIndex()] = signature;
 		needRedraw = true;
 		
 		return 0;
@@ -132,18 +116,6 @@ public class ContactSignatureSlideLayout extends View
 	public void setEditable(boolean isEditable)
 	{
 		this.editable = isEditable;
-	}
-
-	private boolean alreadyContainSignature(Vector<CarruselJson> container, CarruselJson signature)
-	{
-		for(CarruselJson c:container)
-		{
-			if(c.getKey().equals(signature.getKey()))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -224,25 +196,25 @@ public class ContactSignatureSlideLayout extends View
 		 *  we try to draw the object twice on offset and on -w*(workContainer/icons_in_row) + offset
 		 */
 		
-		all_size		= screen.getWidth()*workContainer.size()/icons_in_row;
+		all_size		= screen.getWidth()*workContainer.length/icons_in_row;
 		fixed_offset	= offset;
 		
 		while(fixed_offset < 0.0f) fixed_offset += all_size;
 		while(fixed_offset >= all_size) fixed_offset -= all_size;
 		
-		for(int i = 0; i < workContainer.size(); i++)
+		for(int i = 0; i < workContainer.length; i++)
 		{
 			startx = i*icon_area_size + fixed_offset;
 			if(startx < screen.getWidth())
 			{
 				//Log.d("aaaa", into_areas_counter + ": startx=" + startx + " w=" + screen.getWidth() + " allScreen = " + all_size + " offset=" + fixed_offset);
-				initArea(areas[into_areas_counter], icon_area_size, startx, icon_size, workContainer.elementAt(i).getKey());
+				initArea(areas[into_areas_counter], icon_area_size, startx, icon_size, workContainer[i].getKey(), i);
 				drawIcon
 				(
 					cscreen,
 					areas[into_areas_counter],
-					workContainer.elementAt(i).getIcon(),
-					workContainer.elementAt(i).getTitle()
+					workContainer[i].getIcon(),
+					workContainer[i].getTitle()
 				);
 				into_areas_counter++;
 			}
@@ -251,12 +223,12 @@ public class ContactSignatureSlideLayout extends View
 			if(endx > 0 && endx < screen.getWidth() + icon_area_size)
 			{
 				//Log.d("aaaa", into_areas_counter + ": endx=" + endx + " w=" + screen.getWidth() + " allScreen = " + all_size + " offset=" + fixed_offset);
-				initArea(areas[into_areas_counter], icon_area_size, endx - icon_area_size, icon_size, workContainer.elementAt(i).getKey());
+				initArea(areas[into_areas_counter], icon_area_size, endx - icon_area_size, icon_size, workContainer[i].getKey(), i);
 				drawIcon
 				(
 					cscreen, areas[into_areas_counter],
-					workContainer.elementAt(i).getIcon(),
-					workContainer.elementAt(i).getTitle()
+					workContainer[i].getIcon(),
+					workContainer[i].getTitle()
 				);
 				into_areas_counter++;
 			}
@@ -309,13 +281,14 @@ public class ContactSignatureSlideLayout extends View
 		return NO_TYPE;
 	}
 
-	private void initArea(SignatureArea signatureArea, float icon_area_size, float startx, int icon_size, String path) 
+	private void initArea(SignatureArea signatureArea, float icon_area_size, float startx, int icon_size, String path, int index)
 	{
 		signatureArea.x0   = startx + (icon_area_size - icon_size)/2.0f;
 		signatureArea.x1   = signatureArea.x0 + icon_size;
 		signatureArea.y0   = 0;
 		signatureArea.y1   = icon_size;
 		signatureArea.path = path;
+		signatureArea.index = index;
 	}
 	
 	class ReturnAnimationThread extends HandlerThread
@@ -416,7 +389,7 @@ public class ContactSignatureSlideLayout extends View
 					if(intoArea(areas[index], last_touched_x, last_touched_y))
 					{
 //						Toast.makeText(getContext(), "will open carussel path=" + areas[index].path, Toast.LENGTH_SHORT).show();
-						if(callback != null) callback.onSignatureClicked(areas[index].path);
+						if(callback != null) callback.onSignatureClicked(areas[index].path, areas[index].index);
 					}
 				}
 				
@@ -434,7 +407,7 @@ public class ContactSignatureSlideLayout extends View
 			float diff_x = event.getX() - last_touched_x;
 			float diff_y = event.getY() - last_touched_y;
 			
-			float all_layouts_size = screen.getWidth()*workContainer.size()/icons_in_row;
+			float all_layouts_size = screen.getWidth()*workContainer.length/icons_in_row;
 			
 			offset += diff_x;
 			

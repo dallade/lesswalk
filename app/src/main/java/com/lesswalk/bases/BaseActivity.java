@@ -28,6 +28,7 @@ public abstract class BaseActivity extends FragmentActivity
 	public static final String INTENT_EXTRA_NAME_SPOT_NAME      = "spot_name";
 	public static final String INTENT_EXTRA_NAME_ICON_UUID      = "icon_uuid";
 	public static final String INTENT_EXTRA_NAME_TITLE          = "title";
+	public static final String INTENT_EXTRA_SLIDER_INDEX        = "slider_index";
 
 	private static final String           TAG           = "lesswalkBaseActivity";
     private static       Intent           mainActivity  = null;
