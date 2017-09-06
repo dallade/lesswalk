@@ -55,7 +55,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager, OnMapReadyCallback {
+public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager, OnMapReadyCallback
+{
     private static final String            TAG                  = EditorActivity.class.getSimpleName();
     private static final int               MAX_ADDRESS_RESULTS  = 10;
     private static final float             MIN_DIST_SAME_MARKER = 5.5f;

@@ -106,6 +106,7 @@ public class CarusselEditorMainItem extends ICarusselMainItem
             carruselJson.setIcon("asset:22709EF2-6304-478F-A91E-192022B1AC36 :" + parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_ICON_UUID));
             carruselJson.setTitle(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_TITLE));
             carruselJson.setType(parent.getIntent().getStringExtra(BaseActivity.INTENT_EXTRA_NAME_SPOT_NAME));
+            carruselJson.setIndex(parent.getIntent().getIntExtra(BaseActivity.INTENT_EXTRA_SLIDER_INDEX, 0));
 
             generalEditPage.save(dir, carruselJson);
             carruselJson.setParkingsAmmount(parkingEditPages.size());

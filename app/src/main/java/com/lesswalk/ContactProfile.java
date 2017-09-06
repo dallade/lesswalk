@@ -133,7 +133,7 @@ public class ContactProfile extends BaseActivity
 		userSignatureLayout.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
 		{
 			@Override
-			public void onSignatureClicked(String path)
+			public void onSignatureClicked(String path, int index)
 			{
 				runOnUiThread(new Runnable()
 				{
@@ -167,7 +167,7 @@ public class ContactProfile extends BaseActivity
 		contactSignatureLayout.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
 		{
 			@Override
-			public void onSignatureClicked(String uuid)
+			public void onSignatureClicked(String uuid, int index)
 			{
 				String dirPath = null;
 				if(uuid != null && (dirPath=getService().unzip(getService().uuidToPath(uuid))) != null)

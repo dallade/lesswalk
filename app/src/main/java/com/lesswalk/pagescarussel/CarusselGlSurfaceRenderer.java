@@ -9,6 +9,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.lesswalk.R;
+import com.lesswalk.bases.BackgroundObject;
 import com.lesswalk.bases.BaseRenderer;
 import com.lesswalk.bases.ImageObject3D;
 import com.lesswalk.bases.RectObject3D;
@@ -42,7 +43,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 	private boolean                       touched          = false;
 	private Context                       context          = null;
 
-	private ImageObject3D mBackground;
+	private BackgroundObject mBackground;
 
 //    private GLSurfaceView parent            = null;
     private int WIDTH  = 0;
@@ -59,7 +60,7 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     {
         Bitmap backgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background_1_1x);
     	RectObject3D.init(context);
-        mBackground = new ImageObject3D("background");
+        mBackground = new BackgroundObject(context);
         mBackground.generateTextureID(backgroundBitmap);
         backgroundBitmap.recycle();
     }
@@ -87,8 +88,6 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
     	WIDTH  = w;
     	HEIGTH = h;
 
-		mBackground.initObject(null, 0, 0, 2, 1.0f*h/w, 1);
-
 //    	GLES20.glViewport(0, 0, w, h);
 
         if(perspectiveMat == null)
@@ -113,24 +112,15 @@ public class CarusselGlSurfaceRenderer extends BaseRenderer implements GLSurface
 //			return;
 //		}
 
-//        GLES20.glViewport(0, 0, WIDTH, HEIGTH);
-
-		RectObject3D.useProgram();
+        GLES20.glViewport(0, 0, WIDTH, HEIGTH);
 
 		carusselMainItem.clearScreen();
 
-		// TODO create program for background and draw it
-//		GLES20.glDepthMask(false);
-//		if(container != null && container.size() > 0)
-//		{
-//			float modelView[] = new float[16];
-//			Matrix.setIdentityM(modelView, 0);
-//			carusselMainItem.setPerspectiveMatrix(modelView);
-//			modelView[14] -= 10;
-//			container.elementAt(0).setModelView(modelView);
-//		}
-//        mBackground.drawSelf();
-//		GLES20.glDepthMask(true);
+		GLES20.glDepthMask(false);
+        mBackground.drawSelf();
+		GLES20.glDepthMask(true);
+
+		RectObject3D.useProgram();
 
 		CarusselPageInterface.setModelView(WIDTH, HEIGTH);
 

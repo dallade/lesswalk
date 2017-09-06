@@ -6,6 +6,9 @@ import android.opengl.GLES20;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 public class BaseObject3D 
 {
@@ -65,5 +68,13 @@ public class BaseObject3D
         GLES20.glLinkProgram(mProgram);
 
         return mProgram;
+    }
+
+    protected FloatBuffer loadFloatBuffer(float buff[])
+    {
+        FloatBuffer ret = ByteBuffer.allocateDirect(buff.length * Float.SIZE / 8).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        ret.put(buff);
+        ret.position(0);
+        return ret;
     }
 }

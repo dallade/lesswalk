@@ -8,7 +8,6 @@ import java.util.Vector;
 
 public abstract class ICarusselMainItem 
 {
-
 	/*
 	 * Global Functions
 	 */
@@ -45,4 +44,5 @@ public abstract class ICarusselMainItem
 	public String save(File signature, String s){return null;}
 
 	public void setService(ILesswalkService service){}
+
 }

@@ -167,12 +167,14 @@ public class MainActivity extends BaseActivity
 		signatureSlider.setCallback(new ContactSignatureSlideLayout.IContactSignatureSliderCallback()
 		{
 			@Override
-			public void onSignatureClicked(String uuid)
+			public void onSignatureClicked(String uuid, int index)
 			{
 				if(uuid == null || uuid.length() <= 0 || uuid.equals("null"))
 				{
 					//startActivity(new Intent(MainActivity.this, EditorActivity.class));
-					startActivity(new Intent(MainActivity.this, SelectSpotTypeActivity.class));
+					Intent i = new Intent(MainActivity.this, SelectSpotTypeActivity.class);
+					i.putExtra(INTENT_EXTRA_SLIDER_INDEX, index);
+					startActivity(i);
 				}
 				else
 				{
