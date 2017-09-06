@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1034261466012",
+    "firebase_url": "https://lesswalk-1d05e.firebaseio.com",
+    "project_id": "lesswalk-1d05e",
+    "storage_bucket": "lesswalk-1d05e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034261466012:android:ddc5d9fff78cb690",
+        "android_client_info": {
+          "package_name": "com.lesswalk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1034261466012-1n55uf7shk2mfgugnvjf3cl3jd4sgga8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lesswalk",
+            "certificate_hash": "b001ce9fca2a6f85c81f3cec128503f8061c6e3a"
+          }
+        },
+        {
+          "client_id": "1034261466012-8mi356a327ruuio9op952kese5bl9k82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBROqSy9r2YeW2JvwJx5tfTXmaUr4g6jI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1034261466012-8mi356a327ruuio9op952kese5bl9k82.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
