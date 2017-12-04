@@ -1,6 +1,7 @@
 package com.lesswalk.share;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -39,6 +40,8 @@ public class MyMessagingService extends FirebaseMessagingService {
     public void handleIntent(Intent intent) {
         String action = intent.getAction();
         Set<String> categories = intent.getCategories();
-        Log.d(TAG, ""+intent.toString());
+        Bundle extrasBundle = intent.getExtras();
+        String extrasStr = extrasBundle!=null ? extrasBundle.toString() : "";
+        Log.d(TAG, ""+extrasStr);
     }
 }

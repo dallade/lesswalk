@@ -76,7 +76,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 	private              RelativeLayout     addFamilyView         = null;
 	private              LinearLayout       editorTextTipView     = null;
 	private              LinearLayout       editorTakePhotoMenu   = null;
-	private              LinearLayout       manualAddress         = null;
+	private              GridLayout       	manualAddress         = null;
 	private              Button             backButton       = null;
 	private              Button             saveButton       = null;
 	private              Vector<View>       additionViews    = null;
@@ -125,7 +125,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 		//
 		additionViews.add(addFamilyView = (RelativeLayout) layoutInflater.inflate(R.layout.layout_add_family, null));
 		additionViews.add(editorTextTipView = (LinearLayout) layoutInflater.inflate(R.layout.editor_text_tip, null));
-		additionViews.add(manualAddress = (LinearLayout) layoutInflater.inflate(R.layout.layout_set_address, null));
+		additionViews.add(manualAddress = (GridLayout) layoutInflater.inflate(R.layout.layout_set_address, null));
 		additionViews.add(editorTakePhotoMenu = (LinearLayout) layoutInflater.inflate(R.layout.editor_take_picture_menu, null));
 
 

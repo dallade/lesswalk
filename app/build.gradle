@@ -7,7 +7,7 @@ dependencies {
 }
 android {
     compileSdkVersion 26        //should have a corresponding android platform version
-    buildToolsVersion "26.0.0"    //should be set according to the revision of the latest -
+    buildToolsVersion '26.0.2'    //should be set according to the revision of the latest -
     //      build tools: "<build_tools_ver>.<revision>" (i.e. "25.0")
     defaultConfig {
         applicationId "com.lesswalk"
