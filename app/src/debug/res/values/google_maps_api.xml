@@ -9,7 +9,7 @@
     You can also add your credentials to an existing key, using these values:
 
     Package name:
-    B0:01:CE:9F:CA:2A:6F:85:C8:1F:3C:EC:12:85:03:F8:06:1C:6E:3A
+    com.lesswalk
 
     SHA-1 certificate fingerprint:
     B0:01:CE:9F:CA:2A:6F:85:C8:1F:3C:EC:12:85:03:F8:06:1C:6E:3A
@@ -21,6 +21,6 @@
     string in this file.
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-        AIzaSyBO93sPeNUGAOUGaTy-2P8cjvSSDcfjH4o
+        AIzaSyC9X77ev3pWFCjcySlv0mmvhWtjYtcnZKY
     </string>
 </resources>

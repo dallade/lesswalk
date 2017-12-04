@@ -17,10 +17,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -82,7 +84,9 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 	private              GoogleMap          mMap             = null;
 	private              RelativeLayout     map_menu         = null;
 	private              SupportMapFragment mapFragment      = null;
+	private View               bgForMap;
 	private              File               SIGNATURE_DIR    = null;
+    private boolean isMapShown = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -98,12 +102,20 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 
 		addAdditionLayouts();
 
-		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
-		mapFragment = (SupportMapFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.map);
-		mapFragment.getMapAsync(this);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        bgForMap = findViewById(R.id.bg_for_map);
+        bgForMap.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                toggleMap();
+                return false;
+            }
+        });
 
-		currentDisplayed = new Vector<View>();
+        currentDisplayed = new Vector<View>();
 	}
 
 	private void addAdditionLayouts() {
@@ -115,6 +127,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 		additionViews.add(editorTextTipView = (LinearLayout) layoutInflater.inflate(R.layout.editor_text_tip, null));
 		additionViews.add(manualAddress = (LinearLayout) layoutInflater.inflate(R.layout.layout_set_address, null));
 		additionViews.add(editorTakePhotoMenu = (LinearLayout) layoutInflater.inflate(R.layout.editor_take_picture_menu, null));
+
 
 		for (View v : additionViews) {
 			getScreen().addView(v, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -164,6 +177,18 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			}
 		});
 	}
+
+    private void toggleMap() {
+        FragmentManager fm = getSupportFragmentManager();
+        if (isMapShown){
+            bgForMap.setVisibility(View.INVISIBLE);
+            fm.beginTransaction().hide(mapFragment).commit();
+        }else{
+            bgForMap.setVisibility(View.VISIBLE);
+            fm.beginTransaction().show(mapFragment).commit();
+        }
+        isMapShown = !isMapShown;
+    }
 
 	@Override
 	public void onLoadCarusselItems() {
@@ -404,130 +429,128 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 //		if (mapFragmentView != null) {
 //			mapFragmentView.setVisibility(View.GONE);
 //		}
-		FragmentManager fm = getSupportFragmentManager();
-		fm.beginTransaction().hide(mapFragment).commit();
-	}
+        toggleMap();
+    }
 
-	@Override
-	public void openMapForResult(final EditManagerCallbacks.MapListener listener) {
-		//TODO elad
+    @Override
+    public void openMapForResult(final EditManagerCallbacks.MapListener listener) {
+        //TODO elad
         final ArrayList<LatLng> latLngList = new ArrayList<>();
-		MapData inMapData = listener.getMapData();
-		final MapData mapData = (inMapData != null) ? inMapData : new MapData();
-		final FragmentManager fm = getSupportFragmentManager();
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				fm.beginTransaction().show(mapFragment).commit();
-			}
-		});
+        MapData inMapData = listener.getMapData();
+        final MapData mapData = (inMapData != null) ? inMapData : new MapData();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                toggleMap();
+            }
+        });
         latLngList.clear();
-		mMap.clear();
-		//
-		LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-		//
-		LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-		Criteria criteria = new Criteria();
-		String provider = service.getBestProvider(criteria, false);
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-				== PackageManager.PERMISSION_GRANTED
-				&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-				== PackageManager.PERMISSION_GRANTED) {
-			// TODO: Consider calling
-			//    ActivityCompat#requestPermissions
-			// here to request the missing permissions, and then overriding
-			//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-			//                                          int[] grantResults)
-			// to handle the case where the user grants the permission. See the documentation
-			// for ActivityCompat#requestPermissions for more details.
-			Location location = service.getLastKnownLocation(provider);
-			if (location!=null) {
-				LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-				latLngList.add(currentLatLng);
-				CircleOptions circleOptions = new CircleOptions();
-				circleOptions.center(currentLatLng);
-				circleOptions.fillColor(Color.parseColor("#66446688"));
-				circleOptions.radius(40);
-				mMap.addCircle(circleOptions);
-				boundsBuilder.include(currentLatLng);
-			}
-		}
-		//getCurrentLocation and zoom to range enclosing my location and latLngList
-		if (mapData.inAddress!=null){
-			List<Address> addressList = MapUtils.searchAddress(getApplicationContext(), mapData.inAddress, MAX_ADDRESS_RESULTS);
-			if (addressList != null) {
-				for (Address address : addressList) {
-					LatLng markerLatLng = new LatLng(address.getLatitude(), address.getLongitude());
+        mMap.clear();
+        //
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        //
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String provider = service.getBestProvider(criteria, false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Location location = service.getLastKnownLocation(provider);
+            if (location != null) {
+                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                latLngList.add(currentLatLng);
+                CircleOptions circleOptions = new CircleOptions();
+                circleOptions.center(currentLatLng);
+                circleOptions.fillColor(Color.parseColor("#66446688"));
+                circleOptions.radius(40);
+                mMap.addCircle(circleOptions);
+                boundsBuilder.include(currentLatLng);
+            }
+        }
+        //getCurrentLocation and zoom to range enclosing my location and latLngList
+        if (mapData.inAddress != null) {
+            List<Address> addressList = MapUtils.searchAddress(getApplicationContext(), mapData.inAddress, MAX_ADDRESS_RESULTS);
+            if (addressList != null) {
+                for (Address address : addressList) {
+                    LatLng markerLatLng = new LatLng(address.getLatitude(), address.getLongitude());
                     latLngList.add(markerLatLng);
-					mMap.addMarker(new MarkerOptions().position(markerLatLng).title(address.getAddressLine(0)));
-					boundsBuilder.include(markerLatLng);
-					//mMap.moveCamera(CameraUpdateFactory.newLatLng(markerLatLng));
-				}
-			}
+                    mMap.addMarker(new MarkerOptions().position(markerLatLng).title(address.getAddressLine(0)));
+                    boundsBuilder.include(markerLatLng);
+                    //mMap.moveCamera(CameraUpdateFactory.newLatLng(markerLatLng));
+                }
+            }
 
         }
-		LatLngBounds bounds = null;
-		try {
-			bounds = boundsBuilder.build();
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		if (bounds!=null) {
-			Location ne = new Location("ne");
-			ne.setLatitude(bounds.northeast.latitude);
-			ne.setLongitude(bounds.northeast.longitude);
-			Location sw = new Location("sw");
-			ne.setLatitude(bounds.southwest.latitude);
-			sw.setLongitude(bounds.southwest.longitude);
-			float boundsR2 = sw.distanceTo(ne);
-			CameraUpdate cu;
-			if (boundsR2 < MIN_BOUNDS_R2 && latLngList.size() > 1) {
-				cu = CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 10f);
-			} else {
-				cu = CameraUpdateFactory.newLatLngBounds(bounds, BOUNDS_PADDING);
-			}
-			//  move the map:
-			//mMap.moveCamera(cu);
-			//  animate the map:
-			mMap.animateCamera(cu);
-		}
+        LatLngBounds bounds = null;
+        try {
+            bounds = boundsBuilder.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (bounds != null) {
+            Location ne = new Location("ne");
+            ne.setLatitude(bounds.northeast.latitude);
+            ne.setLongitude(bounds.northeast.longitude);
+            Location sw = new Location("sw");
+            ne.setLatitude(bounds.southwest.latitude);
+            sw.setLongitude(bounds.southwest.longitude);
+            float boundsR2 = sw.distanceTo(ne);
+            CameraUpdate cameraUpdate;
+            if (boundsR2 < MIN_BOUNDS_R2 && latLngList.size() > 1) {
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngList.get(0), 14f);
+            } else {
+                cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, BOUNDS_PADDING);
+            }
+            //  move the map:
+            //mMap.moveCamera(cameraUpdate);
+            //  animate the map:
+            mMap.animateCamera(cameraUpdate);
+        }
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 mapData.latLng = marker.getPosition();
-                fm.beginTransaction().hide(mapFragment).commit();
+                toggleMap();
                 listener.onResult(mapData);
             }
         });
-		mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-			@Override
-			public void onMapLongClick(LatLng latLng) {
-				Address address = MapUtils.getAddress(getApplicationContext(), latLng);
-				latLngList.clear();
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                Address address = MapUtils.getAddress(getApplicationContext(), latLng);
+                latLngList.clear();
                 mMap.clear();
                 LatLng markerLatLng = null;
                 float markerDistFromItsAddress = MIN_DIST_SAME_MARKER;
-				if (address != null){
+                if (address != null) {
                     markerLatLng = new LatLng(address.getLatitude(), address.getLongitude());
                     latLngList.add(markerLatLng);
                     mMap.addMarker(new MarkerOptions().position(markerLatLng).title(address.getAddressLine(0))
-							.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-					float[] results = new float[1];
-					Location.distanceBetween(
-							address.getLatitude(), address.getLongitude(),
-							latLng.latitude, latLng.longitude,
-							results);
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    float[] results = new float[1];
+                    Location.distanceBetween(
+                            address.getLatitude(), address.getLongitude(),
+                            latLng.latitude, latLng.longitude,
+                            results);
                     markerDistFromItsAddress = results[0];
-					Log.d(TAG, String.format("dist: %3.3f", markerDistFromItsAddress));
-				}
-				//
-				if (null == markerLatLng || markerDistFromItsAddress > MIN_DIST_SAME_MARKER){
+                    Log.d(TAG, String.format("dist: %3.3f", markerDistFromItsAddress));
+                }
+                //
+                if (null == markerLatLng || markerDistFromItsAddress > MIN_DIST_SAME_MARKER) {
                     latLngList.add(latLng);
-					mMap.addMarker(new MarkerOptions().position(latLng).title(mapData.inAddress)
-							.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-				}
-			}
-		});
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(mapData.inAddress)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                }
+            }
+        });
     }
 
     private EditManagerCallbacks.EditObjectVideoTipCallback editObjectVideoTipCallback = null;
