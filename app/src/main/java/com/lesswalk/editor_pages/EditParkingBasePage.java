@@ -1,12 +1,16 @@
 package com.lesswalk.editor_pages;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +21,7 @@ import com.lesswalk.editor_pages.bases.EditAddressMapThumnail;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectAddressCallback;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCallback;
+import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectVideoTipCallback;
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectTextTipCallback;
 import com.lesswalk.editor_pages.bases.EditObjects2dManager;
 import com.lesswalk.editor_pages.objects3D.AddressObject3D;
@@ -27,7 +32,8 @@ import com.lesswalk.maps.MapData;
 
 public abstract class EditParkingBasePage extends ParkingPageParametersBase
 {
-    private static final String                 TAG            = EditParkingBasePage.class.getSimpleName();
+	private static final String TAG                   = EditParkingBasePage.class.getSimpleName();
+
     private              RectObject3D           addressArea    = null;
     private              RectObject3D           tipsArea       = null;
     private              RectObject3D           mapThumbnail   = null;
@@ -246,7 +252,14 @@ public abstract class EditParkingBasePage extends ParkingPageParametersBase
 				@Override
 				public void onClicked() 
 				{
-					Toast.makeText(getContext(), "videoTipObject", Toast.LENGTH_SHORT).show();
+					((EditObjects2dManager) getContext()).getVideo(new EditObjectVideoTipCallback()
+					{
+                        @Override
+                        public void onReturn(String videoPath)
+                        {
+                            Toast.makeText(getContext(), "videoTipObject: " + videoPath, Toast.LENGTH_SHORT).show();
+                        }
+                    });
 				}
 			});
 			

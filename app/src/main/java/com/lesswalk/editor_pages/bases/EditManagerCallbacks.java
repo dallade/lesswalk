@@ -1,6 +1,7 @@
 package com.lesswalk.editor_pages.bases;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import com.lesswalk.maps.MapData;
 
@@ -20,6 +21,12 @@ public class EditManagerCallbacks
 	{
 		void onReturn(Bitmap photo);
 	}
+
+	public interface EditObjectVideoTipCallback
+	{
+		void onReturn(String videoUri);
+	}
+
 
 	public interface MapListener
 	{

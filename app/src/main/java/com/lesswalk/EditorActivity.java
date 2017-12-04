@@ -2,14 +2,17 @@ package com.lesswalk;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -23,7 +26,6 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,41 +47,54 @@ import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectPhotoTipCa
 import com.lesswalk.editor_pages.bases.EditManagerCallbacks.EditObjectTextTipCallback;
 import com.lesswalk.editor_pages.bases.EditObjects2dManager;
 import com.lesswalk.editor_pages.bases.ImageView;
+import com.lesswalk.json.CarruselJson;
 import com.lesswalk.maps.MapData;
 import com.lesswalk.maps.MapUtils;
 import com.lesswalk.pagescarussel.ICarusselMainItem;
+import com.lesswalk.utils.Utils;
 import com.lesswalk.views.MyCameraView;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.AbstractList;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 public class EditorActivity extends BaseCarusselActivity implements EditObjects2dManager, OnMapReadyCallback
 {
-	private static final String             TAG                  = EditorActivity.class.getSimpleName();
-	private static final int                MAX_ADDRESS_RESULTS  = 10;
-	private static final float              MIN_DIST_SAME_MARKER = 5.5f;
-	private static final int                BOUNDS_PADDING       = 5;
-	private static final float              MIN_BOUNDS_R2        = 80f;
-	private              ICarusselMainItem  carusselMainItem     = null;
-	private              RelativeLayout     addFamilyView        = null;
-	private              LinearLayout       editorTextTipView    = null;
-	private              LinearLayout       editorTakePhotoMenu  = null;
-	private              LinearLayout       manualAddress        = null;
-	private              Button             backButton           = null;
-	private              Button             saveButton           = null;
-	private              Vector<View>       additionViews        = null;
-	private              Vector<View>       currentDisplayed     = null;
-	private              GoogleMap          mMap                 = null;
-	private              RelativeLayout     map_menu             = null;
-	private              SupportMapFragment mapFragment          = null;
+	private static final int                REQUEST_VIDEO_CAPTURE = 0;
+	private static final String             TAG                   = EditorActivity.class.getSimpleName();
+	private static final int                MAX_ADDRESS_RESULTS   = 10;
+	private static final float              MIN_DIST_SAME_MARKER  = 5.5f;
+	private static final int                BOUNDS_PADDING        = 5;
+	private static final float              MIN_BOUNDS_R2         = 80f;
+	private              ICarusselMainItem  carusselMainItem      = null;
+	private              RelativeLayout     addFamilyView         = null;
+	private              LinearLayout       editorTextTipView     = null;
+	private              LinearLayout       editorTakePhotoMenu   = null;
+	private              LinearLayout       manualAddress         = null;
+	private              Button             backButton       = null;
+	private              Button             saveButton       = null;
+	private              Vector<View>       additionViews    = null;
+	private              Vector<View>       currentDisplayed = null;
+	private              GoogleMap          mMap             = null;
+	private              RelativeLayout     map_menu         = null;
+	private              SupportMapFragment mapFragment      = null;
+	private              File               SIGNATURE_DIR    = null;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
+
+		SIGNATURE_DIR = new File(getCacheDir(), "signature");
+
+		Utils.removeDir(SIGNATURE_DIR);
+
+		SIGNATURE_DIR.mkdir();
+		SIGNATURE_DIR.mkdirs();
 
 		addAdditionLayouts();
 
@@ -119,9 +134,9 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 		saveButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				File dir = new File(getCacheDir(), "signature");
+
 				String filename = "content.json";
-				String uuid = carusselMainItem.save(dir, filename);
+				String uuid = carusselMainItem.save(SIGNATURE_DIR, filename);
 
 				if (uuid != null) {
 					AWS.OnRequestListener onRequestListener = new AWS.OnRequestListener() {
@@ -144,7 +159,7 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 						}
 					};
 
-					getService().saveSignature(uuid, dir, onRequestListener);
+					getService().saveSignature(uuid, SIGNATURE_DIR, onRequestListener);
 				}
 			}
 		});
@@ -514,4 +529,68 @@ public class EditorActivity extends BaseCarusselActivity implements EditObjects2
 			}
 		});
     }
+
+    private EditManagerCallbacks.EditObjectVideoTipCallback editObjectVideoTipCallback = null;
+
+	@Override
+	public void getVideo(EditManagerCallbacks.EditObjectVideoTipCallback callback)
+	{
+		Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+		this.editObjectVideoTipCallback = callback ;
+		if (takeVideoIntent.resolveActivity(getPackageManager()) != null)
+		{
+			startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+		}
+	}
+
+	public String getPath(Uri uri) {
+		String[] projection   = { MediaStore.Images.Media.DATA };
+		Cursor   cursor       = managedQuery(uri, projection, null, null, null);
+		int      column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		cursor.moveToFirst();
+		return cursor.getString(column_index);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+		if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK)
+		{
+			Uri videoUri = intent.getData();
+
+			Log.d("videoTest", "" + getPath(videoUri));
+
+			try
+			{
+				File             temp     = new File(getPath(videoUri));
+				InputStream      fis      = new FileInputStream(temp);
+				String           fileName = getService().generateUUID() + ".mp4";
+				File             tmpFile  = new File(SIGNATURE_DIR, fileName);
+				FileOutputStream fos      = new FileOutputStream(tmpFile);
+
+				byte[] buf = new byte[(int) temp.length()];
+				int len;
+
+				CarruselJson.Video video = carusselMainItem.getCarruselJson().new Video();
+
+				video.setName(fileName);
+
+				carusselMainItem.getCarruselJson().setVideo(video);
+
+				while ((len = fis.read(buf)) > 0)
+				{
+					fos.write(buf, 0, len);
+				}
+				fis.close();
+				fos.close();
+
+				temp.delete();
+			}
+			catch (Exception io_e)
+			{
+				io_e.printStackTrace();
+				// TODO: handle error
+			}
+		}
+	}
 }

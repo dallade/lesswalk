@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 public class Utils
 {
-
     private static final String TAG = "Utils";
 
     public static String toString(HashMap<String, String> hashMap)
@@ -57,6 +56,8 @@ public class Utils
 
     public static void removeDir(File dir)
     {
+        if(dir == null || dir.listFiles() == null || dir.listFiles().length <= 0) return;
+
         for(File f:dir.listFiles())
         {
             if(f.isDirectory()) removeDir(f);

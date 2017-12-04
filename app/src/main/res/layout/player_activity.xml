@@ -9,7 +9,7 @@
     android:background="@drawable/background_1_1x"
     android:weightSum="13"
 	android:id="@+id/player_layout"
-    tools:context="android.on.lesswalk.playerView.PlayerView">
+    >
 
  	<include layout="@layout/base_carussel_activity"/>
     

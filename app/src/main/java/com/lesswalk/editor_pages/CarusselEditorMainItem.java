@@ -129,4 +129,11 @@ public class CarusselEditorMainItem extends ICarusselMainItem
     {
         this.service = service;
     }
+
+    @Override
+    public CarruselJson getCarruselJson()
+    {
+        if (carruselJson == null) carruselJson = new CarruselJson();
+        return carruselJson;
+    }
 }

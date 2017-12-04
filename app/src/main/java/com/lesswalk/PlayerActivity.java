@@ -26,51 +26,52 @@ public class PlayerActivity extends BaseCarusselActivity
         getCarusselSurface().addCarusselMainItem(carusselMainItem);
         //
         //TODO elazar move the next few lines later to the designated place
-        Button deleteButton = new Button(this);
-        deleteButton.setText("Delete");
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        ((LinearLayout)findViewById(R.id.player_layout)).addView(deleteButton, 0, lp);
-        Log.d(TAG, "signatureKey: "+signatureKey);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getService().deleteSignature(signatureKey, new AWS.OnRequestListener()
-                {
-                    @Override
-                    public void onStarted() {
-                        runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                Toast.makeText(PlayerActivity.this, "Deleting signature...", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        Log.d(TAG, "Deleting signature... ("+signatureKey+")");
-                    }
-
-                    @Override
-                    public void onFinished()
-                    {
-                        finish();
-                    }
-
-                    @Override
-                    public void onError(int errorId)
-                    {
-                        runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                Toast.makeText(PlayerActivity.this, "Failed to delete signature!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        Log.d(TAG, "Failed to delete the signature! ("+signatureKey+")");
-                    }
-                });
-            }
-        });
+//        Button deleteButton = new Button(this);
+//        deleteButton.setText("Delete");
+//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        ((LinearLayout)findViewById(R.id.player_layout)).addView(deleteButton, 0, lp);
+//        Log.d(TAG, "signatureKey: "+signatureKey);
+//        deleteButton.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View view) {
+//                getService().deleteSignature(signatureKey, new AWS.OnRequestListener()
+//                {
+//                    @Override
+//                    public void onStarted() {
+//                        runOnUiThread(new Runnable()
+//                        {
+//                            @Override
+//                            public void run()
+//                            {
+//                                Toast.makeText(PlayerActivity.this, "Deleting signature...", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                        Log.d(TAG, "Deleting signature... ("+signatureKey+")");
+//                    }
+//
+//                    @Override
+//                    public void onFinished()
+//                    {
+//                        finish();
+//                    }
+//
+//                    @Override
+//                    public void onError(int errorId)
+//                    {
+//                        runOnUiThread(new Runnable()
+//                        {
+//                            @Override
+//                            public void run()
+//                            {
+//                                Toast.makeText(PlayerActivity.this, "Failed to delete signature!", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                        Log.d(TAG, "Failed to delete the signature! ("+signatureKey+")");
+//                    }
+//                });
+//            }
+//        });
     }
 
     @Override

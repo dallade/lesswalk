@@ -2,6 +2,7 @@ package com.lesswalk.pagescarussel;
 
 import com.lesswalk.bases.ILesswalkService;
 import com.lesswalk.bases.RectObject3D;
+import com.lesswalk.json.CarruselJson;
 
 import java.io.File;
 import java.util.Vector;
@@ -44,5 +45,7 @@ public abstract class ICarusselMainItem
 	public String save(File signature, String s){return null;}
 
 	public void setService(ILesswalkService service){}
+
+	public abstract CarruselJson getCarruselJson();
 
 }

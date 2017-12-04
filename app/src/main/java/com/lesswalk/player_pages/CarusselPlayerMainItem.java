@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.JsonReader;
 import android.util.Log;
 
+import com.lesswalk.json.CarruselJson;
 import com.lesswalk.pagescarussel.CarusselPageInterface;
 import com.lesswalk.pagescarussel.ICarusselMainItem;
 
@@ -76,6 +77,12 @@ public class CarusselPlayerMainItem extends ICarusselMainItem
         }
         
         if(indoorItem != null) container.add(indoorItem);
+    }
+
+    @Override
+    public CarruselJson getCarruselJson()
+    {
+        return null;
     }
 
     private boolean checkJsonState(String[] objArray, String[] generalJsonState)
